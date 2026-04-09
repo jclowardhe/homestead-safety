@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homestead Electric — Safety</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --void:#F4F6F9;
+  --surface:#FFFFFF;
+  --surface2:#F0F3F7;
+  --surface3:#E4E9F0;
+  --lime:#2979FF;
+  --lime-dim:#1565C0;
+  --lime-glow:rgba(41,121,255,0.12);
+  --lime-border:rgba(41,121,255,0.3);
+  --white:#0F1923;
+  --muted:#8A9BB0;
+  --text:#2D3E50;
+  --text2:#7A8FA8;
+  --red:#FF4444;
+  --green:#00C853;
+  --green-dim:rgba(0,200,83,0.12);
+  --green-border:rgba(0,200,83,0.3);
+  --amber:#FFB300;
+  --font:'Syne',sans-serif;
+  --mono:'Syne Mono',monospace;
+  --body:'Inter',sans-serif;
+}
+
+body{
+  font-family:var(--body);
+  background:var(--void);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.55;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* GRID BACKGROUND */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(41,121,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(41,121,255,0.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+.screen{display:none;min-height:100vh;flex-direction:column;position:relative;z-index:1;}
+.screen.active{display:flex;}
+
+/* ── HEADER ── */
+.header{
+  background:var(--surface);
+  padding:0 20px;
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid rgba(41,121,255,0.3);
+}
+.wordmark{display:flex;align-items:center;gap:12px;}
+.bolt-wrap{
+  width:36px;height:36px;
+  background:var(--lime);
+  display:flex;align-items:center;justify-content:center;
+  clip-path:polygon(50% 0%,100% 0%,50% 45%,85% 45%,10% 100%,30% 52%,0% 52%);
+  flex-shrink:0;
+}
+.wm-text{
+  font-family:var(--font);
+  font-size:15px;font-weight:800;
+  color:var(--white);
+  letter-spacing:.02em;
+  line-height:1.1;
+  display:block;
+}
+.wm-sub{font-size:10px;color:var(--text2);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-top:1px;}
+.header-tag{
+  font-family:var(--mono);font-size:10px;
+  color:var(--lime);
+  border:1px solid rgba(41,121,255,0.3);
+  padding:5px 10px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--lime-glow);
+}
+
+/* CONTENT */
+.content{flex:1;padding:28px 20px 40px;max-width:640px;margin:0 auto;width:100%;}
+
+/* PAGE HERO */
+.hero{margin-bottom:32px;position:relative;}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:10px;color:var(--lime);
+  letter-spacing:.14em;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;margin-bottom:12px;
+}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--lime);}
+.hero-title{
+  font-family:var(--font);
+  font-size:26px;font-weight:700;
+  color:var(--white);
+  line-height:.95;
+  letter-spacing:-.03em;
+  text-transform:uppercase;
+}
+.hero-title .accent{color:var(--lime);}
+.hero-sub{font-size:13px;color:var(--text2);margin-top:12px;font-weight:300;line-height:1.6;}
+
+/* ROLE CARDS */
+.role-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.role-card{
+  background:var(--surface);
+  border:1px solid var(--surface3);
+  padding:20px;
+  cursor:pointer;
+  display:flex;align-items:center;gap:16px;
+  text-align:left;width:100%;font-family:var(--body);
+  transition:all .2s;
+  position:relative;
+  overflow:hidden;
+}
+.role-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--lime);
+  transform:scaleY(0);transition:transform .2s;
+  transform-origin:bottom;
+}
+.role-card:hover{border-color:rgba(41,121,255,0.3);background:#F0F3F7;}
+.role-card:hover::before{transform:scaleY(1);}
+.role-card:hover .rc-num{color:var(--lime);}
+.rc-num{
+  font-family:var(--font);font-size:26px;font-weight:700;
+  color:var(--surface3);
+  line-height:1;
+  transition:color .2s;
+  flex-shrink:0;
+  width:44px;
+  text-align:center;
+}
+.rc-name{font-family:var(--font);font-size:15px;font-weight:600;color:var(--white);display:block;letter-spacing:.01em;}
+.rc-desc{font-size:12px;color:var(--text2);display:block;margin-top:3px;font-weight:300;}
+.rc-arrow{margin-left:auto;color:var(--surface3);font-size:20px;font-family:var(--mono);transition:color .2s;flex-shrink:0;}
+.role-card:hover .rc-arrow{color:var(--lime);}
+
+/* COMPLIANCE NOTE */
+.compliance{
+  border:1px solid var(--surface3);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:10px;color:var(--text2);
+  letter-spacing:.05em;
+}
+.compliance-dot{width:5px;height:5px;background:var(--lime);border-radius:50%;flex-shrink:0;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:24px;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--surface3);
+  padding:16px 12px;text-align:center;
+}
+.stat-num{
+  font-family:var(--font);font-size:28px;font-weight:700;
+  color:var(--white);display:block;line-height:1;margin-bottom:4px;
+}
+.stat-num.green{color:var(--green);}
+.stat-num.amber{color:var(--amber);}
+.stat-lbl{font-size:10px;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;}
+
+/* PROGRESS */
+.prog-block{margin-bottom:24px;}
+.prog-meta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.prog-lbl{font-family:var(--font);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text);}
+.prog-pct{font-family:var(--mono);font-size:13px;color:var(--lime);}
+.prog-track{height:4px;background:#E4E9F0;position:relative;}
+.prog-fill{height:100%;background:var(--lime);transition:width .6s cubic-bezier(.4,0,.2,1);position:relative;}
+.prog-fill.complete{background:var(--green);}
+.prog-glow{position:absolute;right:-2px;top:-6px;bottom:-6px;width:8px;background:var(--lime);filter:blur(4px);opacity:.3;}
+
+/* SECTION LABEL */
+.sec-label{
+  font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--text2);
+  margin-bottom:12px;display:flex;align-items:center;gap:10px;
+}
+.sec-label::after{content:'';flex:1;height:1px;background:#E4E9F0;}
+
+/* TOPIC CARD */
+.topic-card{
+  background:var(--surface);
+  border:1px solid var(--surface3);
+  margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.topic-card::after{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--lime),transparent 60%);
+}
+.topic-top{
+  padding:18px 18px 14px;
+  border-bottom:1px solid var(--surface3);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.topic-wk{font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;}
+.osha-chip{
+  font-family:var(--mono);font-size:10px;font-weight:500;
+  padding:4px 10px;
+  background:var(--lime-glow);color:var(--lime);
+  border:1px solid rgba(41,121,255,0.3);
+  letter-spacing:.06em;white-space:nowrap;
+}
+.topic-body{padding:18px;}
+.topic-title{
+  font-family:var(--font);font-size:18px;font-weight:700;
+  color:var(--white);line-height:1.15;
+  text-transform:uppercase;letter-spacing:.01em;
+  margin-bottom:14px;padding-bottom:14px;
+  border-bottom:1px solid var(--surface3);
+}
+.topic-content{font-size:13px;color:var(--text);line-height:1.75;font-weight:300;}
+.topic-content p{margin-bottom:10px;}
+.topic-content ul{padding-left:16px;}
+.topic-content li{margin-bottom:6px;}
+.topic-content strong{color:var(--white);font-weight:500;}
+.topic-loading{padding:48px 18px;text-align:center;color:var(--text2);}
+.spinner{width:24px;height:24px;border:2px solid var(--surface3);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* CREW ROWS */
+.crew-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.crew-row{
+  background:var(--surface);
+  border:1px solid var(--surface3);
+  padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  transition:border-color .15s;
+}
+.crew-row.is-signed{border-color:var(--green-border);background:var(--green-dim);}
+.crew-row.is-lead-row{border-left:2px solid var(--lime);}
+.crew-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.avatar{
+  width:32px;height:32px;
+  background:#E4E9F0;
+  border:1px solid var(--surface3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;color:var(--text2);
+  flex-shrink:0;letter-spacing:.04em;
+}
+.crew-row.is-signed .avatar{background:var(--green-dim);border-color:var(--green-border);color:var(--green);}
+.crew-name{font-family:var(--font);font-size:14px;font-weight:600;color:var(--white);display:block;}
+.crew-role-lbl{font-size:11px;color:var(--text2);display:block;font-family:var(--mono);letter-spacing:.03em;}
+.crew-time{font-size:10px;color:var(--green);font-family:var(--mono);display:block;margin-top:1px;letter-spacing:.03em;}
+
+/* BUTTONS */
+.btn-sign{
+  background:var(--lime);color:#ffffff;border:none;
+  padding:8px 14px;font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  flex-shrink:0;
+}
+.btn-sign:hover{background:#5C9EFF;}
+.btn-sign:active{transform:scale(.97);}
+.signed-check{display:flex;align-items:center;gap:5px;color:var(--green);font-size:11px;font-weight:500;font-family:var(--mono);flex-shrink:0;letter-spacing:.04em;}
+
+.btn-primary{
+  background:var(--lime);color:#ffffff;border:none;
+  padding:15px 20px;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .15s;font-family:var(--mono);
+  width:100%;display:block;text-align:center;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.btn-primary:hover{background:#5C9EFF;}
+.btn-primary:active{transform:scale(.99);}
+
+.btn-outline{
+  background:transparent;color:var(--text);
+  border:1px solid var(--surface3);
+  padding:13px 20px;font-size:12px;font-weight:500;
+  cursor:pointer;font-family:var(--mono);
+  letter-spacing:.08em;text-transform:uppercase;
+  transition:all .15s;width:100%;display:block;text-align:center;
+}
+.btn-outline:hover{border-color:rgba(41,121,255,0.3);color:var(--lime);}
+
+.btn-ghost{background:none;border:none;color:var(--text2);font-size:11px;cursor:pointer;padding:4px 0;font-family:var(--mono);text-decoration:underline;letter-spacing:.04em;}
+
+/* FIELDS */
+.field-lbl{display:block;font-size:10px;font-weight:500;color:var(--text2);margin-bottom:7px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;}
+.field-select{
+  width:100%;background:var(--surface);color:var(--white);
+  border:1px solid var(--surface3);
+  padding:12px 14px;font-size:14px;font-family:var(--body);
+  outline:none;transition:border-color .15s;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A5A4A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;
+}
+.field-select:focus{border-color:rgba(41,121,255,0.3);}
+.field-select option{background:#F0F3F7;}
+
+.check-row{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--surface3);padding:14px;cursor:pointer;}
+.check-row input{width:16px;height:16px;accent-color:var(--lime);margin-top:2px;flex-shrink:0;cursor:pointer;}
+.check-text{font-size:13px;color:var(--text);line-height:1.55;font-weight:300;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,12,16,0.85);backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--surface);
+  border-top:2px solid var(--lime);
+  width:100%;max-width:640px;
+  padding:24px 20px 36px;
+  animation:slideUp .2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0;}}
+.modal-handle{width:36px;height:3px;background:#E4E9F0;margin:0 auto 20px;}
+.modal-title{font-family:var(--font);font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--white);margin-bottom:3px;}
+.modal-sub{font-size:11px;color:var(--text2);margin-bottom:18px;font-family:var(--mono);letter-spacing:.04em;}
+.sig-wrap{background:#F0F3F7;border:1px solid var(--surface3);margin-bottom:10px;position:relative;}
+canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-action:none;}
+.sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--surface3);pointer-events:none;transition:opacity .2s;white-space:nowrap;font-family:var(--mono);}
+.modal-actions{display:flex;gap:10px;margin-top:14px;}
+.modal-actions .btn-primary{flex:1;}
+
+/* EXPORT */
+.export-row{
+  background:var(--surface);border:1px solid var(--surface3);
+  padding:16px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .15s;margin-bottom:8px;
+  width:100%;text-align:left;font-family:var(--body);color:var(--text);
+}
+.export-row:hover{border-color:rgba(41,121,255,0.3);}
+.export-row:hover .exp-name{color:var(--lime);}
+.exp-icon-wrap{width:38px;height:38px;background:#E4E9F0;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.exp-name{font-family:var(--font);font-size:14px;font-weight:700;display:block;text-transform:uppercase;letter-spacing:.02em;transition:color .15s;}
+.exp-desc{font-size:12px;color:var(--text2);display:block;margin-top:1px;font-weight:300;}
+.exp-chev{margin-left:auto;color:var(--text2);font-family:var(--mono);font-size:14px;}
+
+/* HISTORY */
+.hist-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--surface3);}
+.hist-row:first-child{border-top:1px solid var(--surface3);}
+.hist-topic{font-family:var(--font);font-size:13px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:.01em;}
+.hist-week{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:2px;letter-spacing:.04em;}
+.hist-badge{font-size:11px;font-weight:500;padding:4px 10px;font-family:var(--mono);white-space:nowrap;flex-shrink:0;letter-spacing:.04em;border:1px solid;}
+.hist-badge.full{color:var(--green);border-color:var(--green-border);}
+.hist-badge.partial{color:var(--amber);border-color:rgba(255,179,0,.3);}
+
+/* NAV */
+.bottom-nav{
+  background:var(--surface);
+  border-top:1px solid rgba(41,121,255,0.3);
+  display:flex;position:sticky;bottom:0;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:12px 8px 10px;cursor:pointer;border:none;background:none;
+  color:var(--text2);font-size:9px;font-family:var(--mono);
+  letter-spacing:.1em;text-transform:uppercase;transition:color .15s;
+  border-right:1px solid var(--surface3);
+}
+.nav-btn:last-child{border-right:none;}
+.nav-btn .ni{font-size:18px;}
+.nav-btn.active{color:var(--lime);}
+.nav-btn:hover{color:var(--white);}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:80px;left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:#0F1923;color:#2979FF;
+  padding:10px 20px;
+  font-size:11px;font-weight:500;z-index:300;
+  opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1);
+  white-space:nowrap;pointer-events:none;
+  font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid rgba(41,121,255,0.3);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* SUCCESS */
+.success-state{text-align:center;padding:48px 20px;}
+.success-icon{
+  font-size:64px;margin-bottom:16px;display:block;
+  animation:popIn .4s cubic-bezier(.4,0,.2,1);
+}
+@keyframes popIn{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.success-title{font-family:var(--font);font-size:20px;font-weight:700;letter-spacing:.01em;color:var(--white);margin-bottom:6px;}
+.success-sub{font-size:11px;color:var(--text2);font-family:var(--mono);letter-spacing:.06em;}
+
+/* CONFIRM BANNER */
+.confirm-banner{
+  background:var(--green-dim);border:1px solid var(--green-border);
+  border-left:3px solid var(--green);
+  padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.confirm-check{color:var(--green);font-size:20px;}
+.confirm-name{font-family:var(--font);font-size:14px;font-weight:700;color:var(--green);text-transform:uppercase;display:block;letter-spacing:.02em;}
+.confirm-time{font-size:10px;color:var(--text2);font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.04em;}
+
+.divider{height:1px;background:#E4E9F0;margin:24px 0;}
+.mb16{margin-bottom:16px;}
+.mb24{margin-bottom:24px;}
+.mt8{margin-top:8px;}
+.inline-row{display:flex;gap:8px;align-items:stretch;}
+.inline-row .field-select{flex:1;}
+
+/* ── QUIZ ── */
+.quiz-q{margin-bottom:20px;}
+.quiz-q-text{font-family:var(--font);font-size:16px;font-weight:600;color:#0F1923;line-height:1.4;margin-bottom:14px;letter-spacing:-.01em;}
+.quiz-q-num{font-family:var(--mono);font-size:10px;color:#7A8FA8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{
+  background:#FFFFFF;border:1.5px solid #E4E9F0;
+  padding:14px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+  transition:all .15s;font-family:var(--body);
+  text-align:left;width:100%;
+}
+.quiz-opt:hover:not(.answered){border-color:#2979FF;background:#F0F3F7;}
+.quiz-opt.correct{border-color:#00C853;background:rgba(0,200,83,0.08);pointer-events:none;}
+.quiz-opt.wrong{border-color:#FF4444;background:rgba(255,68,68,0.08);pointer-events:none;}
+.quiz-opt.dimmed{opacity:.4;pointer-events:none;}
+.quiz-opt-letter{
+  width:28px;height:28px;flex-shrink:0;
+  background:#E4E9F0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;font-weight:500;color:#7A8FA8;
+  transition:all .15s;
+}
+.quiz-opt.correct .quiz-opt-letter{background:#00C853;color:#fff;}
+.quiz-opt.wrong .quiz-opt-letter{background:#FF4444;color:#fff;}
+.quiz-opt-text{font-size:14px;color:#2D3E50;line-height:1.4;}
+.quiz-opt.correct .quiz-opt-text{color:#00C853;font-weight:500;}
+.quiz-opt.wrong .quiz-opt-text{color:#FF4444;}
+.quiz-feedback{font-size:13px;margin-top:10px;padding:10px 14px;font-weight:300;line-height:1.5;}
+.quiz-feedback.correct{background:rgba(0,200,83,0.08);color:#00A847;border-left:3px solid #00C853;}
+.quiz-feedback.wrong{background:rgba(255,68,68,0.08);color:#CC3333;border-left:3px solid #FF4444;}
+.quiz-next{margin-top:14px;width:100%;}
+.quiz-progress{display:flex;gap:4px;margin-bottom:20px;}
+.quiz-pip{height:3px;flex:1;background:#E4E9F0;transition:background .3s;}
+.quiz-pip.done{background:#2979FF;}
+.quiz-pip.correct{background:#00C853;}
+.quiz-loading{padding:32px;text-align:center;color:#7A8FA8;font-family:var(--mono);font-size:12px;letter-spacing:.06em;}
+
+/* ── LEAD SCORECARD ── */
+.scorecard-row{
+  background:#FFFFFF;border:1px solid #E4E9F0;
+  padding:14px 16px;margin-bottom:6px;
+  display:flex;align-items:center;gap:12px;
+}
+.scorecard-row.perfect{border-left:3px solid #00C853;}
+.scorecard-row.partial{border-left:3px solid #FFB300;}
+.scorecard-row.none{border-left:3px solid #E4E9F0;}
+.scorecard-avatar{
+  width:36px;height:36px;background:#F4F6F9;
+  border:1px solid #E4E9F0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;color:#7A8FA8;
+  flex-shrink:0;
+}
+.scorecard-name{font-family:var(--font);font-size:14px;font-weight:600;color:#0F1923;display:block;}
+.scorecard-detail{font-size:11px;color:#7A8FA8;font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.03em;}
+.scorecard-right{margin-left:auto;text-align:right;flex-shrink:0;}
+.scorecard-pct{font-family:var(--font);font-size:20px;font-weight:700;display:block;line-height:1;}
+.scorecard-pct.green{color:#00C853;}
+.scorecard-pct.amber{color:#FFB300;}
+.scorecard-pct.red{color:#FF4444;}
+.scorecard-sublabel{font-size:10px;color:#7A8FA8;font-family:var(--mono);letter-spacing:.04em;}
+.scorecard-bar{height:3px;background:#E4E9F0;margin-top:8px;width:100%;}
+.scorecard-bar-fill{height:100%;transition:width .4s ease;}
+
+/* ── REPEAT OFFENDERS ── */
+.offender-row{
+  background:#FFFFFF;border:1px solid #E4E9F0;
+  padding:14px 16px;margin-bottom:6px;
+  display:flex;align-items:center;gap:12px;
+  border-left:3px solid #FF4444;
+}
+.offender-name{font-family:var(--font);font-size:14px;font-weight:600;color:#0F1923;display:block;}
+.offender-detail{font-size:11px;color:#FF4444;font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.03em;}
+.offender-badge{
+  margin-left:auto;flex-shrink:0;
+  background:rgba(255,68,68,0.08);
+  border:1px solid rgba(255,68,68,0.2);
+  color:#FF4444;
+  font-family:var(--mono);font-size:10px;font-weight:500;
+  padding:4px 10px;letter-spacing:.06em;white-space:nowrap;
+}
+.no-issues{
+  background:#F0FDF4;border:1px solid #BBF7D0;
+  padding:14px 16px;
+  font-size:13px;color:#16A34A;
+  font-family:var(--mono);letter-spacing:.03em;
+  display:flex;align-items:center;gap:10px;
+}
+
+/* ── INCIDENT REPORT ── */
+.ir-section{margin-bottom:24px;}
+.ir-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ir-type-btn{
+  background:#FFFFFF;border:1.5px solid #E4E9F0;
+  padding:16px 8px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-family:var(--font);font-size:12px;font-weight:600;
+  color:#7A8FA8;text-transform:uppercase;letter-spacing:.04em;
+  transition:all .15s;
+}
+.ir-type-btn:hover{border-color:#FF4444;color:#FF4444;}
+.ir-type-btn.active{border-color:#FF4444;background:rgba(255,68,68,0.06);color:#FF4444;}
+.ir-type-icon{font-size:24px;}
+textarea.field-select{font-family:var(--body);}
+input.field-select{font-family:var(--body);}
+input.field-select::placeholder{color:#B8B6B0;}
+
+.lead-quiz-q-text{font-family:var(--font);font-size:18px;font-weight:700;color:#0F1923;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;}
+.lead-quiz-q-num{font-family:var(--mono);font-size:10px;color:#2979FF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.lead-quiz-opts{display:flex;flex-direction:column;gap:6px;}
+.lead-quiz-opt{
+  background:#0F1923;color:#F0F4F0;
+  border:none;padding:16px 20px;
+  cursor:pointer;display:flex;align-items:center;gap:14px;
+  text-align:left;width:100%;font-family:var(--body);
+  transition:all .15s;position:relative;overflow:hidden;
+}
+.lead-quiz-opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:#2979FF;transition:width .15s;}
+.lead-quiz-opt:hover:not(.answered)::before{width:3px;}
+.lead-quiz-opt:hover:not(.answered){background:#1C2530;}
+.lead-quiz-opt.correct{background:#003820;pointer-events:none;}
+.lead-quiz-opt.correct::before{width:3px;background:#00C853;}
+.lead-quiz-opt.wrong{background:#2D0A0A;pointer-events:none;}
+.lead-quiz-opt.wrong::before{width:3px;background:#FF4444;}
+.lead-quiz-opt.dimmed{opacity:.3;pointer-events:none;}
+.lead-quiz-letter{font-family:var(--mono);font-size:12px;font-weight:500;color:#7A8FA8;flex-shrink:0;width:20px;transition:color .15s;}
+.lead-quiz-opt.correct .lead-quiz-letter{color:#00C853;}
+.lead-quiz-opt.wrong .lead-quiz-letter{color:#FF4444;}
+.lead-quiz-text{font-size:15px;color:#F0F4F0;line-height:1.4;}
+.lead-quiz-opt.correct .lead-quiz-text{color:#00C853;}
+.lead-quiz-opt.wrong .lead-quiz-text{color:#FF4444;}
+.lead-quiz-fb{font-size:13px;margin-top:12px;padding:12px 16px;color:#C8D8C8;background:#0F1923;border-left:3px solid transparent;font-weight:300;line-height:1.5;}
+.lead-quiz-fb.correct{border-color:#00C853;color:#7DFFC0;}
+.lead-quiz-fb.wrong{border-color:#FF4444;color:#FFB3B3;}
+.lead-quiz-loading{padding:40px;text-align:center;color:#7A8FA8;font-family:var(--mono);font-size:12px;letter-spacing:.06em;}
+
+.quiz-pass-banner{
+  background:#0F1923;
+  padding:20px;
+  display:flex;align-items:center;gap:16px;
+  border-top:2px solid #2979FF;
+}
+.quiz-pass-icon{font-size:36px;animation:popIn .4s cubic-bezier(.4,0,.2,1);}
+.quiz-pass-title{font-family:var(--font);font-size:22px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.02em;}
+.quiz-pass-sub{font-size:12px;color:#7A8FA8;font-family:var(--mono);letter-spacing:.04em;margin-top:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="screen-role">
+  <header class="header">
+    <div class="wordmark">
+      <div class="bolt-wrap"></div>
+      <div>
+        <span class="wm-text">Homestead Electric</span>
+        <span class="wm-sub">Safety Program</span>
+      </div>
+    </div>
+    <div class="header-tag">OSHA 1926</div>
+  </header>
+  <div class="content">
+    <div class="hero">
+      <div class="hero-eyebrow">Toolbox Talk System</div>
+      <div class="hero-title">Select<br>your role.</div>
+
+    </div>
+
+    <div class="role-grid">
+      <button class="role-card" onclick="enterRole('lead')">
+        <div class="rc-num">01</div>
+        <div>
+          <span class="rc-name">Job Lead</span>
+          <span class="rc-desc">Wednesday lead meeting · sign off · collect crew</span>
+        </div>
+        <span class="rc-arrow">→</span>
+      </button>
+      <button class="role-card" onclick="enterRole('crew')">
+        <div class="rc-num">02</div>
+        <div>
+          <span class="rc-name">Crew Member</span>
+          <span class="rc-desc">Read this week's topic · sign off</span>
+        </div>
+        <span class="rc-arrow">→</span>
+      </button>
+      <button class="role-card" onclick="enterRole('admin')">
+        <div class="rc-num">03</div>
+        <div>
+          <span class="rc-name">Safety Lead</span>
+          <span class="rc-desc">Records · exports · topic management</span>
+        </div>
+        <span class="rc-arrow">→</span>
+      </button>
+      <button class="role-card" onclick="enterRole('incident')" style="border-color:rgba(255,68,68,0.25);">
+        <div class="rc-num" style="color:rgba(255,68,68,0.25);">04</div>
+        <div>
+          <span class="rc-name" style="color:#FF4444;">Incident Report</span>
+          <span class="rc-desc">Report an injury, near-miss, or hazard</span>
+        </div>
+        <span class="rc-arrow" style="color:#FF4444;">→</span>
+      </button>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="compliance">
+        <div class="compliance-dot"></div>
+        System active · OSHA 29 CFR 1926 compliant
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ JOB LEAD ══ -->
+<div class="screen" id="screen-lead">
+  <header class="header">
+    <div class="wordmark">
+      <div class="bolt-wrap"></div>
+      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
+    </div>
+    <div class="header-tag">Job Lead</div>
+  </header>
+  <div class="content" style="padding-bottom:100px;">
+
+    <div class="hero" style="margin-bottom:24px;">
+      <div class="hero-eyebrow">Wednesday Lead Meeting</div>
+      <div class="hero-title" style="font-size:26px;">Knowledge<br>Check.</div>
+    </div>
+
+    <div class="sec-label">Wednesday Lead Meeting</div>
+    <div style="font-size:13px;color:#7A8FA8;font-weight:300;margin-bottom:20px;">Answer the questions below to unlock your sign-off.</div>
+
+    <!-- LEAD QUIZ -->
+    <div id="leadQuizSection" style="margin-bottom:20px;">
+      <div id="leadQuizInner"></div>
+    </div>
+
+    <!-- LEAD QUIZ PASS -->
+    <div id="leadQuizPass" style="display:none; margin-bottom:20px;">
+      <div class="quiz-pass-banner">
+        <div class="quiz-pass-icon">⚡</div>
+        <div>
+          <div class="quiz-pass-title">Passed</div>
+          <div class="quiz-pass-sub" id="leadQuizScoreLabel">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Your sign-off</div>
+    <div id="leadSignSection" class="mb24" style="display:none;">
+      <div class="mb16">
+        <label class="field-lbl">Your name</label>
+        <select class="field-select" id="leadNameSelect"><option value="">Select your name…</option></select>
+      </div>
+      <div class="mb16">
+        <label class="check-row">
+          <input type="checkbox" id="leadConfirm">
+          <span class="check-text">I confirm I attended this week's lead safety meeting and understand the topic presented.</span>
+        </label>
+      </div>
+      <button class="btn-primary" onclick="openLeadSignModal()">Sign off as lead →</button>
+    </div>
+
+    <div id="leadSigned" style="display:none;" class="mb24">
+      <div class="confirm-banner">
+        <span class="confirm-check">✓</span>
+        <div>
+          <span class="confirm-name" id="leadSignedName">—</span>
+          <span class="confirm-time" id="leadSignedDetails">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="stats-row">
+      <div class="stat-card"><span class="stat-num" id="lead-stat-total">12</span><span class="stat-lbl">Crew</span></div>
+      <div class="stat-card"><span class="stat-num green" id="lead-stat-signed">0</span><span class="stat-lbl">Signed</span></div>
+      <div class="stat-card"><span class="stat-num amber" id="lead-stat-pending">12</span><span class="stat-lbl">Pending</span></div>
+    </div>
+
+    <div class="prog-block">
+      <div class="prog-meta">
+        <span class="prog-lbl">Crew progress</span>
+        <span class="prog-pct" id="lead-progress-pct">0%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="leadProgressBar" style="width:0%">
+          <div class="prog-glow"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Crew sign-offs</div>
+    <div class="crew-list" id="crewSignoffList"></div>
+    <button class="btn-outline" onclick="shareLink()">Share sign-off link with crew</button>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active"><span class="ni">📋</span>Meeting</button>
+    <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
+  </nav>
+</div>
+
+<!-- ══ CREW ══ -->
+<div class="screen" id="screen-crew">
+  <header class="header">
+    <div class="wordmark">
+      <div class="bolt-wrap"></div>
+      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub" id="crewWeekLabel">—</span></div>
+    </div>
+    <div class="header-tag">Crew</div>
+  </header>
+  <div class="content" style="padding-bottom:40px;">
+    <div class="hero" style="margin-bottom:24px;">
+      <div class="hero-eyebrow">Safety Topic</div>
+      <div class="hero-title" style="font-size:26px;">This<br>Week's<br>Talk.</div>
+    </div>
+    <div class="topic-card" id="crewTopicCard">
+      <div class="topic-loading"><div class="spinner"></div><p>Loading topic…</p></div>
+    </div>
+    <!-- QUIZ -->
+    <div id="crewQuizSection" style="display:none; margin-top:28px;">
+      <div class="sec-label">Knowledge check</div>
+      <div id="quizInner"></div>
+    </div>
+
+    <!-- QUIZ PASS -->
+    <div id="crewQuizPass" style="display:none; margin-top:28px;">
+      <div class="quiz-pass-banner">
+        <div class="quiz-pass-icon">⚡</div>
+        <div>
+          <div class="quiz-pass-title">Passed</div>
+          <div class="quiz-pass-sub" id="quizScoreLabel">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label" style="margin-top:28px;">Your sign-off</div>
+    <div id="crewSignSection" style="display:none;">
+      <div class="mb16">
+        <label class="field-lbl">Your name</label>
+        <select class="field-select" id="crewNameSelect"><option value="">Select your name…</option></select>
+      </div>
+      <div class="mb16">
+        <label class="check-row">
+          <input type="checkbox" id="crewConfirm">
+          <span class="check-text">I confirm I reviewed this week's safety topic and understand the information presented.</span>
+        </label>
+      </div>
+      <button class="btn-primary" onclick="openSignModal()">Sign &amp; submit →</button>
+    </div>
+    <div id="crewSigned" style="display:none;">
+      <div class="success-state">
+        <span class="success-icon">⚡</span>
+        <div class="success-title">Signed in.</div>
+        <div class="success-sub" id="crewSignedDetails">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div class="screen" id="screen-admin">
+  <header class="header">
+    <div class="wordmark">
+      <div class="bolt-wrap"></div>
+      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
+    </div>
+    <div class="header-tag">Admin</div>
+  </header>
+  <div class="content" style="padding-bottom:100px;">
+    <div class="hero" style="margin-bottom:24px;">
+      <div class="hero-eyebrow">Safety Lead</div>
+      <div class="hero-title" style="font-size:26px;">Safety<br>Records.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><span class="stat-num">12</span><span class="stat-lbl">Weeks</span></div>
+      <div class="stat-card"><span class="stat-num green" id="admin-leads-signed">0/8</span><span class="stat-lbl">Leads</span></div>
+      <div class="stat-card"><span class="stat-num amber" id="admin-crew-signed">0/12</span><span class="stat-lbl">Crew</span></div>
+    </div>
+
+    <!-- LEAD SCORECARDS -->
+    <div class="divider"></div>
+    <div class="sec-label">Lead scorecard — this week</div>
+    <div id="leadScorecard"></div>
+
+    <!-- REPEAT OFFENDERS -->
+    <div class="divider"></div>
+    <div class="sec-label">Needs attention</div>
+    <div id="repeatOffenders"></div>
+
+    <div class="divider"></div>
+    <div class="sec-label">Export</div>
+    <button class="export-row" onclick="exportReport()">
+      <div class="exp-icon-wrap">📄</div>
+      <div><span class="exp-name">This week's report</span><span class="exp-desc">All signatures · timestamps · GPS coordinates</span></div>
+      <span class="exp-chev">→</span>
+    </button>
+    <button class="export-row" onclick="exportCSV()">
+      <div class="exp-icon-wrap">📊</div>
+      <div><span class="exp-name">Full year CSV</span><span class="exp-desc">All records · audit-ready format</span></div>
+      <span class="exp-chev">→</span>
+    </button>
+    <button class="export-row" onclick="showToast('OSHA 300 log coming soon')">
+      <div class="exp-icon-wrap">🏛️</div>
+      <div><span class="exp-name">OSHA 300 log</span><span class="exp-desc">Pre-formatted for OSHA recordkeeping</span></div>
+      <span class="exp-chev">→</span>
+    </button>
+
+    <div class="divider"></div>
+    <div class="sec-label">Weekly history</div>
+    <div id="weekHistory"></div>
+
+    <div class="divider"></div>
+    <div class="sec-label">Generate topic</div>
+    <div class="inline-row mt8">
+      <select class="field-select" id="topicCategory">
+        <option value="general">General Construction Safety</option>
+        <option value="fall">Fall Protection (1926.502)</option>
+        <option value="electrical">Electrical Safety (1926.400)</option>
+        <option value="ppe">PPE Requirements (1926.95)</option>
+        <option value="excavation">Excavation &amp; Trenching (1926.650)</option>
+        <option value="scaffolding">Scaffolding (1926.451)</option>
+        <option value="hazcom">Hazard Communication (1926.59)</option>
+        <option value="fire">Fire Prevention (1926.150)</option>
+        <option value="tools">Hand &amp; Power Tools (1926.300)</option>
+        <option value="lifting">Rigging &amp; Lifting</option>
+      </select>
+      <button class="btn-primary" style="width:auto;white-space:nowrap;padding:12px 18px;" onclick="generateNewTopic()">Generate</button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active"><span class="ni">📋</span>Records</button>
+    <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
+  </nav>
+</div>
+
+<!-- ══ INCIDENT REPORT ══ -->
+<div class="screen" id="screen-incident">
+  <header class="header">
+    <div class="wordmark">
+      <div class="bolt-wrap" style="background:#FF4444;"></div>
+      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
+    </div>
+    <div class="header-tag" style="color:#FF4444;border-color:rgba(255,68,68,0.4);">Incident</div>
+  </header>
+  <div class="content" style="padding-bottom:40px;">
+
+    <div class="hero" style="margin-bottom:24px;">
+      <div class="hero-eyebrow" style="color:#FF4444;">Incident Report</div>
+      <div class="hero-title" style="font-size:26px;">File a<br>Report.</div>
+    </div>
+
+    <!-- Submitted state -->
+    <div id="incidentSubmitted" style="display:none;">
+      <div class="success-state">
+        <span class="success-icon">📋</span>
+        <div class="success-title">Report filed</div>
+        <div class="success-sub" id="incidentSubmittedDetails">—</div>
+      </div>
+      <button class="btn-outline" style="margin-top:16px;" onclick="goHome()">Back to home</button>
+    </div>
+
+    <div id="incidentForm">
+
+      <!-- Type -->
+      <div class="ir-section">
+        <div class="sec-label">Type of report</div>
+        <div class="ir-type-grid">
+          <button class="ir-type-btn active" data-type="injury" onclick="selectType(this,'injury')">
+            <span class="ir-type-icon">🤕</span>
+            <span>Injury</span>
+          </button>
+          <button class="ir-type-btn" data-type="nearmiss" onclick="selectType(this,'nearmiss')">
+            <span class="ir-type-icon">⚠️</span>
+            <span>Near-miss</span>
+          </button>
+          <button class="ir-type-btn" data-type="hazard" onclick="selectType(this,'hazard')">
+            <span class="ir-type-icon">🚧</span>
+            <span>Hazard</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Who -->
+      <div class="ir-section">
+        <div class="sec-label">Person involved</div>
+        <div class="mb16">
+          <label class="field-lbl">Name</label>
+          <select class="field-select" id="ir-person">
+            <option value="">Select name…</option>
+          </select>
+        </div>
+        <div class="mb16">
+          <label class="field-lbl">Job lead on site</label>
+          <select class="field-select" id="ir-lead">
+            <option value="">Select lead…</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- When & Where -->
+      <div class="ir-section">
+        <div class="sec-label">When &amp; where</div>
+        <div class="mb16">
+          <label class="field-lbl">Date &amp; time</label>
+          <input type="datetime-local" class="field-select" id="ir-datetime">
+        </div>
+        <div class="mb16">
+          <label class="field-lbl">Job site / location</label>
+          <input type="text" class="field-select" id="ir-location" placeholder="e.g. 1234 Main St, Site B">
+        </div>
+      </div>
+
+      <!-- Injury specifics (shown for injury type) -->
+      <div class="ir-section" id="ir-injury-fields">
+        <div class="sec-label">Injury details</div>
+        <div class="mb16">
+          <label class="field-lbl">Body part affected</label>
+          <select class="field-select" id="ir-bodypart">
+            <option value="">Select…</option>
+            <option>Head / face</option>
+            <option>Eye(s)</option>
+            <option>Neck</option>
+            <option>Shoulder / arm</option>
+            <option>Hand / fingers</option>
+            <option>Back</option>
+            <option>Torso / chest</option>
+            <option>Hip / leg</option>
+            <option>Knee</option>
+            <option>Foot / toes</option>
+            <option>Multiple</option>
+          </select>
+        </div>
+        <div class="mb16">
+          <label class="field-lbl">Type of injury</label>
+          <select class="field-select" id="ir-injurytype">
+            <option value="">Select…</option>
+            <option>Cut / laceration</option>
+            <option>Burn</option>
+            <option>Fracture / break</option>
+            <option>Strain / sprain</option>
+            <option>Bruise / contusion</option>
+            <option>Electric shock</option>
+            <option>Eye injury</option>
+            <option>Head injury</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="mb16">
+          <label class="field-lbl">Medical attention</label>
+          <select class="field-select" id="ir-medical">
+            <option value="">Select…</option>
+            <option>None required</option>
+            <option>First aid on site</option>
+            <option>Urgent care / clinic</option>
+            <option>Emergency room</option>
+            <option>Hospitalized</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- What happened -->
+      <div class="ir-section">
+        <div class="sec-label">What happened</div>
+        <div class="mb16">
+          <label class="field-lbl">Description — in your own words</label>
+          <textarea class="field-select" id="ir-description" rows="4" placeholder="Describe exactly what happened, step by step…" style="resize:vertical;line-height:1.6;"></textarea>
+        </div>
+        <div class="mb16">
+          <label class="field-lbl">Root cause</label>
+          <select class="field-select" id="ir-rootcause">
+            <option value="">Select primary cause…</option>
+            <option>Procedure not followed</option>
+            <option>Inadequate training</option>
+            <option>Equipment failure / defect</option>
+            <option>Environmental condition</option>
+            <option>PPE not worn / unavailable</option>
+            <option>Distraction / inattention</option>
+            <option>Fatigue</option>
+            <option>Unknown</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Witnesses -->
+      <div class="ir-section">
+        <div class="sec-label">Witnesses <span style="color:#7A8FA8;font-weight:400;">(optional)</span></div>
+        <div class="mb16">
+          <input type="text" class="field-select" id="ir-witnesses" placeholder="Names of anyone who saw what happened">
+        </div>
+      </div>
+
+      <!-- Reporter -->
+      <div class="ir-section">
+        <div class="sec-label">Filed by</div>
+        <div class="mb16">
+          <select class="field-select" id="ir-filedby">
+            <option value="">Select your name…</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-left:3px solid #FF4444;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#CC3333;font-weight:300;line-height:1.6;">
+        This report is submitted immediately to the Safety Lead and retained in OSHA records. Workers comp provider notification is handled separately by the Safety Lead.
+      </div>
+
+      <button class="btn-primary" style="background:#FF4444;" onclick="submitIncident()">Submit report →</button>
+      <button class="btn-outline" style="margin-top:10px;width:100%;" onclick="goHome()">Cancel</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- SIG MODAL -->
+<div class="modal-overlay" id="sigModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">Sign here</h2>
+    <p class="modal-sub" id="sigModalName">—</p>
+    <div class="sig-wrap">
+      <canvas id="sigCanvas" width="600" height="150"></canvas>
+      <span class="sig-hint" id="sigHint">Sign with your finger or mouse</span>
+    </div>
+    <button class="btn-ghost" onclick="clearSig()">Clear signature</button>
+    <div class="modal-actions">
+      <button class="btn-outline" style="flex-shrink:0;" onclick="closeSigModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitSignature()">Submit →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TOPIC_BANK = [
+
+  {week:1,title:"FALL PROTECTION FUNDAMENTALS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Falls are the <strong>number one killer</strong> in construction, accounting for over one-third of all fatalities every year. OSHA requires fall protection any time you are working 6 feet or more above a lower level — no exceptions.</p><p>Every worker at height must use a <strong>personal fall arrest system (PFAS)</strong>: a full-body harness, a connecting lanyard, and an anchor point rated for at least 5,000 lbs per attached worker.</p><ul><li>Inspect your harness before every single use — check for fraying, cuts, broken buckles, corroded hardware</li><li>Tie off only to rated anchor points — never to guardrails, conduit, or unrated structure</li><li>Keep your lanyard short enough that a fall won't result in contact with a lower level</li><li>Never remove fall protection, even briefly, without your lead's authorization</li><li>Report any equipment that has arrested a fall — it must be taken out of service immediately</li></ul><p>A fall from 15 feet takes less than one second. Your equipment must be right <strong>before</strong> you step out there.</p>",questions:[{q:"At what height does OSHA require fall protection on construction sites?",options:["4 feet","6 feet","8 feet","10 feet"],correct:1,explain:"OSHA 1926.502 requires fall protection at 6 feet or more above a lower level on construction sites."},{q:"What is the minimum load rating for a fall arrest anchor point?",options:["1,000 lbs","2,500 lbs","5,000 lbs per attached worker","3,000 lbs"],correct:2,explain:"Anchor points must be capable of supporting at least 5,000 lbs per attached worker."},{q:"What should you do with a harness that has arrested a fall?",options:["Inspect it and reuse if it looks okay","Return it to the tool crib","Take it out of service immediately","Have your lead inspect it before reuse"],correct:2,explain:"Any harness that has arrested a fall must be immediately removed from service — internal damage may not be visible."}]},
+  {week:2,title:"LOCKOUT/TAGOUT PROCEDURES",oshaRef:"OSHA 29 CFR 1926.417",content:"<p>Lockout/Tagout (LOTO) ensures dangerous machines and electrical systems are <strong>properly shut off and cannot be re-energized</strong> before maintenance begins. Failure to follow LOTO is one of the most cited OSHA violations in construction.</p><p>Before working on any electrical panel or equipment — even for a quick fix — you must de-energize it, lock it out, and verify it is dead. Every worker on the job must apply their own personal lock. One lock per person.</p><ul><li>Notify all affected employees before shutting down equipment</li><li>Identify ALL energy sources — electrical, pneumatic, hydraulic, gravity, and stored spring energy</li><li>Apply your personal lock and tag to every energy source</li><li>Release all stored energy — bleed lines, block elevated parts, discharge capacitors</li><li>Verify the equipment is de-energized by attempting to start it before beginning work</li></ul><p>If you see someone else's lock on a panel and you don't know why — <strong>do not remove it</strong>. That lock may be the only thing keeping someone alive.</p>",questions:[{q:"Who should apply a lock during a lockout/tagout procedure?",options:["Only the lead on site","Only the person who shut down the equipment","Every worker exposed to the hazardous energy","One designated safety person"],correct:2,explain:"Each worker exposed to the hazard must apply their own personal lock — never rely on someone else's lock for your protection."},{q:"After locking out a system, what must you do before starting work?",options:["Check with your lead","Verify the equipment is de-energized by attempting to start it","Wait 5 minutes","Check the breaker position"],correct:1,explain:"You must verify de-energization by attempting to operate the equipment after applying your lock."},{q:"You find an unknown lock on a panel. What do you do?",options:["Remove it carefully","Call the power company","Do not remove it — find out who it belongs to","Use a bolt cutter if no one is around"],correct:2,explain:"Never remove an unknown lock. That lock may be protecting a worker's life. Find the owner before taking any action."}]},
+  {week:3,title:"PPE SELECTION AND INSPECTION",oshaRef:"OSHA 29 CFR 1926.95",content:"<p>Personal Protective Equipment is your last line of defense — it doesn't eliminate hazards, it protects you when other controls fail. <strong>You are responsible for inspecting your PPE before every use.</strong></p><ul><li>Inspect hard hats for cracks, dents, and brittle plastic — replace after any impact</li><li>Check safety glasses for scratches, cracks, or missing side shields</li><li>Inspect gloves for cuts, holes, or worn areas before putting them on</li><li>Safety-toed boots must meet ASTM standards — check for separation and worn soles</li><li>High-vis vests must be clean and visible</li></ul><p>PPE is provided at no cost to you. If your equipment is damaged or worn out, report it to your lead and get a replacement. There is no acceptable reason to work with defective PPE.</p>",questions:[{q:"When should you inspect your PPE?",options:["Once a week","Only when it looks damaged","Before every use","Monthly"],correct:2,explain:"PPE must be inspected before every use — damage can occur between uses and may not be obvious until you look closely."},{q:"Your hard hat took a direct impact but looks undamaged. What do you do?",options:["Keep using it — it looks fine","Replace it immediately","Have your lead inspect it","Sand the impact point and reuse"],correct:1,explain:"A hard hat that has absorbed an impact must be replaced immediately — internal structure may be compromised even without visible damage."},{q:"Who pays for replacement PPE if yours is damaged on the job?",options:["You pay for it","The cost is split with your employer","Your employer provides it at no cost","Workers comp covers it"],correct:2,explain:"OSHA requires employers to provide required PPE at no cost to workers."}]},
+  {week:4,title:"ELECTRICAL SAFETY BASICS",oshaRef:"OSHA 29 CFR 1926.403",content:"<p>Electricity is the core of what Homestead Electric does — and one of the most unforgiving hazards on any job site. <strong>Current as low as 100 milliamps can kill.</strong> You cannot see, smell, or hear electricity before it hurts you.</p><p>Every energized electrical system must be treated as live until verified de-energized with a calibrated meter. The phrase 'I think it's off' has cost workers their lives.</p><ul><li>Always use the right voltage-rated tools and PPE for the task</li><li>Inspect all cords and cables before use — cuts, fraying, missing ground prongs are immediate hazards</li><li>Keep electrical equipment away from water and wet surfaces</li><li>Never defeat or bypass a ground connection</li><li>Maintain required clearances from energized parts — 3 feet minimum for 0-50V systems</li></ul><p>If you are unsure whether something is energized — <strong>treat it as if it is</strong>.</p>",questions:[{q:"How much current can cause fatal electrocution?",options:["500 milliamps","1 amp","100 milliamps","Only high voltage matters"],correct:2,explain:"Currents as low as 100 milliamps (0.1 amps) can be fatal — far less than what a standard 15-amp circuit can deliver."},{q:"You're not sure if a circuit is de-energized. What do you do?",options:["Assume it's off and proceed carefully","Test it with a calibrated meter before touching","Ask a coworker","Check the breaker panel"],correct:1,explain:"Always verify de-energization with a calibrated meter. Assumptions about electrical systems can be fatal."},{q:"Why should you never bypass or remove a ground connection?",options:["It reduces electrical efficiency","It is only required for high-voltage work","Grounding keeps fault current off equipment frames and off you","It only matters during inspections"],correct:2,explain:"Grounding provides a safe path for fault current — removing it means fault current may flow through the nearest person touching the equipment."}]},
+  {week:5,title:"LADDER SAFETY",oshaRef:"OSHA 29 CFR 1926.1053",content:"<p>Ladders are involved in more construction fatalities than almost any other piece of equipment. The <strong>4-to-1 rule</strong>: for every 4 feet of height, the base must be 1 foot away from the wall. The top must extend at least 3 feet above the landing point.</p><ul><li>Inspect ladders before every use — check for cracks, bent rails, missing rungs, loose hardware</li><li>Never use a damaged ladder — tag it out of service immediately</li><li>Face the ladder when climbing and descending — maintain three points of contact</li><li>Do not carry tools or materials in your hands while climbing</li><li>Never stand on the top two rungs of a step ladder or top three rungs of an extension ladder</li></ul><p>If something feels like a stretch — climb down and reposition. The few seconds it takes is worth your life.</p>",questions:[{q:"Using the 4-to-1 rule, how far out should the base of a 20-foot ladder be placed?",options:["2 feet","3 feet","5 feet","4 feet"],correct:2,explain:"The 4-to-1 rule: for every 4 feet of height, the base must be 1 foot away. 20 divided by 4 equals 5 feet."},{q:"How far should an extension ladder extend above the landing point?",options:["1 foot","2 feet","At least 3 feet","Flush with the landing"],correct:2,explain:"Extension ladders must extend at least 3 feet above the upper landing surface to provide a safe handhold when stepping on or off."},{q:"You find a ladder with a cracked rail. What do you do?",options:["Use it carefully for light tasks only","Tag it out of service and report it","Tape the crack and continue","Leave it for someone else"],correct:1,explain:"A damaged ladder must be immediately taken out of service and tagged. Using a damaged ladder risks structural failure under load."}]},
+  {week:6,title:"EXCAVATION AND TRENCHING SAFETY",oshaRef:"OSHA 29 CFR 1926.651",content:"<p>A cubic yard of soil weighs between 2,700 and 3,000 pounds. When a trench collapses, <strong>escape is nearly impossible</strong>. OSHA requires a competent person to inspect all excavations daily and protective systems for any excavation 5 feet deep or greater.</p><ul><li>Never enter an unprotected trench — wait for your competent person to clear it</li><li>Keep spoil piles at least 2 feet from the edge of the trench</li><li>Water accumulation dramatically increases collapse risk — control it</li><li>Exit access must be within 25 feet of every worker in the trench</li><li>Call 811 at least 3 days before digging</li></ul><p>If the trench walls look wet, cracked, or you hear soil shifting — get out immediately.</p>",questions:[{q:"At what depth does OSHA require protective systems in excavations?",options:["3 feet","5 feet","8 feet","10 feet"],correct:1,explain:"OSHA requires protective systems for excavations 5 feet deep or greater."},{q:"How far must spoil piles be kept from the edge of a trench?",options:["At least 1 foot","At least 2 feet","At least 3 feet","At least 5 feet"],correct:1,explain:"Spoil piles must be kept at least 2 feet from the trench edge to prevent material from falling in and to reduce surcharge pressure."},{q:"You're in a trench and notice water accumulating. What should you do?",options:["Continue working — a little water is normal","Exit immediately and notify your competent person","Dig a small drainage channel and continue","Wait to see if it gets worse"],correct:1,explain:"Water in a trench dramatically weakens soil and increases collapse risk. Exit immediately."}]},
+  {week:7,title:"SCAFFOLDING SAFETY",oshaRef:"OSHA 29 CFR 1926.451",content:"<p>Scaffolding accidents kill hundreds of workers every year. Only a competent person may supervise scaffold erection and must inspect it before each work shift. Scaffolding must support at least <strong>4 times the maximum intended load</strong>.</p><ul><li>Scaffold platforms must be fully planked — no gaps more than 1 inch between planks</li><li>Guardrails are required on all open sides more than 10 feet above the ground</li><li>Never climb cross-braces to access a scaffold</li><li>Do not exceed the scaffold's load rating</li><li>Toe boards must be installed to prevent falling objects</li></ul><p>If a scaffold has a red tag or is marked out of service — do not use it.</p>",questions:[{q:"What load capacity must scaffolding support?",options:["2x the intended load","3x the intended load","4x the intended load","1.5x the intended load"],correct:2,explain:"OSHA requires scaffolding to support at least 4 times the maximum intended load without failure."},{q:"At what height are guardrails required on scaffold platforms?",options:["6 feet","10 feet","8 feet","4 feet"],correct:1,explain:"Guardrails are required on all open sides of scaffold platforms more than 10 feet above the ground."},{q:"How should you access upper levels of a scaffold?",options:["Climb the cross-braces","Use the proper access ladder or stairway","Climb the outside of the frame","Have a coworker boost you up"],correct:1,explain:"Always use the proper access ladder or stairway. Climbing cross-braces is prohibited."}]},
+  {week:8,title:"HAND AND POWER TOOL SAFETY",oshaRef:"OSHA 29 CFR 1926.301",content:"<p>Tool injuries send tens of thousands of workers to emergency rooms every year. <strong>Every guard on a tool exists because someone got hurt without it.</strong> Never remove, modify, or bypass safety guards.</p><ul><li>Inspect all tools before use — cracked handles, missing guards, damaged cords are take-out-of-service conditions</li><li>Disconnect power tools before changing blades, bits, or attachments</li><li>Keep cutting tools sharp — dull tools require more force and are more likely to slip</li><li>Use the right PPE — safety glasses for cutting and grinding, hearing protection for sustained noise</li><li>Store tools properly — loose tools at height become falling object hazards</li></ul>",questions:[{q:"A coworker removes the guard from an angle grinder. What should you do?",options:["Mind your own business","Help them — it's their choice","Tell them to stop and replace the guard","Ask your lead later"],correct:2,explain:"Guards must never be removed from tools. You have both the right and responsibility to stop unsafe work."},{q:"When should you disconnect a power tool from its energy source?",options:["Only when storing it overnight","When changing blades, bits, or attachments","Only when it malfunctions","When your lead tells you to"],correct:1,explain:"Always disconnect power tools before changing any blades, bits, or attachments to prevent accidental start-up."},{q:"Why are dull cutting tools more dangerous than sharp ones?",options:["They are heavier","They require more force and are more likely to slip","They overheat faster","They are not more dangerous"],correct:1,explain:"Dull tools require more force to cut, which increases the chance of slipping and losing control."}]},
+  {week:9,title:"HAZARD COMMUNICATION AND GHS LABELS",oshaRef:"OSHA 29 CFR 1926.59",content:"<p>The <strong>Globally Harmonized System (GHS)</strong> ensures every container tells you exactly what's inside and how to protect yourself. Safety Data Sheets (SDS) must be available for every hazardous chemical on site.</p><ul><li>Read all GHS labels before using a product — look for hazard pictograms, signal words, and precautionary statements</li><li>Never use an unlabeled container — take it out of service and report it</li><li>Know where SDS sheets are kept on your job site</li><li>Match your PPE to the chemical's requirements</li><li>Never mix chemicals unless you know it's safe</li></ul><p>If exposed to a chemical — get to fresh air, flush with water for at least 15 minutes, and consult the SDS. Tell your lead immediately.</p>",questions:[{q:"What does SDS stand for and where should it be kept?",options:["Safety Data Sheet — in the office only","Site Danger Summary — at the tool crib","Safety Data Sheet — accessible on site for every hazardous chemical","Standard Disposal Sheet — with the container"],correct:2,explain:"SDS stands for Safety Data Sheet. OSHA requires them to be readily accessible to workers during every work shift."},{q:"You find a container with no label. What should you do?",options:["Assume it's water and use it","Smell it to identify it","Take it out of service and report it to your lead","Put a new label on it based on your best guess"],correct:2,explain:"Never use an unlabeled container. Remove it from service and report it immediately."},{q:"You get a chemical in your eye. What is the first action?",options:["Call your lead first","Flush with water for at least 15 minutes","Check the SDS before doing anything","Drive yourself to urgent care"],correct:1,explain:"Immediate flushing with water for at least 15 minutes is the first priority for chemical eye exposure."}]},
+  {week:10,title:"FIRE PREVENTION AND EXTINGUISHER USE",oshaRef:"OSHA 29 CFR 1926.150",content:"<p><strong>Most job site fires start small and become disasters because no one acted immediately.</strong> Class C extinguishers are required for electrical fires — using a water extinguisher on an electrical fire can be fatal.</p><ul><li>Know where every fire extinguisher is on your job site before you need it</li><li>Check that the extinguisher is charged — gauge needle should be in the green zone</li><li>Use the PASS technique: Pull the pin, Aim at the base, Squeeze the handle, Sweep side to side</li><li>Only fight a fire if it is small, contained, and you have an exit behind you</li><li>Never store flammable materials near ignition sources — 10 feet minimum clearance</li></ul>",questions:[{q:"What type of fire extinguisher is required for electrical fires?",options:["Class A","Class B","Class C","Class D"],correct:2,explain:"Class C extinguishers are designed for electrical fires. Using water-based Class A extinguishers on electrical fires can cause electrocution."},{q:"What does the PASS technique stand for?",options:["Point, Aim, Spray, Stop","Pull, Aim, Squeeze, Sweep","Position, Activate, Spray, Stand back","Prepare, Aim, Squeeze, Sweep"],correct:1,explain:"PASS: Pull the pin, Aim at the base of the fire, Squeeze the handle, Sweep side to side."},{q:"When is it appropriate to fight a fire with an extinguisher?",options:["Any time — always try to fight it","Only when the fire department is on the way","When it is small, contained, and you have a clear exit behind you","Never — always evacuate"],correct:2,explain:"Only attempt to fight a fire when it is small, contained, and you have a clear escape route. When in doubt, evacuate."}]},
+  {week:11,title:"STRUCK-BY HAZARDS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Struck-by accidents are the second leading cause of construction fatalities. <strong>Most involve workers who were in the wrong place at the wrong time — and didn't know it.</strong></p><ul><li>Never position yourself between a moving vehicle and a fixed object</li><li>Wear high-visibility vests in all areas with vehicle or equipment traffic</li><li>Keep clear of crane and hoist swing areas</li><li>Secure all materials and tools at height — a wrench falling 20 feet hits with lethal force</li><li>Wear a hard hat at all times in areas where overhead work is occurring</li></ul><p>Make eye contact with equipment operators before walking near their equipment. Do not assume they can see you.</p>",questions:[{q:"What is the most important thing to do before walking near operating equipment?",options:["Walk quickly to minimize exposure","Make eye contact with the operator","Wait for the equipment to stop","Call out loudly"],correct:1,explain:"Always make eye contact with equipment operators before entering their work zone. Never assume they can see you."},{q:"Where should you position yourself relative to a moving vehicle?",options:["In front so the driver sees you","On the side away from fixed objects","Never between a moving vehicle and a fixed object","Behind it to follow its movement"],correct:2,explain:"Never position yourself between a moving vehicle and a fixed object — you can be pinned with no escape route."},{q:"Why must tools and materials be secured when working at height?",options:["To prevent theft","A falling tool can strike with lethal force","OSHA requires it for paperwork purposes","To prevent tools from getting dirty"],correct:1,explain:"A tool falling from height gains significant momentum. A wrench falling 20 feet can strike with enough force to kill."}]},
+  {week:12,title:"CAUGHT-IN/BETWEEN HAZARDS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Caught-in/between fatalities happen when a worker's body or body part is caught between two objects. <strong>These accidents happen fast, and they are almost always fatal or permanently disabling.</strong> Loose clothing, long hair, and dangling jewelry dramatically increase the risk around rotating parts.</p><ul><li>Never reach into or around rotating equipment — always wait for full stop</li><li>Keep guards in place on all machinery — never operate equipment with guards removed</li><li>Secure loose clothing, tie back long hair, and remove dangling jewelry before working near rotating equipment</li><li>Never work in an unprotected excavation</li><li>Be aware of pinch points during material handling and rigging operations</li></ul>",questions:[{q:"A machine jams while you are operating it. What is the correct procedure?",options:["Quickly reach in and clear the jam","Stop the machine, lock it out, then clear the jam","Use a stick to clear the jam while it's running","Call your lead and wait"],correct:1,explain:"Always stop the machine and apply lockout/tagout before clearing any jam. Reaching into running machinery causes amputations."},{q:"Which personal items increase caught-in risk near rotating equipment?",options:["Safety glasses and hard hats","Loose clothing, long hair, and dangling jewelry","Steel-toed boots","Tool belts"],correct:1,explain:"Loose clothing, long hair, and dangling jewelry can be grabbed by rotating equipment and pull a worker in before they can react."},{q:"Why is working in an unprotected trench a caught-in/between hazard?",options:["The walls can collapse and trap or bury a worker","Water can accumulate","It violates LOTO procedures","Utilities can be damaged"],correct:0,explain:"Trench walls can collapse without warning, trapping or burying workers under thousands of pounds of soil."}]},
+  {week:13,title:"ELECTRICAL ARC FLASH AWARENESS",oshaRef:"OSHA 29 CFR 1926.403",content:"<p>An electrical arc flash is an explosive release of energy. Temperatures can reach <strong>35,000°F — four times hotter than the surface of the sun.</strong> The pressure wave, heat, and molten metal produced can kill at distances of 10 feet or more.</p><ul><li>Always check for arc flash warning labels on electrical equipment before opening panels</li><li>Wear arc-rated PPE when working on or near energized equipment — standard work clothes will ignite</li><li>Maintain maximum possible working distance from energized parts</li><li>Use properly insulated tools rated for the voltage you're working on</li><li>Never assume a panel is de-energized because the breaker is off — verify with a meter</li></ul>",questions:[{q:"What temperature can an electrical arc flash reach?",options:["1,000°F","5,000°F","35,000°F","500°F"],correct:2,explain:"An electrical arc flash can reach temperatures of approximately 35,000°F — four times hotter than the surface of the sun."},{q:"What PPE is required when working on or near energized electrical equipment?",options:["Standard work gloves and safety glasses","Arc-rated face shield, arc flash suit, and arc-rated gloves","Hard hat and high-vis vest","Any PPE your lead recommends"],correct:1,explain:"Arc flash requires arc-rated PPE — arc flash face shield, arc-rated suit, and arc-rated gloves. Standard work clothing will ignite."},{q:"The breaker is off on a panel you need to open. Is it safe to assume it's de-energized?",options:["Yes — the breaker position is reliable","No — always verify with a calibrated meter","Only if a second person confirms the breaker position","Yes if the breaker is a main breaker"],correct:1,explain:"Never assume a panel is de-energized based on breaker position alone. Always verify with a calibrated meter."}]}
+,
+{week:14,title:"RIGGING AND LIFTING SAFETY",oshaRef:"OSHA 29 CFR 1926.251",content:"<p>Rigging failures kill workers every year. <strong>Never underestimate a load and never overestimate your rigging.</strong> All rigging equipment has a Working Load Limit (WLL) that must never be exceeded. At 60° from vertical, a sling's effective capacity is reduced by nearly half.</p><ul><li>Inspect all rigging before every lift — look for cuts, kinks, broken wires, corrosion, and deformed hooks</li><li>Never use damaged or unlabeled rigging — if the WLL tag is missing, don't use it</li><li>Keep all personnel clear of the load's path during lifts</li><li>Never stand under a suspended load — ever</li><li>Use tag lines to control load movement — never guide a load with your hands</li></ul>",questions:[{q:"What happens to a sling's working load limit as the angle increases?",options:["It increases","It stays the same","It decreases","It doubles"],correct:2,explain:"As sling angles increase (get wider from vertical), each leg carries more load — reducing the effective working load limit."},{q:"A rigging sling is missing its WLL tag. What should you do?",options:["Estimate the capacity and use it carefully","Use it for light loads only","Do not use it — tag it out and report it","Ask a coworker what they think the capacity is"],correct:2,explain:"Never use rigging with a missing WLL tag. Without knowing the rated capacity, you cannot ensure the lift is safe."},{q:"Where should personnel stand during a rigging lift?",options:["Near the load to guide it","Directly below to watch the lift","Clear of the load path and potential drop zone","As close as possible to react if something goes wrong"],correct:2,explain:"All personnel must be clear of the load's path and the potential drop zone. Never stand under a suspended load."}]},
+  {week:15,title:"AERIAL LIFT AND SCISSOR LIFT SAFETY",oshaRef:"OSHA 29 CFR 1926.453",content:"<p>Every aerial lift operator must be trained and authorized before operating any lift. <strong>Falls from aerial lifts account for a significant portion of construction fatalities.</strong> A scissor lift operator must receive separate training for a boom lift.</p><ul><li>Inspect the lift before every use — check tires, controls, guardrails, outriggers, and hydraulics</li><li>Always wear a full-body harness tied off to the manufacturer's anchor point inside the basket</li><li>Never exceed the platform load capacity</li><li>Do not use aerial lifts in high winds or adverse weather</li><li>Never climb or lean over the guardrails — reposition the lift instead</li></ul><p>If a lift malfunctions while elevated — stay in the basket, use the emergency lowering system, and call for help.</p>",questions:[{q:"Where should you tie off your harness in an aerial lift basket?",options:["To the nearest overhead structure","To the manufacturer's anchor point inside the basket","To the guardrail of the platform","Tying off is not required in a basket"],correct:1,explain:"Always tie off to the manufacturer-designated anchor point inside the basket — never to external structures or the guardrail."},{q:"An aerial lift malfunctions while you are elevated. What do you do?",options:["Climb down the boom immediately","Stay in the basket, use the emergency lowering system, and call for help","Jump if it's less than 10 feet","Rock the basket to free the mechanism"],correct:1,explain:"Stay in the basket. Use the emergency lowering system and call for help. Never attempt to climb down the boom or mast."},{q:"Your scissor lift certification qualifies you to operate a boom lift. True or false?",options:["True — aerial lift training covers all types","False — each type requires separate training","True if they are the same brand","False only for boom lifts over 40 feet"],correct:1,explain:"Training for one type of aerial lift does not transfer to other types. Operators must receive specific training for each type."}]},
+  {week:16,title:"HOUSEKEEPING AND SLIP/TRIP/FALL PREVENTION",oshaRef:"OSHA 29 CFR 1926.25",content:"<p>Slips, trips, and falls on the same level cause more lost-time injuries than almost any other hazard. OSHA requires construction sites to be kept clean and orderly <strong>throughout the shift</strong> — not just at the end of the day.</p><ul><li>Keep all walkways, stairways, and work areas clear of tools, materials, cords, and debris</li><li>Route extension cords overhead or secure them flat with cord covers</li><li>Clean up spills immediately — mark the area if cleanup isn't immediate</li><li>Return tools and materials to their designated storage locations when not in use</li><li>Maintain adequate lighting in all work and transit areas</li></ul>",questions:[{q:"When should construction sites be kept clean and orderly according to OSHA?",options:["At the end of each workday","Once a week","Throughout the shift","Before inspections only"],correct:2,explain:"OSHA 1926.25 requires construction areas to be kept in clean and orderly condition throughout every work shift."},{q:"What is the best way to route extension cords across a walkway?",options:["Tape them to the floor with duct tape","Run them overhead or use cord covers flat on the floor","Coil them loosely to the side","Leave them — workers will step over them"],correct:1,explain:"Extension cords across walkways should be run overhead when possible, or secured flat with proper cord covers."},{q:"You notice a water spill in an area maintained by another trade. What should you do?",options:["Ignore it — it's not your responsibility","Barricade or mark it and notify the responsible party","Clean it up yourself and say nothing","Walk around it and continue working"],correct:1,explain:"Even if a hazard was created by another trade, mark or barricade it and notify the responsible person."}]},
+  {week:17,title:"HEAT ILLNESS PREVENTION",oshaRef:"OSHA 29 CFR 1926.503",content:"<p><strong>Heat stroke is a medical emergency with a 15% fatality rate even with treatment.</strong> New workers and those returning from time off are at highest risk — the body takes 7-14 days to adjust to working in heat.</p><ul><li>Drink water frequently — at least one cup every 20 minutes, even if you don't feel thirsty</li><li>Take rest breaks in shaded or cool areas</li><li>Wear light-colored, loose-fitting, moisture-wicking clothing</li><li>Heat exhaustion signs: heavy sweating, weakness, cold/pale/clammy skin, fast weak pulse, nausea</li><li>Heat stroke signs: temperature over 103°F, hot/red/dry skin, rapid strong pulse, unconsciousness — call 911</li></ul>",questions:[{q:"How much water should you drink while working in the heat?",options:["A large bottle in the morning","One cup every 20 minutes throughout the shift","Only when you feel thirsty","Two cups per hour maximum"],correct:1,explain:"Workers in the heat should drink at least one cup of water every 20 minutes — even when not thirsty. Thirst is a late sign of dehydration."},{q:"A coworker has stopped sweating, has hot dry red skin, and seems confused. What is happening?",options:["Heat cramps — give them water","Heat exhaustion — help them rest in shade","Heat stroke — call 911 immediately","Dehydration — give them a sports drink"],correct:2,explain:"Stopped sweating, hot dry skin, and confusion are signs of heat stroke — a life-threatening emergency. Call 911 immediately."},{q:"Which workers are at the highest risk of heat illness?",options:["Older workers only","New workers and those returning from time off","Workers who exercise regularly","Workers who sweat a lot"],correct:1,explain:"New workers and those returning from time off have not acclimatized to working in the heat. The risk is significantly elevated for the first 7-14 days."}]},
+  {week:18,title:"HEARING CONSERVATION",oshaRef:"OSHA 29 CFR 1926.52",content:"<p>Noise-induced hearing loss is permanent, painless, and invisible until it's too late. <strong>Construction is one of the loudest industries in the world.</strong> OSHA requires hearing protection when noise levels reach 90 decibels averaged over an 8-hour shift. If you have to raise your voice to be heard 3 feet away, it's loud enough to damage your hearing.</p><ul><li>Wear properly fitted earplugs or earmuffs in all high-noise areas</li><li>Roll foam earplugs tightly, insert fully, and hold in place until they expand</li><li>Earmuffs must seal completely around the ear</li><li>Report any ringing in your ears after work — it's a warning sign of hearing damage</li></ul>",questions:[{q:"At what noise level does OSHA require hearing protection?",options:["75 dB average over 8 hours","90 dB average over 8 hours","100 dB at any time","Only for impact tools"],correct:1,explain:"OSHA requires hearing protection when noise levels average 90 decibels or higher over an 8-hour shift."},{q:"What is a practical way to tell if noise levels require hearing protection?",options:["If your ears are ringing","If you have to raise your voice to be heard 3 feet away","If you can feel vibration","If other workers are wearing protection"],correct:1,explain:"If you have to raise your voice to be heard 3 feet away, the noise level is high enough to cause hearing damage."},{q:"Noise-induced hearing loss can be reversed with rest. True or false?",options:["True — rest restores hearing","True — with the right medication","False — noise-induced hearing loss is permanent","False — only if caught within 24 hours"],correct:2,explain:"Noise-induced hearing loss is permanent and irreversible. Once the hair cells in the inner ear are damaged, they do not regenerate."}]},
+  {week:19,title:"RESPIRATORY PROTECTION",oshaRef:"OSHA 29 CFR 1926.103",content:"<p><strong>Many respiratory hazards have no smell, no visible cloud, and no immediate symptoms.</strong> A standard paper dust mask provides no protection against fine silica dust, chemical vapors, or low-oxygen environments.</p><ul><li>Know the hazards before selecting a respirator — silica dust, mold, asbestos, chemical vapors, and oxygen deficiency each require different protection</li><li>N95 respirators filter 95% of airborne particles — they must be NIOSH-approved and properly fitted</li><li>Respirators must be fit-tested before use — a poor seal makes any respirator useless</li><li>Never use an air-purifying respirator in an oxygen-deficient atmosphere — use supplied-air equipment</li></ul>",questions:[{q:"Can a standard paper dust mask protect you against silica dust and chemical vapors?",options:["Yes — it filters all airborne hazards","Yes for dust, no for vapors","No — it provides inadequate protection for fine particles and no protection against vapors","Yes if it is NIOSH-approved"],correct:2,explain:"Standard paper dust masks are not designed to protect against fine crystalline silica dust or chemical vapors."},{q:"Why is fit testing required before using a respirator?",options:["It's only required for new respirators","A poor seal allows unfiltered air to bypass the respirator, making it useless","It's an OSHA paperwork requirement only","To check the filter condition"],correct:1,explain:"Respirator fit testing ensures the facepiece seals properly. Any gap allows contaminated air to bypass the filter entirely."},{q:"What respiratory protection should you use in an oxygen-deficient space?",options:["An N95 respirator","A half-face air-purifying respirator","Supplied-air equipment","A standard dust mask with extra filters"],correct:2,explain:"Air-purifying respirators cannot create oxygen. In oxygen-deficient atmospheres, supplied-air equipment is required."}]},
+  {week:20,title:"EYE AND FACE PROTECTION",oshaRef:"OSHA 29 CFR 1926.102",content:"<p>Eye injuries are the most common workplace injury in construction. <strong>90% could be prevented with proper eye protection.</strong> Safety glasses must be ANSI Z87.1 rated. Prescription glasses are not safety glasses unless they are also ANSI-rated.</p><ul><li>Wear safety glasses any time flying debris, dust, grinding sparks, or splatter is possible</li><li>Use a face shield over safety glasses for grinding, chipping, and chemical use</li><li>Chemical splash goggles are required when working with corrosive liquids</li><li>Inspect safety glasses for scratches, cracked lenses, and damaged frames before use</li><li>If something gets in your eye — don't rub it. Flush with clean water for at least 15 minutes</li></ul>",questions:[{q:"What certification must safety glasses have to be acceptable on a job site?",options:["CE certified","ISO 9001","ANSI Z87.1","FDA approved"],correct:2,explain:"Safety eyewear must be ANSI Z87.1 rated to provide adequate impact and penetration protection."},{q:"When grinding or chipping, what eye protection combination is required?",options:["Safety glasses only","Face shield only","Safety glasses with a face shield worn over them","Goggles only"],correct:2,explain:"A face shield must be worn over safety glasses for grinding and chipping. A face shield alone does not protect the eyes from all angles."},{q:"You get a chemical in your eye. What is the first and most important action?",options:["Check the SDS before treating","Call your lead immediately","Flush with clean water for at least 15 minutes","Rub gently to remove the chemical"],correct:2,explain:"Immediately flush the affected eye with clean water for a minimum of 15 minutes. Do not rub — rubbing spreads the chemical and can cause more damage."}]},
+  {week:21,title:"CONFINED SPACE AWARENESS",oshaRef:"OSHA 29 CFR 1926.1203",content:"<p>More than half of all confined space fatalities are rescuers — people who entered to help without proper equipment or training. If a coworker collapses in a confined space, <strong>call for help, do not enter.</strong></p><ul><li>Never enter a permit-required confined space without a written entry permit</li><li>Test the atmosphere before entry and continuously while inside</li><li>Have a trained attendant outside the space at all times</li><li>Use retrieval equipment so a worker can be extracted without entry if incapacitated</li><li>Know the emergency rescue plan before entering</li></ul><p>Oxygen-deficient air kills in seconds. A space that was safe an hour ago may not be safe now. Test every time, before every entry.</p>",questions:[{q:"What percentage of confined space fatalities involve would-be rescuers?",options:["About 10%","About 25%","More than 50%","Less than 5%"],correct:2,explain:"More than half of all confined space fatalities are rescuers who entered without proper equipment or training."},{q:"A coworker collapses inside a permit-required confined space. Your first action?",options:["Enter immediately to pull them out","Call for help and do not enter without proper rescue equipment","Try to reach them with a rope","Ventilate the space by opening covers"],correct:1,explain:"Call for help immediately and do not enter. The same hazard that incapacitated your coworker will incapacitate you."},{q:"The atmosphere was tested safe one hour ago. Is it safe to enter without retesting?",options:["Yes — conditions don't change that fast","Yes if no work has been done nearby","No — test before every entry, conditions can change rapidly","Only if there was no work in the space"],correct:2,explain:"Confined space atmospheres can change rapidly. Test the atmosphere immediately before every entry."}]},
+  {week:22,title:"GROUND FAULT CIRCUIT INTERRUPTERS",oshaRef:"OSHA 29 CFR 1926.404",content:"<p>GFCIs are the single most effective device for preventing electrocution on construction sites. A GFCI detects current differences as small as <strong>4-6 milliamps</strong> and cuts power in 1/40th of a second. OSHA requires GFCI protection for all 120-volt, single-phase, 15- and 20-ampere temporary wiring on construction sites — no exceptions.</p><ul><li>Test all GFCI devices before use — press TEST, confirm power cuts off, press RESET to restore</li><li>If a GFCI trips repeatedly — stop using that circuit or tool and have it inspected</li><li>Do not use non-GFCI extension cords on construction sites</li><li>Keep GFCI devices dry</li><li>Never bypass a GFCI that is tripping — it is detecting a real fault</li></ul>",questions:[{q:"How much current does a GFCI detect to trigger disconnection?",options:["1 amp","100 milliamps","4-6 milliamps","50 milliamps"],correct:2,explain:"GFCIs detect current imbalances as small as 4-6 milliamps and cut power in 1/40th of a second."},{q:"A GFCI keeps tripping on the same tool. What should you do?",options:["Use a non-GFCI outlet instead","Reset it repeatedly until it stays on","Stop using that tool and have it inspected","Use a longer extension cord"],correct:2,explain:"A GFCI that repeatedly trips is detecting a real electrical fault. Stop using the tool immediately and have it inspected."},{q:"Where is GFCI protection required on construction sites?",options:["Only near water sources","Only for tools rated over 20 amps","All 120V single-phase 15 and 20 amp temporary wiring","Only in areas with overhead electrical hazards"],correct:2,explain:"OSHA requires GFCI protection for all 120-volt, single-phase, 15- and 20-ampere temporary power on construction sites."}]},
+  {week:23,title:"TEMPORARY WIRING SAFETY",oshaRef:"OSHA 29 CFR 1926.405",content:"<p>Temporary wiring must meet the same safety standards as permanent wiring — <strong>'temporary' doesn't mean improvised.</strong> Damaged temporary wiring is a fire and electrocution hazard.</p><ul><li>Use only UL-listed wiring and equipment</li><li>Support temporary wiring on insulators or in conduit — never staple or tie to pipes or rebar</li><li>Keep wiring clear of traffic and equipment paths</li><li>Inspect temporary wiring daily</li><li>Remove all temporary wiring when the work it supports is complete</li><li>Use weatherproof connections and enclosures for outdoor wiring</li></ul>",questions:[{q:"How should temporary wiring be supported on a construction site?",options:["Tie it to nearby pipes or rebar","Staple it to wood framing","On insulators or in conduit, clear of traffic","It doesn't need support if it's on the ground"],correct:2,explain:"Temporary wiring must be supported on insulators or run in conduit and kept clear of traffic areas."},{q:"When should temporary wiring be removed?",options:["At the end of the project only","When it becomes damaged","When the work it supports is complete","Only when the GC requests it"],correct:2,explain:"Temporary wiring must be removed when the purpose it was installed for is complete. Abandoned temporary wiring creates ongoing hazards."},{q:"Temporary wiring has lower safety standards than permanent wiring. True or false?",options:["True — it's expected to be less refined","True if it's under 90 days","False — temporary wiring must meet the same safety standards","False only for outdoor installations"],correct:2,explain:"OSHA requires temporary wiring to meet the same electrical safety standards as permanent wiring."}]},
+  {week:24,title:"EXTENSION CORD SAFETY",oshaRef:"OSHA 29 CFR 1926.405",content:"<p>Extension cords are responsible for a disproportionate number of electrical fires and electrocutions. <strong>Extension cords are for temporary use — they are not a permanent wiring solution.</strong></p><ul><li>Match the cord gauge to the tool's amperage draw — heavier tools need heavier cords (lower AWG number)</li><li>Never use indoor-rated cords outdoors</li><li>Inspect cords before every use — damaged insulation and missing ground prongs are immediate hazards</li><li>Never remove the ground prong from a three-prong cord</li><li>Fully uncoil extension cords before use under load — a coiled cord generates heat that can melt insulation</li></ul><p>If a cord feels warm or hot during use — stop using it. Heat means the cord is overloaded or has a problem.</p>",questions:[{q:"Why must extension cords be fully uncoiled before use under load?",options:["Coiled cords are a tripping hazard","Coiled cords under load generate heat that can melt insulation","It reduces voltage drop","OSHA requires fully uncoiled cords"],correct:1,explain:"A coiled extension cord under electrical load generates significant heat that can melt the insulation and create a fire hazard."},{q:"The ground prong on an extension cord is bent. What should you do?",options:["Bend it back into place","Remove it — two-prong works fine","Take it out of service immediately","Only use it with tools that don't require grounding"],correct:2,explain:"A bent or missing ground prong means the cord cannot provide grounding protection. Remove it from service immediately."},{q:"An extension cord feels warm during normal use. What does this indicate?",options:["Normal operation — cords warm up","The cord is overloaded or has a fault — stop using it","The ambient temperature is too high","The tool is drawing more power, which is fine"],correct:1,explain:"Warmth in an extension cord indicates it may be overloaded or have an internal fault. Stop using it immediately."}]},
+  {week:25,title:"WORKING NEAR OVERHEAD POWER LINES",oshaRef:"OSHA 29 CFR 1926.1408",content:"<p>Contact with overhead power lines is one of the leading causes of electrocution deaths in construction. Power lines are NOT insulated — that coating is weatherproofing only. <strong>Any contact with an energized overhead line is potentially fatal.</strong> OSHA requires a minimum approach distance of 10 feet for lines up to 50kV.</p><ul><li>Identify all overhead power lines before beginning any work nearby</li><li>Assume all power lines are energized until the utility company confirms otherwise in writing</li><li>Maintain at least 10 feet of clearance from all overhead lines</li><li>Use a spotter when operating equipment near overhead lines</li><li>If equipment contacts a power line — stay in the cab, call 911, wait for utility to de-energize</li></ul>",questions:[{q:"What is the minimum approach distance from overhead power lines?",options:["3 feet","6 feet","10 feet","25 feet"],correct:2,explain:"OSHA requires a minimum clearance of 10 feet from all overhead power lines up to 50kV for workers, tools, equipment, and materials."},{q:"Your equipment contacts an overhead power line. You are in the cab. What do you do?",options:["Jump out immediately","Stay in the cab, call 911, wait for the utility to de-energize the line","Try to back the equipment away","Call your lead first"],correct:1,explain:"Stay in the cab — the equipment provides protection. Call 911 and wait for the utility company to de-energize the line."},{q:"The coating on overhead power lines is electrical insulation. True or false?",options:["True — overhead lines are insulated","True for distribution lines only","False — the coating is weatherproofing, not insulation","True if the lines are less than 15kV"],correct:2,explain:"The coating on overhead power lines is weatherproofing — NOT electrical insulation. Treat all overhead lines as bare, energized conductors."}]},
+  {week:26,title:"PERSONAL FALL ARREST SYSTEM INSPECTION",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Your PFAS is only as good as the condition it's in when you need it. A harness exposed to chemicals or UV damage <strong>may appear fine but fail catastrophically under load.</strong> The harness, connecting device, and anchor must all be inspected independently.</p><ul><li>Harness webbing: look for cuts, tears, fraying, abrasion, heat or chemical damage, and discoloration</li><li>Hardware: check all D-rings, buckles, and snaps for cracks, distortion, and corrosion</li><li>Energy absorber: inspect for tears, damage, or signs that it has been deployed</li><li>Self-retracting lifelines: test the locking mechanism by giving a sharp tug</li><li>Lanyards: inspect for cuts, fraying, and damaged snap hooks at both ends</li></ul>",questions:[{q:"A harness shows no visible damage but was stored in a hot vehicle for months. Is it safe to use?",options:["Yes — if there's no visible damage it's fine","Possibly — inspect carefully for UV and heat degradation before use","No — any heat or UV exposure means immediate replacement","Yes if it has not arrested a fall"],correct:1,explain:"Heat and UV exposure can degrade harness webbing even without visible damage. Inspect carefully for discoloration, stiffness, and brittleness."},{q:"What should you check on a snaphook during inspection?",options:["Only check the locking gate","Check for cracks, distortion, corrosion, and that the gate locks positively","Only visual inspection is needed","Check only the load-bearing end"],correct:1,explain:"Snaphooks must be inspected for cracks, distortion, corrosion, and proper gate function. The gate must lock positively."},{q:"If a self-retracting lifeline does not lock when you give it a sharp tug, what should you do?",options:["Use it carefully for low-height work only","Test it again — one failure could be a fluke","Take it out of service immediately","Have your lead test it before deciding"],correct:2,explain:"An SRL that fails to lock on a sharp tug must be immediately removed from service. A failed SRL will not stop a fall."}]},
+{week:27,title:"GUARDRAIL AND SAFETY NET SYSTEMS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Guardrail systems and safety nets are passive fall protection — they protect workers without requiring any action by the worker. The top rail must withstand <strong>200 pounds of force</strong> applied in any downward or outward direction.</p><ul><li>Top rail must be 42 inches high (plus or minus 3 inches) from the walking/working surface</li><li>Mid-rails must be installed halfway between the top rail and the walking surface</li><li>Toe boards are required to prevent tools and materials from falling onto workers below</li><li>Guardrail openings must be protected with self-closing gates or chains</li><li>Inspect guardrails daily — look for missing sections, damaged components, and loose connections</li></ul><p>If you see a guardrail section missing or damaged — report it immediately and barricade the area.</p>",questions:[{q:"What is the required height of the top rail in a guardrail system?",options:["36 inches","48 inches","42 inches plus or minus 3 inches","40 inches minimum"],correct:2,explain:"The top rail must be 42 inches high, plus or minus 3 inches, measured from the walking/working surface."},{q:"How much force must a guardrail top rail withstand?",options:["100 pounds","150 pounds","200 pounds in any downward or outward direction","500 pounds"],correct:2,explain:"OSHA requires the top rail to withstand at least 200 pounds of force applied in any downward or outward direction at any point."},{q:"A guardrail section is missing at a material delivery point. What is required?",options:["Leave it open but mark the edge","Barricade the area and report it — alternative protection is required","Put up a warning sign","It's acceptable if material deliveries are brief"],correct:1,explain:"Any missing guardrail section creates an open edge hazard. The area must be immediately barricaded and alternative fall protection put in place."}]},
+  {week:28,title:"FORKLIFT AND POWERED INDUSTRIAL TRUCK SAFETY",oshaRef:"OSHA 29 CFR 1926.602",content:"<p>Forklifts are responsible for approximately 85 fatalities and 34,900 serious injuries in workplaces every year. <strong>A forklift carrying a full load has the same stopping distance as a car at highway speeds.</strong> Only trained and certified operators may operate forklifts.</p><ul><li>Never ride on a forklift as a passenger unless a designated seat with a seatbelt is provided</li><li>Never stand or walk under elevated forks — even without a load</li><li>Stay clear of the forklift's turning radius — tip-overs happen fast and without warning</li><li>If inside an overturning forklift — stay in the cab, hold on, and lean away from the fall direction</li><li>Pedestrians must make eye contact with operators before crossing forklift travel paths</li></ul>",questions:[{q:"A forklift is about to travel through your path. What should you do?",options:["Walk quickly behind it","Walk in front so the operator sees you","Make eye contact with the operator and wait for a clear signal","Call out to the operator to stop"],correct:2,explain:"Always make eye contact with the forklift operator and wait for a clear signal before crossing a forklift travel path."},{q:"A forklift tips over while you are the operator in the cab. What is the correct action?",options:["Jump out immediately","Stay in the cab, hold on, and lean away from the direction of fall","Brake hard and lean toward the fall","Jump out the uphill side"],correct:1,explain:"Stay in the cab during a tip-over — the ROPS is designed to protect you. Jumping out puts you at risk of being crushed."},{q:"Is it acceptable to walk under elevated forklift forks with no load on them?",options:["Yes — unloaded forks are safe","Yes if the operator is present","No — never walk or stand under elevated forks, with or without a load","Only if the mast is fully tilted back"],correct:2,explain:"Never walk or stand under elevated forks regardless of load status. Hydraulic failure or mechanical issues can cause forks to drop without warning."}]},
+  {week:29,title:"CONCRETE AND MASONRY SAFETY",oshaRef:"OSHA 29 CFR 1926.701",content:"<p>Wet concrete is highly caustic — extended skin contact causes chemical burns that may not be felt until hours later. Concrete cutting and grinding creates <strong>silica dust</strong>, which causes an incurable lung disease called silicosis.</p><ul><li>Wear impermeable gloves and boots when working with wet concrete</li><li>Wash any concrete off skin promptly — burning means you may have already sustained a chemical burn</li><li>Use wet methods or vacuum extraction to suppress silica dust when cutting, grinding, or drilling</li><li>Wear an N95 or higher respirator when silica dust cannot be adequately controlled</li><li>Never work in or around unsupported concrete formwork</li></ul><p>If formwork creaks, deflects, or shows signs of stress during a pour — stop immediately and evacuate.</p>",questions:[{q:"Why must you protect your skin from wet concrete?",options:["It stains skin permanently","It is highly caustic and can cause chemical burns, sometimes hours after exposure","It contains sharp aggregate that causes cuts","It is slippery and causes falls"],correct:1,explain:"Wet concrete has a pH above 12 — highly alkaline and caustic. It can cause serious chemical burns that may not be felt immediately."},{q:"What health hazard does silica dust from concrete cutting cause?",options:["Temporary lung irritation","Allergic reactions","Silicosis — a progressive, incurable lung disease","Carbon monoxide poisoning"],correct:2,explain:"Crystalline silica dust causes silicosis — a serious, progressive, and incurable lung disease."},{q:"During a concrete pour, the formwork begins making cracking sounds. What should you do?",options:["Finish the pour quickly","Reduce the pour rate and continue cautiously","Stop immediately, evacuate, and reassess before continuing","Only stop if visible deflection occurs"],correct:2,explain:"Sounds of stress in formwork are warning signs of potential failure. Stop, evacuate, and have the formwork inspected before resuming."}]},
+  {week:30,title:"STEEL ERECTION SAFETY",oshaRef:"OSHA 29 CFR 1926.752",content:"<p>Steel erection is one of the most hazardous operations in construction — working at extreme heights with heavy loads swinging overhead. <strong>Falls and struck-by incidents kill dozens of workers every year.</strong></p><ul><li>Never work under a load being hoisted</li><li>Use tag lines to control swinging loads — never use your hands</li><li>Columns and beams must have two bolts minimum per connection before releasing the crane hook</li><li>Do not work on structural steel that has been rained on or iced without taking precautions</li><li>Connectors have the right to refuse work without adequate fall protection — use it</li></ul>",questions:[{q:"What is the minimum number of bolts required per connection before releasing the crane hook?",options:["One bolt","Two bolts minimum","Finger-tight is acceptable","The hook can be released when the connection is made up by hand"],correct:1,explain:"OSHA requires a minimum of two bolts per connection, installed and tightened before the crane hook may be released."},{q:"It begins to rain, making steel wet and slippery. What should you do?",options:["Work carefully and slowly","Stop work on slippery steel until precautions are taken","Use grip tape on your boots","Only stop if ice forms"],correct:1,explain:"Working on wet or slippery structural steel significantly increases fall risk. Work should stop until the surfaces are safe."},{q:"How should you control a load swinging during a crane lift?",options:["Guide it with your hands","Use a tag line to control the load's movement","Have the crane operator reposition to reduce swing","Let it swing free — attempting to control it is more dangerous"],correct:1,explain:"Tag lines must be used to control swinging loads during crane operations. Never use your hands to guide a load."}]},
+  {week:31,title:"DEMOLITION SAFETY",oshaRef:"OSHA 29 CFR 1926.850",content:"<p>Demolition is dangerous because you are deliberately weakening structures whose behavior becomes increasingly unpredictable. <strong>Unexpected collapses kill workers every year.</strong> Before any demolition begins, a competent person must conduct an engineering survey. All utilities must be disconnected at the source — not just turned off.</p><ul><li>Follow the demolition sequence — never deviate without engineering approval</li><li>Shore and brace structural elements that may become unstable</li><li>Protect workers below from falling debris</li><li>Use wet methods to control demolition dust — older structures often contain silica, lead, and asbestos</li><li>Identify and control all utilities before beginning</li></ul>",questions:[{q:"Before beginning demolition work, what must be done with utilities?",options:["Turn off all breakers and close all valves","Cap all lines at the work area","Disconnect and shut off at the source — not just turned off locally","Mark their locations for awareness"],correct:2,explain:"All utilities must be disconnected and shut off at their source before demolition begins. Simply turning off breakers is not sufficient."},{q:"During demolition, the structure begins making unusual cracking sounds. What should you do?",options:["Proceed quickly to complete the demolition sequence","Stop immediately, evacuate, and get an engineering evaluation","Slow down and monitor the situation","Only stop if visible movement occurs"],correct:1,explain:"Unusual sounds during demolition are warning signs of potential unexpected collapse. Stop and evacuate immediately."},{q:"Why must the demolition sequence be followed exactly?",options:["It's an OSHA paperwork requirement","The sequence maintains structural stability — deviating can cause premature collapse","It ensures the most efficient work progression","To track which areas have been completed"],correct:1,explain:"Demolition sequences are engineered to maintain structural stability as supports are removed. Deviating can cause premature collapse."}]},
+  {week:32,title:"SILICA DUST EXPOSURE",oshaRef:"OSHA 29 CFR 1926.1153",content:"<p>Crystalline silica is found in concrete, masonry, rock, and sand. When disturbed, these materials release <strong>respirable silica dust</strong> that penetrates deep into the lungs. There is no cure for silicosis. OSHA's silica standard established a Permissible Exposure Limit of 50 micrograms per cubic meter — a limit that cannot be met by respiratory protection alone in high-exposure tasks.</p><ul><li>Use water to suppress dust during cutting, grinding, and drilling</li><li>Use vacuum systems with HEPA filtration</li><li>Wear at least an N95 respirator when silica dust cannot be fully controlled</li><li>Do not dry sweep or blow silica-laden dust with compressed air</li><li>Wash hands and face before eating, drinking, or using tobacco</li></ul>",questions:[{q:"What materials commonly contain crystalline silica?",options:["Wood, plastic, and aluminum","Concrete, masonry, rock, and sand","Copper wire and steel conduit","PVC pipe and fiberglass insulation"],correct:1,explain:"Concrete, masonry, rock, and sand all contain crystalline silica. When cut, ground, drilled, or disturbed, they release respirable silica dust."},{q:"What is the preferred control method for silica dust when cutting concrete?",options:["Respiratory protection alone","Dry sweeping the area after cutting","Wet suppression or vacuum extraction with HEPA filtration","Working outdoors in wind to disperse dust"],correct:2,explain:"Engineering controls — wet suppression and HEPA vacuum extraction — are the primary controls for silica. Respiratory protection is a supplement, not a substitute."},{q:"After cutting concrete, is it acceptable to blow the dust off surfaces with compressed air?",options:["Yes — it removes the dust","Yes if done outdoors","No — compressed air re-suspends settled silica dust","Only if workers are wearing respirators"],correct:2,explain:"Using compressed air re-suspends settled silica dust and increases airborne concentrations. Use wet methods or HEPA vacuums instead."}]},
+  {week:33,title:"LEAD EXPOSURE AWARENESS",oshaRef:"OSHA 29 CFR 1926.62",content:"<p>Lead was used extensively in paint until 1978 and in other construction materials for decades. <strong>Lead exposure causes irreversible neurological damage, kidney disease, and reproductive harm.</strong> Assume any paint on structures built before 1978 contains lead until tested otherwise.</p><ul><li>Do not sand, scrape, torch, or disturb lead paint without proper controls</li><li>Wear appropriate respiratory protection</li><li>Wash hands and face thoroughly before eating, drinking, or smoking</li><li>Change out of work clothes before leaving the job site</li><li>Participate in blood lead level monitoring if you regularly work with lead-containing materials</li></ul>",questions:[{q:"In what year was lead-based paint banned for residential use in the United States?",options:["1968","1978","1985","1990"],correct:1,explain:"Lead-based paint was banned for residential use in 1978. Any structure built before that date should be assumed to contain lead paint until tested."},{q:"How does lead primarily enter the body on a construction site?",options:["Through skin contact only","Through inhalation of dust and fumes, and ingestion from hand-to-mouth contact","Only through inhalation","Only through open wounds"],correct:1,explain:"Lead enters the body through inhalation of airborne dust and fumes, and through ingestion when contaminated hands touch the mouth."},{q:"What should you do with work clothing at the end of a shift with potential lead exposure?",options:["Wash it at home with the family laundry","Leave it in your truck","Change out of work clothes before leaving the site","It doesn't matter if you wore coveralls"],correct:2,explain:"Work clothes contaminated with lead must be changed before leaving the job site to prevent bringing lead dust home to your family."}]},
+  {week:34,title:"ASBESTOS AWARENESS",oshaRef:"OSHA 29 CFR 1926.1101",content:"<p>Asbestos was used in thousands of building products until the late 1970s. When disturbed, these materials release <strong>microscopic fibers</strong> that cause mesothelioma, asbestosis, and lung cancer — all incurable. These diseases take 10 to 40 years to develop after exposure.</p><ul><li>Assume any insulation, ceiling tile, floor tile, or roofing material in buildings before 1980 may contain asbestos</li><li>Never disturb suspected asbestos-containing materials — stop work and notify your lead</li><li>Only trained and licensed asbestos abatement contractors may remove asbestos</li><li>If you accidentally disturb suspected asbestos — leave the area immediately and notify your lead</li></ul><p>If you're unsure whether a material contains asbestos — don't touch it, don't cut it, don't drill it. Get it tested.</p>",questions:[{q:"You discover pipe insulation while running conduit in an older building. What should you do?",options:["Remove it carefully to get to the pipe","Continue working and note the location","Stop work, leave the area, and notify your lead","Wet it down before disturbing it"],correct:2,explain:"Pipe insulation in older buildings may contain asbestos. Stop work, leave the area, and notify your lead. Only licensed professionals may evaluate and remove asbestos."},{q:"How long can it take for asbestos-related diseases to develop after exposure?",options:["1-5 years","5-10 years","10-40 years","Only develops with prolonged daily exposure"],correct:2,explain:"Asbestos-related diseases typically take 10 to 40 years to develop after exposure."},{q:"Can a good respirator make it safe to disturb asbestos-containing materials?",options:["Yes — P100 respirators provide full protection","Yes for brief disturbances only","No — respiratory protection reduces risk but does not make asbestos disturbance safe","Yes if the material is wet"],correct:2,explain:"Respiratory protection reduces asbestos exposure but does not eliminate risk. Only licensed abatement contractors with proper containment may safely remove asbestos."}]},
+  {week:35,title:"BLOODBORNE PATHOGENS",oshaRef:"OSHA 29 CFR 1910.1030",content:"<p>Construction workers encounter bloodborne pathogen hazards more than many realize. <strong>HIV, Hepatitis B, and Hepatitis C</strong> can be transmitted through contact between infected blood and broken skin. Hepatitis B can survive on surfaces outside the body for up to 7 days.</p><ul><li>Treat all blood and body fluids as potentially infectious</li><li>Wear disposable gloves when providing first aid or cleaning up blood</li><li>Use a CPR face shield if performing rescue breathing</li><li>Do not recap used needles — use a puncture-resistant sharps container or notify your lead</li><li>Report any exposure incident to your lead immediately — post-exposure protocols are time-sensitive</li></ul>",questions:[{q:"How long can Hepatitis B survive on surfaces outside the body?",options:["A few hours","Up to 24 hours","Up to 7 days","Only minutes"],correct:2,explain:"Hepatitis B can survive on environmental surfaces for up to 7 days at room temperature."},{q:"You find a used hypodermic needle on a job site. What should you do?",options:["Pick it up with gloves and throw it in the trash","Leave it and mark the area","Do not recap it — use a sharps container or notify your lead","Stomp on it to render it harmless"],correct:2,explain:"Never recap a used needle — recapping is a major cause of needlestick injuries. Use a proper sharps container or notify your lead."},{q:"After first aid while wearing gloves, is it safe to skip handwashing?",options:["Yes — gloves provide complete protection","No — always wash hands after potential exposure, even when gloves were worn","Only if the gloves were doubled","Yes if the gloves were nitrile"],correct:1,explain:"Always wash hands with soap and water after any potential bloodborne pathogen exposure, even when gloves were worn."}]},
+  {week:36,title:"COLD STRESS AND WINTER SAFETY",oshaRef:"OSHA 29 CFR 1926.503",content:"<p>The first symptom of hypothermia is often impaired judgment — which prevents recognition that help is needed. <strong>Hypothermia can be fatal at temperatures well above freezing when combined with wind and moisture.</strong> A 30°F day with 20 mph winds feels like 17°F to exposed skin.</p><ul><li>Dress in layers — moisture-wicking base, insulating middle, wind/waterproof outer layer</li><li>Wear insulated waterproof boots and keep feet dry — wet feet lose heat 25 times faster than dry feet</li><li>Protect extremities — fingers, toes, ears, and nose are first areas to suffer frostbite</li><li>Take warm-up breaks in heated areas on a regular schedule</li><li>If a coworker stops shivering in the cold — that's dangerous. Get them to warmth and medical help immediately</li></ul>",questions:[{q:"A coworker has been in the cold and has stopped shivering. Is this a good or bad sign?",options:["Good — their body has adjusted","Neutral — normal","Bad — shivering stops when the body can no longer generate heat","Depends on how long they've been working"],correct:2,explain:"Stopping shivering in cold conditions is a dangerous sign of advancing hypothermia. Get the person to warmth and seek medical attention immediately."},{q:"Why does wet clothing increase cold stress risk so dramatically?",options:["Wet clothing restricts movement","Wet skin conducts heat away approximately 25 times faster than dry skin","Wet clothing adds weight causing fatigue","It reflects sunlight needed to warm the body"],correct:1,explain:"Water conducts heat away from the body approximately 25 times faster than air. Wet clothing dramatically accelerates heat loss."},{q:"What is wind chill and why does it matter for winter work safety?",options:["The actual air temperature in winter","The temperature that exposed skin effectively experiences when wind and air temperature combine","Only relevant for outdoor workers in northern states","A meteorological term that doesn't affect worker safety"],correct:1,explain:"Wind chill is the temperature that exposed skin effectively feels due to the combined effect of air temperature and wind speed — dramatically increasing frostbite and hypothermia risk."}]},
+  {week:37,title:"ELECTRICAL PANEL AND SWITCHGEAR SAFETY",oshaRef:"OSHA 29 CFR 1926.403",content:"<p>Electrical panels concentrate high levels of energy in a small space. A fault inside a panel can produce an arc flash that releases more energy than a stick of dynamite. <strong>Panel work requires more preparation and caution than almost any other task.</strong></p><ul><li>Check the arc flash label before opening any panel — it tells you the incident energy level and required PPE</li><li>Always stand to the side of the panel when opening it — not directly in front</li><li>Use one hand when working inside energized panels — keep the other away from conducting surfaces</li><li>Maintain clear access — minimum 3 feet in front of all panels</li><li>Replace all covers, blanks, and knockouts before re-energizing</li></ul>",questions:[{q:"Why should you stand to the side of a panel door rather than directly in front when opening it?",options:["Panels are heavy and may swing hard","Standing to the side keeps you out of the path of any arc flash or blast","It's required by OSHA for documentation purposes","To allow better visibility"],correct:1,explain:"If an arc flash or explosion occurs when a panel is opened, the blast travels outward through the door opening. Standing to the side removes you from the direct line of any energy release."},{q:"What is the 'one hand rule' when working inside energized panels?",options:["Always use one hand — two hands are never allowed","Use one hand in the panel and keep the other away from conducting surfaces","Use one insulated tool at a time","One worker per panel at a time"],correct:1,explain:"The one hand rule prevents creating a current path through your chest. One hand in the panel, one hand away from conductive surfaces."},{q:"What is the minimum clearance required in front of electrical panels?",options:["18 inches","2 feet","3 feet","5 feet"],correct:2,explain:"OSHA requires a minimum of 3 feet of clear working space in front of all electrical panels and switchgear."}]},
+  {week:38,title:"CONDUIT BENDING AND INSTALLATION SAFETY",oshaRef:"OSHA 29 CFR 1926.416",content:"<p>Conduit installation involves specific hazards that are easy to overlook. <strong>The injury that ends careers most often isn't dramatic — it's a back or shoulder that gives out after years of ignoring warning signs.</strong></p><ul><li>Use proper lifting technique — bend at the knees, keep the load close to your body, avoid twisting while lifting</li><li>Deburr all cut conduit ends before handling — sharp edges cause cuts and lacerations</li><li>Wear gloves when handling conduit</li><li>Secure conduit properly before cutting or bending — unsecured conduit can whip and strike workers</li><li>Use mechanical assists when handling long sections</li></ul><p>If conduit falls while you're working — step back, don't try to catch it.</p>",questions:[{q:"What must you do to conduit ends immediately after cutting?",options:["Paint them to prevent corrosion","Deburr them — sharp edges cause cuts and lacerations","Cap them to prevent water entry","Nothing if the cut is clean"],correct:1,explain:"Cut conduit ends have sharp burrs that can cause serious cuts. Always deburr cut ends before handling."},{q:"What is the most common career-ending injury type for electricians?",options:["Electrocution","Burns from arc flash","Musculoskeletal injuries from repetitive strain and poor ergonomics","Falls from ladders"],correct:2,explain:"Musculoskeletal injuries — back injuries, shoulder injuries, and repetitive strain — end more electrical careers than any other injury type."},{q:"A long stick of conduit starts to fall. What should you do?",options:["Try to catch it to prevent damage","Step back and let it fall","Brace it against your leg","Call for help to catch the other end"],correct:1,explain:"Never try to catch falling conduit. Step back and let it fall safely."}]},
+  {week:39,title:"UNDERGROUND ELECTRICAL WORK SAFETY",oshaRef:"OSHA 29 CFR 1926.956",content:"<p>Underground electrical work combines electrical exposure and excavation hazards. <strong>Hitting an energized underground line with excavation equipment can kill the operator and workers nearby.</strong></p><ul><li>Call 811 at least 3 days before any digging — this is the law in all 50 states</li><li>Hand dig within 18-24 inches of any marked utility — never use power equipment within that zone</li><li>Treat any unmarked wire, conduit, or pipe as energized until verified otherwise</li><li>Ensure trenches are properly shored or sloped before workers enter</li></ul><p>If you hit an unidentified line while digging — stop all work, evacuate, call 911 and the utility company.</p>",questions:[{q:"How far in advance must you call 811 before any ground disturbance?",options:["24 hours","48 hours","At least 3 business days","1 week"],correct:2,explain:"You must call 811 at least 3 business days before any ground disturbance in all 50 states."},{q:"How close to a marked underground utility can you use power excavation equipment?",options:["12 inches","18-24 inches — hand dig within that zone","6 inches","Power equipment can always be used with care"],correct:1,explain:"Within 18-24 inches of any marked underground utility, hand digging is required. Power equipment must not be used in this zone."},{q:"You hit an unmarked line while excavating. What do you do?",options:["Determine if it's live before deciding","Cover it up and continue","Stop all work, evacuate, call 911 and the utility company","Check if it's a gas or electric line first"],correct:2,explain:"When you hit any unidentified underground line, stop all work, evacuate, call 911, and contact the utility company immediately."}]},
+{week:40,title:"ENERGIZED ELECTRICAL WORK PERMIT",oshaRef:"OSHA 29 CFR 1926.403",content:"<p>OSHA's preferred approach: <strong>de-energize first, always.</strong> Working on energized electrical equipment should only occur when infeasible to de-energize, or when de-energizing would create additional hazards. When energized work is necessary, an Energized Electrical Work Permit is required.</p><ul><li>Complete the permit before performing any work on energized parts above 50 volts</li><li>The permit must identify the equipment, justification for energized work, voltage, arc flash hazard, and PPE required</li><li>Only qualified persons may perform energized electrical work</li><li>A second qualified person must be present during energized work to respond to an emergency</li><li>Establish boundaries and keep unauthorized personnel out of the work area</li></ul><p>If someone asks you to perform energized work without a permit — refuse. A permit takes 15 minutes. An arc flash takes a fraction of a second.</p>",questions:[{q:"When is it acceptable to perform electrical work on energized parts?",options:["Whenever it is faster","Only when infeasible to de-energize or de-energizing creates additional hazards","Whenever a lead approves it verbally","Anytime the voltage is below 480V"],correct:1,explain:"OSHA requires that energized work only occur when de-energizing is infeasible or creates greater hazards. The default must always be to de-energize first."},{q:"Who must be present during energized electrical work above 50 volts?",options:["Only the worker performing the task","A second qualified person to respond in case of emergency","Any coworker as a witness","A supervisor"],correct:1,explain:"A second qualified person must be present during any energized electrical work to provide emergency response."},{q:"Your lead asks you to work on an energized panel without a permit. What should you do?",options:["Do it — experienced workers sometimes skip permits for quick tasks","Agree but work extra carefully","Refuse — you have the right and responsibility to decline unsafe work","Do it but document it afterward"],correct:2,explain:"You have both the right and the responsibility to refuse energized work without a permit. No task is too quick to require proper authorization."}]},
+  {week:41,title:"MOTOR AND EQUIPMENT GROUNDING",oshaRef:"OSHA 29 CFR 1926.404",content:"<p>Equipment grounding provides a low-resistance path for fault current. <strong>Without proper grounding, that fault current path may be through you.</strong> When a fault occurs, fault current flows through the equipment ground rather than through a person touching the equipment, and trips the overcurrent protection device.</p><ul><li>Never remove the ground prong from a three-prong plug</li><li>Verify grounding continuity when connecting equipment</li><li>Ground all metal enclosures and equipment housings containing energized parts</li><li>Do not use the neutral conductor as a ground — they serve different purposes</li><li>If you touch equipment and feel a 'tingle' — stop immediately. Current is flowing through you. Report it.</li></ul>",questions:[{q:"What is the purpose of equipment grounding?",options:["To reduce energy consumption","To provide a low-resistance path for fault current so it trips the breaker instead of flowing through a person","To improve equipment performance","To prevent corrosion on metal enclosures"],correct:1,explain:"Equipment grounding provides a low-resistance fault current path back to source. When a fault occurs, current follows the ground path, trips the overcurrent protection, and removes the shock hazard."},{q:"You touch equipment and feel a mild tingle. What does this indicate?",options:["Normal static electricity","Low battery in your meter","Current is flowing through your body — something is wrong with the grounding","The equipment is new and needs to break in"],correct:2,explain:"A tingle means current is flowing through your body. The grounding system has a problem. Stop immediately, report it, and have it inspected."},{q:"Can you use the neutral conductor as the equipment ground if the ground wire is missing?",options:["Yes — neutral and ground are functionally the same","Yes for temporary use only","No — neutral and ground serve different purposes and this creates serious hazards","Only on circuits under 120 volts"],correct:2,explain:"Using neutral as ground creates hazardous voltage on equipment frames during normal operation and can cause electrocution."}]},
+  {week:42,title:"CABLE TRAY AND RACEWAY SAFETY",oshaRef:"OSHA 29 CFR 1926.416",content:"<p>Cable tray installation involves working at height with heavy sections near energized conductors. <strong>Cable tray falls and electrical contact injuries are more common than the work's apparent simplicity would suggest.</strong></p><ul><li>Inspect cable tray support structures before working above or near cable tray</li><li>Do not step on or stand in cable tray — they are not designed to support body weight</li><li>Use proper scaffolding or aerial lifts to access cable tray at height</li><li>Treat conductors in adjacent trays as energized even when your circuit is de-energized</li><li>Follow fill capacity limits — overloaded cable tray creates heat buildup and fire hazards</li><li>Secure cable tray covers properly — unsecured covers in traffic areas become falling object hazards</li></ul>",questions:[{q:"Is it acceptable to step on cable tray to access a higher work area?",options:["Yes if it is properly supported","Yes for brief access","No — cable tray is not designed to support body weight","Only for tray rated for maintenance access"],correct:2,explain:"Cable tray is not designed to support the weight of a person. Standing in or on cable tray risks structural failure and injury from sharp edges."},{q:"You are working in a de-energized cable tray. Adjacent tray has energized conductors. How should you treat them?",options:["They are safe since you are in a different tray","As energized — maintain clearances and use appropriate PPE","As de-energized if the cables are in conduit","Only worry if working within 6 inches"],correct:1,explain:"Always treat conductors in adjacent cable trays as energized regardless of your circuit status."},{q:"What is the hazard of overloading cable tray beyond its fill capacity?",options:["The tray will sag cosmetically","Heat buildup in cables leading to insulation failure and fire","Conductor resistance increases","Only a structural concern, not a fire hazard"],correct:1,explain:"Cable tray fill limits prevent heat buildup from densely packed conductors. Overloaded trays concentrate heat, degrade insulation, and create fire hazards."}]},
+  {week:43,title:"TRENCHING FOR ELECTRICAL WORK",oshaRef:"OSHA 29 CFR 1926.651",content:"<p>Installing underground electrical infrastructure requires trenching — combining excavation hazards with electrical utility hazards. <strong>Electrical contractors frequently encounter utilities they didn't install and have limited information about.</strong></p><ul><li>Call 811 a minimum of 3 business days before any excavation</li><li>Hand dig within 18-24 inches of any marked utility using insulated tools near electrical utilities</li><li>Use protective systems for any trench 5 feet or deeper</li><li>Inspect the trench daily and after rain or nearby vibration</li><li>Treat any wire, conduit, or cable encountered while excavating as energized until proven otherwise</li><li>Verify required cover depths before backfilling</li></ul>",questions:[{q:"When trenching and you encounter an unmarked wire, what do you do?",options:["Move it out of the way carefully","Determine if it's energized before deciding","Treat it as energized, stop work, evacuate, and call utilities","Cut it if it's in your way and report it later"],correct:2,explain:"Any unidentified wire encountered during excavation must be treated as energized. Stop work, evacuate, and call the utility company."},{q:"Why are insulated tools recommended when hand digging near marked electrical utilities?",options:["They are lighter and easier to use","They prevent damage to the utility being uncovered","They reduce the risk of electrocution if you contact an energized conductor","They comply with OSHA PPE requirements for all digging"],correct:2,explain:"When hand digging near marked electrical utilities, insulated tools reduce the risk of electrocution if the tool contacts an energized conductor."},{q:"After backfilling an underground conduit trench, when should cover depth be verified?",options:["Before backfilling — verify as you install","After the project is complete","Before final inspection only","It is the GC's responsibility to verify cover depths"],correct:0,explain:"Cover depth must be verified during installation, before backfilling. Once the trench is backfilled, verifying cover depth requires excavation."}]},
+  {week:44,title:"WORKING IN ATTICS AND CRAWL SPACES",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Attics and crawl spaces present limited egress, compromised air quality, fall-through hazards, biological hazards, and thermal extremes. <strong>Workers in these spaces are more likely to take shortcuts because the work is uncomfortable — which is exactly when safety is most important.</strong> Attic temperatures in summer can exceed 150°F.</p><ul><li>Test the air in attics and crawl spaces for oxygen and hazardous gases before entry</li><li>In attics, walk only on structural framing — ceiling drywall will not support your weight</li><li>In crawl spaces, use knee pads and appropriate PPE</li><li>Wear respiratory protection — fiberglass insulation, mold spores, and rodent waste are respiratory hazards</li><li>Ensure you have a clear, unobstructed exit path before beginning work</li></ul>",questions:[{q:"In an attic, where is it safe to walk?",options:["On the insulation — it provides cushioning","On the drywall between joists for even weight distribution","Only on structural framing (joists and trusses)","Anywhere — attic construction supports body weight"],correct:2,explain:"In attics, only walk on structural framing. Ceiling drywall and the spaces between framing members will not support body weight and will result in a fall through the ceiling."},{q:"What symptom should immediately prompt you to exit an attic or crawl space?",options:["Feeling hot","Feeling disoriented, unusually short of breath, or abnormally fatigued","Muscle soreness from crawling","Difficulty hearing communications"],correct:1,explain:"Disorientation, unusual shortness of breath, or abnormal fatigue in an enclosed space can indicate oxygen deficiency or toxic gas exposure. Exit immediately."},{q:"Why should you test the atmosphere in a crawl space before entry?",options:["To check humidity levels","Gas leaks, decomposing material, and mold can create oxygen-deficient or toxic atmospheres","It's required by OSHA only for spaces deeper than 4 feet","To check temperature for heat illness risk"],correct:1,explain:"Crawl spaces can accumulate natural gas, methane from decomposing material, and gases from mold — any of which can create oxygen-deficient or toxic conditions."}]},
+  {week:45,title:"MATERIAL HANDLING AND LIFTING TECHNIQUES",oshaRef:"OSHA 29 CFR 1926.250",content:"<p>Back injuries are the single most common disabling injury in construction. Most could be prevented with proper lifting technique and mechanical assist equipment. <strong>Your back doesn't fail all at once — it fails a little at a time over years until one routine lift puts you on the injured list.</strong></p><ul><li>Plan the lift before lifting — know where you're going, clear the path, know the weight</li><li>Position close to the load — the further away, the more stress on your spine</li><li>Bend your knees and keep your back straight — lift with your legs, not your back</li><li>Never twist while lifting — move your feet to change direction</li><li>Use mechanical assists for loads over 50 pounds</li><li>Get help for awkward or unbalanced loads</li></ul>",questions:[{q:"What is the most common way disc injuries occur during lifting?",options:["Lifting loads that are too heavy","Lifting while reaching overhead","Lifting and twisting simultaneously","Lifting too quickly"],correct:2,explain:"Disc injuries most commonly occur when workers lift and twist simultaneously. Always move your feet to change direction rather than twisting while holding a heavy object."},{q:"At what weight should you use mechanical assists rather than manual lifting?",options:["Over 75 pounds","Over 100 pounds","Over 50 pounds","Weight doesn't matter — technique is everything"],correct:2,explain:"Manual lifting of loads over 50 pounds significantly increases injury risk. Use mechanical assists for loads above 50 pounds."},{q:"What should you do if a load feels too heavy or awkward to lift safely?",options:["Power through it — you'll be fine","Try a different grip position","Stop and get help or a mechanical assist","Bend more at the knees and try again"],correct:2,explain:"If a load feels too heavy or awkward, stop and get help or use a mechanical assist. Attempting to lift an unsafe load is how back injuries happen."}]},
+  {week:46,title:"JOBSITE SECURITY AND UNAUTHORIZED ACCESS",oshaRef:"OSHA 29 CFR 1926.150",content:"<p>Construction sites are hazardous environments for trained workers — they are exponentially more dangerous for untrained members of the public. <strong>A construction site that is not properly secured becomes a dangerous attractive nuisance.</strong></p><ul><li>Ensure all job site perimeter fencing is intact at the start and end of every shift</li><li>Report gaps, holes, or damage in perimeter fencing to your lead immediately</li><li>Do not prop open or leave unsecured any gates or entry points</li><li>Secure all ladders at end of shift — remove or lock them to prevent unauthorized climbing</li><li>Report any unauthorized persons on the job site to your lead immediately</li><li>At end of shift, ensure all energized equipment and systems are properly de-energized and secured</li></ul>",questions:[{q:"What should you do if you find a gap in the perimeter fencing of a job site?",options:["Note it and mention it at the next safety meeting","Report it to your lead immediately","Fix it yourself if you have the materials","It's the GC's responsibility — not yours"],correct:1,explain:"Gaps in perimeter fencing must be reported immediately. Every hour a gap exists is an hour a member of the public, especially a child, could enter the site and be seriously injured."},{q:"Why must ladders be secured or removed at the end of each shift?",options:["To prevent theft of the ladders","To comply with OSHA equipment storage requirements","To prevent unauthorized persons from using them to access elevated areas","All tools must be stored indoors overnight"],correct:2,explain:"Unsecured ladders provide unauthorized access to elevated and dangerous areas of the job site. Remove them from exposed locations or lock them to prevent use after hours."},{q:"You see an unauthorized person on the job site. What is your first action?",options:["Physically remove them from the site","Ignore them if they don't appear to be causing harm","Calmly direct them off the site and report it to your lead","Call the police immediately"],correct:2,explain:"Calmly direct unauthorized persons off the site and always report the incident to your lead so it can be documented."}]},
+  {week:47,title:"EMERGENCY ACTION PLANS",oshaRef:"OSHA 29 CFR 1926.35",content:"<p>An Emergency Action Plan tells every worker what to do when things go wrong — fire, medical emergency, severe weather, structural failure, chemical release. <strong>Emergencies are not the time to figure out the plan.</strong></p><ul><li>Know the evacuation routes from your current work area — they change as the job progresses</li><li>Know the assembly point where all workers account for each other after an evacuation</li><li>Know who the designated emergency coordinator is on your site</li><li>Know the location of fire extinguishers, first aid kits, and eyewash stations</li><li>Know how to contact emergency services — 911 — and be able to describe your exact location</li></ul><p>After any evacuation — a full headcount must be completed before anyone re-enters. A worker unaccounted for is a potential victim.</p>",questions:[{q:"After an evacuation, what must happen before anyone re-enters?",options:["Wait 10 minutes as a safety precaution","Re-enter once the alarm stops","Account for every worker — a full headcount must be completed","Wait for emergency services to clear the area"],correct:2,explain:"A full headcount must be completed at the assembly point after every evacuation. Every worker must be accounted for before anyone considers re-entering."},{q:"What information should you be able to provide when calling 911 from a construction site?",options:["Your name and employee ID","The site address and your exact location within the site","The name of the general contractor","Your company's insurance information"],correct:1,explain:"When calling 911, provide the site address and your specific location within the site immediately. Responders need to know exactly where to go."},{q:"How often should evacuation routes be reviewed on a construction site?",options:["Once at project start","Annually","As the job progresses — routes change as the work changes","Only when OSHA requires a drill"],correct:2,explain:"Evacuation routes change as construction progresses. Routes must be reviewed regularly as site conditions evolve."}]},
+  {week:48,title:"FIRST AID AND INCIDENT REPORTING",oshaRef:"OSHA 29 CFR 1926.50",content:"<p>When an injury occurs, the initial response in the first few minutes can determine whether a worker makes a full recovery or sustains permanent damage. <strong>Knowing basic first aid is a baseline competency for construction workers — not a bonus skill.</strong></p><ul><li>Know where the first aid kit is on your job site before an emergency</li><li>For any injury — report it to your lead the same day, regardless of how minor it seems</li><li>For severe bleeding: apply direct pressure, elevate if possible, don't remove the cloth if it soaks through — add more on top</li><li>For electrical shock: do not touch the victim if still in contact with the source — shut off power first</li><li>For suspected fractures: immobilize, don't straighten, wait for medical help</li></ul>",questions:[{q:"A coworker receives an electrical shock and is still in contact with the source. What do you do first?",options:["Pull them away from the source immediately","Shut off the power source before touching them","Call 911 first, then pull them away","Use rubber gloves to pull them away"],correct:1,explain:"Do not touch a person still in contact with an electrical source — you will also be electrocuted. Shut off the power source first, then provide assistance."},{q:"A worker has a minor cut that stops bleeding after a few minutes. Should it be reported?",options:["No — minor injuries don't need to be reported","Only if stitches were needed","Yes — all injuries must be reported to the lead the same day","Only if it required first aid treatment"],correct:2,explain:"All injuries — however minor — must be reported to the lead the same day. Minor injuries that go unreported can develop complications."},{q:"A cloth used to apply pressure to a bleeding wound soaks through. What should you do?",options:["Remove it and replace with a fresh cloth","Add more cloth on top — removing it disrupts clotting","Apply a tourniquet instead","Rinse the wound with water and reapply"],correct:1,explain:"When a cloth soaks through, do not remove it — doing so disrupts any clot formation. Add more cloth on top and maintain firm pressure."}]},
+  {week:49,title:"DRIVER AND VEHICLE SAFETY ON JOBSITES",oshaRef:"OSHA 29 CFR 1926.601",content:"<p><strong>More workers are struck and killed by backing vehicles than by any other vehicle movement on construction sites.</strong> Many of these fatalities involve the driver's own coworkers. Distracted driving is now a factor in a significant percentage of vehicle incidents.</p><ul><li>Use a spotter when backing any vehicle on a job site — required whenever the driver's direct vision is obstructed</li><li>Walk around the vehicle before starting — check for workers and obstacles in the path of travel</li><li>Wear a seatbelt at all times in all vehicles</li><li>No phone use while driving — park and stop before using a phone for any reason</li><li>Observe all posted speed limits on job sites — typically 10 mph or less</li><li>Yield to pedestrians and workers on foot — always</li></ul>",questions:[{q:"What is the most common vehicle-related fatality on construction sites?",options:["Side-impact collisions","Vehicles striking overhead structures","Workers struck by backing vehicles","Rollovers on uneven ground"],correct:2,explain:"More construction workers are struck and killed by backing vehicles than any other vehicle movement on job sites."},{q:"When must a spotter be used for vehicle backing on a construction site?",options:["Only for vehicles over 10,000 lbs","Whenever the driver's direct vision is obstructed","Only when workers are actively in the backup area","Only for vehicles without backup cameras"],correct:1,explain:"A spotter is required whenever the driver's direct line of sight is obstructed during backing. Backup cameras do not substitute for a spotter."},{q:"You receive a text message while driving on the job site. What should you do?",options:["Read it quickly at a stop sign","Use voice-to-text to reply hands-free","Park completely and stop the vehicle before reading or responding","Slow down and quickly check it"],correct:2,explain:"Park and stop completely before using a phone for any reason. On a job site with workers on foot, a distracted driver is a lethal hazard."}]},
+  {week:50,title:"FATIGUE AND IMPAIRMENT AWARENESS",oshaRef:"OSHA 29 CFR 1926.20",content:"<p>A worker who has been awake for 17 hours has cognitive impairment equivalent to a blood alcohol level of 0.05%. After 24 hours without sleep, impairment reaches the level of a 0.10% BAC — <strong>legally drunk in every state.</strong> Most workers don't recognize their own impairment — fatigue reduces the ability to accurately self-assess.</p><ul><li>Get adequate sleep — 7-9 hours — before shifts involving high-risk tasks</li><li>Report to your lead if you feel too fatigued to work safely</li><li>Watch for signs of fatigue in coworkers: slowed reactions, poor coordination, difficulty following instructions</li><li>Alcohol and drugs — including some prescription medications — impair judgment and reaction time. Never work impaired</li><li>Medications that cause drowsiness must be reported to your lead before working at height or operating equipment</li></ul>",questions:[{q:"A worker has been awake for 24 hours. How does their cognitive impairment compare to alcohol impairment?",options:["No significant impairment","Equivalent to 0.05% BAC","Equivalent to 0.10% BAC — legally drunk in every state","Impairment depends on the individual"],correct:2,explain:"Research shows that 24 hours without sleep produces cognitive impairment equivalent to a 0.10% blood alcohol concentration."},{q:"You are taking a prescription medication that causes drowsiness. You are scheduled to work at height today. What must you do?",options:["Work carefully and stay focused","Take a lower dose today","Report it to your lead before working at height or operating equipment","It's a private medical matter — no need to disclose"],correct:2,explain:"Medications that cause drowsiness must be reported to your lead before performing high-risk tasks like working at height or operating equipment."},{q:"Why are workers often unable to recognize their own fatigue-related impairment?",options:["Workers are trained to push through fatigue","Fatigue reduces the ability to accurately self-assess impairment","Only extreme fatigue causes noticeable impairment","Workers typically feel more confident when fatigued"],correct:1,explain:"Fatigue directly impairs the brain's ability to judge its own level of impairment — making fatigued workers likely to overestimate their own alertness."}]},
+  {week:51,title:"NEW EMPLOYEE JOBSITE ORIENTATION",oshaRef:"OSHA 29 CFR 1926.21",content:"<p>New employees — including experienced workers starting at a new company or job site — are at dramatically higher risk of injury in their first days and weeks. <strong>A 20-year veteran on their first day at a new site is at elevated risk.</strong> Generic safety training is not sufficient — workers must be trained on the specific conditions and hazards of the site where they work.</p><ul><li>Review site layout — entry and exit points, material staging areas, traffic patterns, and no-go zones</li><li>Identify the location of first aid kits, fire extinguishers, eyewash stations, and emergency exits</li><li>Receive a briefing on site-specific hazards — active excavations, overhead work, restricted areas</li><li>Review the Emergency Action Plan — evacuation routes and assembly points</li><li>Ask questions about anything you're unsure of — there are no stupid questions about safety</li></ul>",questions:[{q:"Why do experienced workers still need site-specific orientation at every new job site?",options:["OSHA requires it for paperwork purposes","Experience from other sites doesn't prepare workers for site-specific hazards, layouts, and procedures","Only workers new to the trade need orientation","Experienced workers only need a shortened orientation"],correct:1,explain:"Every job site has unique hazards, layouts, and procedures. Experience at other sites doesn't provide the site-specific knowledge needed to work safely."},{q:"What should you do if you start a new site and no orientation is provided?",options:["Begin work — orientation is optional for experienced workers","Ask a coworker to show you around informally","Ask your lead for a proper orientation — you have the right to know your site's hazards","Wait — orientation will happen eventually"],correct:2,explain:"Every worker has the right to be informed about the hazards of their work environment before beginning work. If orientation is not provided, ask your lead."},{q:"During orientation, what is the most important question to ask if you are unsure about something?",options:["How long until I'm fully trained","What are the overtime rules","Ask whatever you need to — there are no stupid questions about safety","How does this compare to your last job site"],correct:2,explain:"There are no stupid questions about safety. Asking about something you're unsure of is the professional and correct response."}]},
+  {week:52,title:"ANNUAL SAFETY PROGRAM REVIEW",oshaRef:"OSHA 29 CFR 1926.20",content:"<p>We've completed a full year of weekly toolbox talks covering the most important safety topics for electrical construction workers. Homestead Electric's safety program exists for one reason: <strong>to make sure everyone goes home at the end of every shift.</strong></p><ul><li>Review the incidents and near-misses from the past year — what patterns do you see?</li><li>Identify any gaps in training — are there specific hazards on your work that weren't covered?</li><li>Review your incident reporting records — are you capturing near-misses as well as injuries?</li><li>Discuss what's working — which safety practices have become second nature?</li><li>Discuss what still needs work — honest conversation about gaps is what makes programs improve</li><li>Look ahead — what new projects, new equipment, or new hazards will require additional training next year?</li></ul><p>Safety is not a compliance exercise. It is a commitment that every person on this crew makes to every other person on this crew.</p>",questions:[{q:"What is the primary purpose of Homestead Electric's safety program?",options:["To satisfy OSHA inspection requirements","To reduce workers comp costs","To ensure everyone goes home at the end of every shift","To meet general contractor requirements"],correct:2,explain:"The primary purpose is simple: everyone goes home safely. OSHA compliance and documentation are the byproducts of a real safety culture."},{q:"Why should near-miss incidents be reported even when no one was hurt?",options:["OSHA requires near-miss reporting","Near-misses reveal hazards that will eventually cause an injury if not corrected","Only to satisfy paperwork requirements","So workers can be disciplined if at fault"],correct:1,explain:"Near-misses reveal real hazards that will eventually cause a real injury if not corrected. Reporting near-misses is how safety programs prevent injuries before they happen."},{q:"What makes a safety program genuinely effective rather than just compliant?",options:["Having the most detailed written program","Conducting more inspections than required","Building a culture where workers genuinely look out for each other — not just documentation","Having the most safety signs posted on site"],correct:2,explain:"A genuinely effective safety program is built on culture: workers who look out for each other, speak up about hazards, and take safety personally."}]}
+];
+
+const LEADS=[
+  {name:"Daegan Smith"},{name:"Keegan Wilkinson"},{name:"Braden Davis"},
+  {name:"Gage Lund"},{name:"Abraham Tristan"},{name:"Treycen Rollene"},
+  {name:"Louis Hoffman"},{name:"Jonathan Harding"},
+];
+const CREW=[
+  {name:"Payton Bolda"},{name:"Callen Jakeman"},{name:"Noah Davis"},
+  {name:"Coleman Christen"},{name:"Asher Miller"},{name:"Braxton Raven"},
+  {name:"Bailey Smith"},{name:"Jacob Nuffer"},{name:"Austin Schut"},
+  {name:"Jacob Spackman"},{name:"Isaiah Miller"},{name:"Jacob Bingham"},
+];
+const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+function wkLabel(){const d=new Date(),s=new Date(d);s.setDate(d.getDate()-d.getDay());return`Week of ${s.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;}
+function wkId(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return`${d.getFullYear()}-W${Math.ceil(((d-j)/86400000+j.getDay()+1)/7)}`;}
+const S={signoffs:{},leadSignoffs:{},topic:null,quiz:null,role:null,signing:null,signingType:null,loc:null,weekLabel:wkLabel(),weekId:wkId()};
+try{const sv=localStorage.getItem('hes_safety_v3');if(sv){const p=JSON.parse(sv);if(p.weekId===S.weekId){S.signoffs=p.signoffs||{};S.leadSignoffs=p.leadSignoffs||{};S.topic=p.topic||null;S.quiz=p.quiz||null;}}}catch(e){}
+function save(){try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz}));}catch(e){}}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function goHome(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-role').classList.add('active');}
+function getLoc(){navigator.geolocation?.getCurrentPosition(p=>{S.loc={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};},()=>{S.loc={lat:'N/A',lng:'N/A'};});}
+function enterRole(r){S.role=r;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');getLoc();if(!S.topic)loadTopic();if(r==='lead')renderLead();else if(r==='crew')renderCrew();else if(r==='admin')renderAdmin();else if(r==='incident')renderIncident();}
+function loadTopic(cat){
+  const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
+  const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
+  const idx=(weekNum-1)%TOPIC_BANK.length;
+  const t=TOPIC_BANK[idx];
+  S.topic={title:t.title,oshaRef:t.oshaRef,content:t.content,questions:t.questions};
+  S.quiz={topicTitle:t.title,questions:t.questions};
+  save();
+  renderTopic();
+}
+function renderTopic(){
+  const t=S.topic;if(!t)return;
+  const html=`<div class="topic-top"><span class="topic-wk">${S.weekLabel}</span><span class="osha-chip">${t.oshaRef}</span></div><div class="topic-body"><div class="topic-title">${t.title}</div><div class="topic-content">${t.content}</div></div>`;
+  ['leadTopicCard','crewTopicCard'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+}
+function renderLead(){
+  renderTopic();
+  const sel=document.getElementById('leadNameSelect');
+  if(sel&&sel.options.length===1){LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;sel.appendChild(o);});}
+  renderCrewSignoffList();updateLeadStats();
+  loadLeadQuiz();
+}
+
+// ── LEAD QUIZ (separate state from crew quiz) ──
+let leadQuiz={questions:[],current:0,correct:0,answered:[]};
+
+function loadLeadQuiz(){
+  if(!S.topic)return;
+  document.getElementById('leadQuizInner').innerHTML='<div class="lead-quiz-loading"><div class="spinner" style="border-top-color:#2979FF;margin:0 auto 10px;"></div>Loading questions…</div>';
+  if(S.quiz&&S.quiz.topicTitle===S.topic.title){
+    leadQuiz.questions=S.quiz.questions;
+    leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
+    renderLeadQuiz();return;
+  }
+  // Fallback to topic bank questions
+  const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
+  const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
+  const idx=(weekNum-1)%TOPIC_BANK.length;
+  const t=TOPIC_BANK[idx];
+  leadQuiz.questions=t.questions;
+  S.quiz={topicTitle:S.topic.title,questions:t.questions};
+  save();
+  leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
+  renderLeadQuiz();
+}
+
+function renderLeadQuiz(){
+  const qs=leadQuiz.questions;
+  if(!qs||!qs.length)return;
+  const q=qs[leadQuiz.current];
+  const letters=['A','B','C','D'];
+  document.getElementById('leadQuizInner').innerHTML=`
+    <div style="font-family:var(--mono);font-size:10px;color:#2979FF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">${leadQuiz.current+1} / ${qs.length}</div>
+    <div style="font-family:var(--font);font-size:18px;font-weight:700;color:#0F1923;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;">${q.q}</div>
+    <div class="lead-quiz-opts" id="leadQuizOpts">
+      ${q.options.map((opt,i)=>`
+        <button class="lead-quiz-opt" onclick="answerLeadQuiz(${i})">
+          <span class="lead-quiz-letter">${letters[i]}</span>
+          <span class="lead-quiz-text">${opt.replace(/^[A-D]\)\s*/,'')}</span>
+        </button>`).join('')}
+    </div>
+    <div id="leadQuizFeedback"></div>`;
+}
+
+function answerLeadQuiz(chosen){
+  const q=leadQuiz.questions[leadQuiz.current];
+  const opts=document.querySelectorAll('#leadQuizOpts .lead-quiz-opt');
+  const isCorrect=chosen===q.correct;
+  if(isCorrect)leadQuiz.correct++;
+  opts.forEach((opt,i)=>{
+    if(i===q.correct)opt.classList.add('correct');
+    else if(i===chosen&&!isCorrect)opt.classList.add('wrong');
+    else opt.classList.add('dimmed');
+    opt.classList.add('answered');
+  });
+  const fb=document.getElementById('leadQuizFeedback');
+  fb.innerHTML=`<div class="lead-quiz-fb ${isCorrect?'correct':'wrong'}">${isCorrect?'✓ ':'✗ '}${q.explain}</div>
+    <button class="btn-primary quiz-next" onclick="nextLeadQuiz()">${leadQuiz.current+1<leadQuiz.questions.length?'Next →':'Results →'}</button>`;
+}
+
+function nextLeadQuiz(){
+  leadQuiz.current++;
+  if(leadQuiz.current>=leadQuiz.questions.length){
+    document.getElementById('leadQuizSection').style.display='none';
+    if(leadQuiz.correct>=2){
+      document.getElementById('leadQuizPass').style.display='block';
+      document.getElementById('leadQuizScoreLabel').textContent=`${leadQuiz.correct}/3 correct · Sign-off unlocked`;
+      document.getElementById('leadSignSection').style.display='block';
+    } else {
+      document.getElementById('leadQuizSection').style.display='block';
+      document.getElementById('leadQuizInner').innerHTML=`
+        <div class="quiz-pass-banner" style="background:#1a0a0a;border-top-color:#FF4444;">
+          <div style="font-size:36px;">✗</div>
+          <div>
+            <div class="quiz-pass-title" style="color:#FF4444;">Try again</div>
+            <div class="quiz-pass-sub">${leadQuiz.correct}/${leadQuiz.questions.length} correct · Need 2/3 to pass</div>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:14px;" onclick="retryLeadQuiz()">Retry quiz →</button>`;
+    }
+  } else {
+    renderLeadQuiz();
+  }
+}
+
+function retryLeadQuiz(){
+  leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
+  renderLeadQuiz();
+}
+function renderCrewSignoffList(){
+  const list=document.getElementById('crewSignoffList');if(!list)return;
+  list.innerHTML=CREW.map(c=>{const s=S.signoffs[c.name];return`<div class="crew-row ${s?'is-signed':''}"><div class="crew-left"><div class="avatar">${ini(c.name)}</div><div><span class="crew-name">${c.name}</span>${s?`<span class="crew-time">✓ ${s.time}</span>`:`<span class="crew-role-lbl">Crew</span>`}</div></div>${s?`<div class="signed-check">✓ Signed</div>`:`<button class="btn-sign" onclick="openSigFor('${c.name}','crew')">Sign</button>`}</div>`;}).join('');
+}
+function updateLeadStats(){
+  const total=CREW.length,signed=Object.keys(S.signoffs).length,pending=total-signed,pct=Math.round((signed/total)*100);
+  const $=id=>document.getElementById(id);
+  if($('lead-stat-total'))$('lead-stat-total').textContent=total;
+  if($('lead-stat-signed'))$('lead-stat-signed').textContent=signed;
+  if($('lead-stat-pending'))$('lead-stat-pending').textContent=pending;
+  if($('leadProgressBar')){$('leadProgressBar').style.width=pct+'%';if(pct===100)$('leadProgressBar').classList.add('complete');}
+  if($('lead-progress-pct'))$('lead-progress-pct').textContent=pct+'%';
+}
+function openLeadSignModal(){const name=document.getElementById('leadNameSelect')?.value;const ok=document.getElementById('leadConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you attended the meeting');return;}S.signing=name;S.signingType='lead';openSigModal(name,'Job Lead');}
+function renderCrew(){
+  document.getElementById('crewWeekLabel').textContent=S.weekLabel;
+  const sel=document.getElementById('crewNameSelect');
+  if(sel&&sel.options.length===1){CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;sel.appendChild(o);});}
+  renderTopic();
+  // Start quiz load after topic renders
+  loadQuiz();
+}
+
+// ── QUIZ ──
+let quiz={questions:[],current:0,correct:0,answered:[]};
+
+function loadQuiz(){
+  if(!S.topic)return;
+  if(S.quiz&&S.quiz.topicTitle===S.topic.title){quiz.questions=S.quiz.questions;renderQuiz();return;}
+  const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
+  const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
+  const idx=(weekNum-1)%TOPIC_BANK.length;
+  const t=TOPIC_BANK[idx];
+  quiz.questions=t.questions;
+  S.quiz={topicTitle:S.topic.title,questions:t.questions};
+  save();
+  quiz.current=0;quiz.correct=0;quiz.answered=[];
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const qs=quiz.questions;
+  if(!qs||!qs.length)return;
+  document.getElementById('crewQuizSection').style.display='block';
+  const q=qs[quiz.current];
+  const letters=['A','B','C','D'];
+  const pips=qs.map((_,i)=>`<div class="quiz-pip ${i<quiz.current?'done':''}"></div>`).join('');
+  document.getElementById('quizInner').innerHTML=`
+    <div class="quiz-progress">${pips}</div>
+    <div class="quiz-q">
+      <div class="quiz-q-num">Question ${quiz.current+1} of ${qs.length}</div>
+      <div class="quiz-q-text">${q.q}</div>
+      <div class="quiz-options" id="quizOpts">
+        ${q.options.map((opt,i)=>`
+          <button class="quiz-opt" onclick="answerQuiz(${i})">
+            <div class="quiz-opt-letter">${letters[i]}</div>
+            <span class="quiz-opt-text">${opt.replace(/^[A-D]\)\s*/,'')}</span>
+          </button>`).join('')}
+      </div>
+      <div id="quizFeedback"></div>
+    </div>`;
+}
+
+function answerQuiz(chosen){
+  const q=quiz.questions[quiz.current];
+  const opts=document.querySelectorAll('.quiz-opt');
+  const isCorrect=chosen===q.correct;
+  if(isCorrect)quiz.correct++;
+  quiz.answered.push({chosen,correct:q.correct,isCorrect});
+
+  opts.forEach((opt,i)=>{
+    if(i===q.correct)opt.classList.add('correct');
+    else if(i===chosen&&!isCorrect)opt.classList.add('wrong');
+    else opt.classList.add('dimmed');
+    opt.classList.add('answered');
+  });
+
+  const fb=document.getElementById('quizFeedback');
+  fb.innerHTML=`<div class="quiz-feedback ${isCorrect?'correct':'wrong'}">${isCorrect?'✓ Correct — ':'✗ Not quite — '}${q.explain}</div>
+    <button class="btn-primary quiz-next" onclick="nextQuiz()">${quiz.current+1<quiz.questions.length?'Next question →':'See results →'}</button>`;
+}
+
+function nextQuiz(){
+  quiz.current++;
+  if(quiz.current>=quiz.questions.length){
+    // Done — show pass/fail
+    document.getElementById('crewQuizSection').style.display='none';
+    if(quiz.correct>=2){
+      document.getElementById('crewQuizPass').style.display='block';
+      document.getElementById('quizScoreLabel').textContent=`${quiz.correct}/3 correct · Sign-off unlocked`;
+      document.getElementById('crewSignSection').style.display='block';
+    } else {
+      // Retry
+      document.getElementById('quizInner').innerHTML=`
+        <div class="quiz-pass-banner" style="background:#1a0a0a;border-top-color:#FF4444;">
+          <div style="font-size:36px;">✗</div>
+          <div>
+            <div class="quiz-pass-title" style="color:#FF4444;">Try again</div>
+            <div class="quiz-pass-sub">${quiz.correct}/${quiz.questions.length} correct · Need 2/3 to pass</div>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:14px;" onclick="retryQuiz()">Retry quiz →</button>`;
+      document.getElementById('crewQuizSection').style.display='block';
+    }
+  } else {
+    renderQuiz();
+  }
+}
+
+function retryQuiz(){
+  quiz.current=0;quiz.correct=0;quiz.answered=[];
+  renderQuiz();
+}
+function openSignModal(){const name=document.getElementById('crewNameSelect')?.value;const ok=document.getElementById('crewConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you reviewed the topic');return;}S.signing=name;S.signingType='crew';openSigModal(name,'Crew Member');}
+function openSigFor(name,type){S.signing=name;S.signingType=type;openSigModal(name,type==='lead'?'Job Lead':'Crew Member');}
+function shareLink(){showToast('Sign-off link copied');}
+function renderAdmin(){
+  const $=id=>document.getElementById(id);
+  const hist=[
+    {week:'Apr 7, 2026',topic:'FALL PROTECTION — KNOW THE RULES',signed:20,total:20},
+    {week:'Mar 31, 2026',topic:'ELECTRICAL SAFETY & LOCKOUT/TAGOUT',signed:19,total:20},
+    {week:'Mar 24, 2026',topic:'PPE SELECTION & CARE',signed:20,total:20},
+    {week:'Mar 17, 2026',topic:'EXCAVATION HAZARDS',signed:18,total:20},
+  ];
+
+  // Weekly history
+  if($('weekHistory'))$('weekHistory').innerHTML=hist.map(w=>`
+    <div class="hist-row">
+      <div><div class="hist-topic">${w.topic}</div><div class="hist-week">${w.week}</div></div>
+      <span class="hist-badge ${w.signed===w.total?'full':'partial'}">${w.signed}/${w.total}</span>
+    </div>`).join('');
+
+  // Stats
+  if($('admin-leads-signed'))$('admin-leads-signed').textContent=Object.keys(S.leadSignoffs).length+'/'+LEADS.length;
+  if($('admin-crew-signed'))$('admin-crew-signed').textContent=Object.keys(S.signoffs).length+'/'+CREW.length;
+
+  // ── LEAD SCORECARD ──
+  // Mock historical data — weeks signed + quiz pass rate per lead
+  const leadHistory={
+    'Daegan Smith':    {weeks:[true,true,true,true], crewPct:[100,92,100,83], quizPass:[true,true,true,true]},
+    'Keegan Wilkinson':{weeks:[true,true,false,true],crewPct:[100,100,0,100], quizPass:[true,true,false,true]},
+    'Braden Davis':    {weeks:[true,true,true,true], crewPct:[75,100,100,100],quizPass:[true,true,true,true]},
+    'Gage Lund':       {weeks:[true,false,true,true],crewPct:[100,0,100,100], quizPass:[true,false,true,true]},
+    'Abraham Tristan': {weeks:[true,true,true,true], crewPct:[100,100,100,100],quizPass:[true,true,true,true]},
+    'Treycen Rollene': {weeks:[true,true,true,false],crewPct:[83,92,75,0],    quizPass:[true,true,false,false]},
+    'Louis Hoffman':   {weeks:[true,true,true,true], crewPct:[100,100,83,100],quizPass:[true,true,true,true]},
+    'Jonathan Harding':{weeks:[false,true,true,true],crewPct:[0,100,100,92], quizPass:[false,true,true,true]},
+  };
+
+  // This week's sign-off status
+  const scorecardEl=$('leadScorecard');
+  if(scorecardEl){
+    scorecardEl.innerHTML=LEADS.map(l=>{
+      const signed=!!S.leadSignoffs[l.name];
+      const hist=leadHistory[l.name];
+      const weeksSigned=hist?hist.weeks.filter(Boolean).length:0;
+      const avgCrew=hist?Math.round(hist.crewPct.reduce((a,b)=>a+b,0)/hist.crewPct.length):0;
+      const statusClass=signed?'perfect':weeksSigned>=3?'partial':'none';
+      const pctColor=avgCrew===100?'green':avgCrew>=80?'amber':'red';
+      const barColor=avgCrew===100?'#00C853':avgCrew>=80?'#FFB300':'#FF4444';
+      return`<div class="scorecard-row ${statusClass}">
+        <div class="scorecard-avatar">${ini(l.name)}</div>
+        <div style="flex:1;min-width:0;">
+          <span class="scorecard-name">${l.name}</span>
+          <span class="scorecard-detail">${weeksSigned}/4 weeks signed · ${signed?'✓ This week':'Not signed yet'}</span>
+          <div class="scorecard-bar"><div class="scorecard-bar-fill" style="width:${avgCrew}%;background:${barColor};"></div></div>
+        </div>
+        <div class="scorecard-right">
+          <span class="scorecard-pct ${pctColor}">${avgCrew}%</span>
+          <span class="scorecard-sublabel">crew avg</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── REPEAT OFFENDERS ──
+  const offendersEl=$('repeatOffenders');
+  if(offendersEl){
+    const issues=[];
+
+    // Leads who missed 2+ weeks
+    LEADS.forEach(l=>{
+      const hist=leadHistory[l.name];
+      if(!hist)return;
+      const missed=hist.weeks.filter(w=>!w).length;
+      const failedQuiz=hist.quizPass.filter(p=>!p).length;
+      if(missed>=2) issues.push({name:l.name,role:'Job Lead',issue:`Missed ${missed} of last 4 meetings`,severity:'high'});
+      else if(failedQuiz>=2) issues.push({name:l.name,role:'Job Lead',issue:`Failed quiz ${failedQuiz} times recently`,severity:'medium'});
+      else if(hist.crewPct.slice(-2).some(p=>p<80)) issues.push({name:l.name,role:'Job Lead',issue:'Crew sign-off rate below 80% recently',severity:'medium'});
+    });
+
+    // Crew who haven't signed this week AND missed last week too
+    const knownMissed=['Braxton Raven','Jacob Nuffer']; // mock — would be real data with backend
+    knownMissed.forEach(name=>{
+      if(!S.signoffs[name]) issues.push({name,role:'Crew',issue:'No sign-off 2+ weeks in a row',severity:'high'});
+    });
+
+    if(issues.length===0){
+      offendersEl.innerHTML=`<div class="no-issues"><span>✓</span>No issues flagged — everyone is current</div>`;
+    } else {
+      offendersEl.innerHTML=issues.map(i=>`
+        <div class="offender-row">
+          <div class="scorecard-avatar" style="border-color:rgba(255,68,68,0.3);color:#FF4444;">${ini(i.name)}</div>
+          <div>
+            <span class="offender-name">${i.name}</span>
+            <span class="offender-detail">${i.issue}</span>
+          </div>
+          <span class="offender-badge">${i.role}</span>
+        </div>`).join('');
+    }
+  }
+}
+function generateNewTopic(){
+  const cat=document.getElementById('topicCategory')?.value||'general';
+  const catTopics=TOPIC_BANK.filter(t=>cat==='general'||t.oshaRef.toLowerCase().includes(cat)||t.title.toLowerCase().includes(cat));
+  const pool=catTopics.length>0?catTopics:TOPIC_BANK;
+  const t=pool[Math.floor(Math.random()*pool.length)];
+  S.topic={title:t.title,oshaRef:t.oshaRef,content:t.content,questions:t.questions};
+  S.quiz={topicTitle:t.title,questions:t.questions};
+  quiz.questions=t.questions;quiz.current=0;quiz.correct=0;quiz.answered=[];
+  leadQuiz.questions=t.questions;leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
+  save();
+  renderTopic();
+  showToast('New topic loaded');
+}
+let drawing=false,hasMark=false;
+const cv=document.getElementById('sigCanvas'),cx=cv.getContext('2d');
+function gp(e,c){const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height,src=e.touches?e.touches[0]:e;return{x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};}
+cv.addEventListener('mousedown',e=>{drawing=true;cx.beginPath();const p=gp(e,cv);cx.moveTo(p.x,p.y);});
+cv.addEventListener('mousemove',e=>{if(!drawing)return;hasMark=true;document.getElementById('sigHint').style.opacity='0';const p=gp(e,cv);cx.lineTo(p.x,p.y);cx.strokeStyle='#0F1923';cx.lineWidth=2;cx.lineCap='round';cx.stroke();});
+cv.addEventListener('mouseup',()=>drawing=false);cv.addEventListener('mouseleave',()=>drawing=false);
+cv.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;cx.beginPath();const p=gp(e,cv);cx.moveTo(p.x,p.y);},{passive:false});
+cv.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;hasMark=true;document.getElementById('sigHint').style.opacity='0';const p=gp(e,cv);cx.lineTo(p.x,p.y);cx.strokeStyle='#0F1923';cx.lineWidth=2;cx.lineCap='round';cx.stroke();},{passive:false});
+cv.addEventListener('touchend',()=>drawing=false);
+function openSigModal(name,roleLabel){document.getElementById('sigModalName').textContent=`${name} · ${roleLabel}`;document.getElementById('sigModal').classList.add('open');clearSig();}
+function closeSigModal(){document.getElementById('sigModal').classList.remove('open');S.signing=null;S.signingType=null;}
+function clearSig(){cx.clearRect(0,0,cv.width,cv.height);hasMark=false;document.getElementById('sigHint').style.opacity='1';}
+function submitSignature(){
+  if(!hasMark){showToast('Please sign before submitting');return;}
+  if(!S.signing)return;
+  const now=new Date(),ts=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),ds=now.toLocaleDateString('en-US',{month:'short',day:'numeric'}),loc=S.loc?`${S.loc.lat}, ${S.loc.lng}`:'Location N/A';
+  const rec={time:`${ds} ${ts}`,location:loc,sigData:cv.toDataURL(),weekId:S.weekId,topic:S.topic?.title||''};
+  if(S.signingType==='lead'){
+    rec.quizScore=`${leadQuiz.correct}/3`;
+    S.leadSignoffs[S.signing]=rec;save();closeSigModal();showToast(`${S.signing} signed`);document.getElementById('leadSignSection').style.display='none';document.getElementById('leadSigned').style.display='block';document.getElementById('leadSignedName').textContent=S.signing;document.getElementById('leadSignedDetails').textContent=`${ds} ${ts} · ${loc}`;
+  } else {
+    rec.quizScore=`${quiz.correct}/3`;
+    S.signoffs[S.signing]=rec;save();closeSigModal();showToast(`${S.signing} signed`);if(S.role==='lead'){renderCrewSignoffList();updateLeadStats();}else if(S.role==='crew'){document.getElementById('crewSignSection').style.display='none';document.getElementById('crewSigned').style.display='block';document.getElementById('crewSignedDetails').textContent=`${S.signing} · ${ds} ${ts}`;}
+  }
+}
+function exportReport(){
+  const t=S.topic;
+  const lr=LEADS.map(l=>{const s=S.leadSignoffs[l.name];return`${l.name.padEnd(22)} Job Lead      ${s?s.time:'NOT SIGNED'.padEnd(12)} ${s?s.quizScore:'—/3  '} ${s?s.location:'—'}`;}).join('\n');
+  const cr=CREW.map(c=>{const s=S.signoffs[c.name];return`${c.name.padEnd(22)} Crew           ${s?s.time:'NOT SIGNED'.padEnd(12)} ${s?s.quizScore:'—/3  '} ${s?s.location:'—'}`;}).join('\n');
+  const txt=`HOMESTEAD ELECTRIC — TOOLBOX TALK RECORD\n=========================================\n${S.weekLabel}\nTopic: ${t?.title||'—'}\nOSHA Reference: ${t?.oshaRef||'—'}\nGenerated: ${new Date().toLocaleString()}\n\nJOB LEADS (${Object.keys(S.leadSignoffs).length}/${LEADS.length} — Wednesday lead meeting)\nNAME                   ROLE           TIME         QUIZ  LOCATION\n${lr}\n\nCREW (${Object.keys(S.signoffs).length}/${CREW.length})\nNAME                   ROLE           TIME         QUIZ  LOCATION\n${cr}\n\nMaintained per OSHA 29 CFR 1926. Retain minimum 3 years.`;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=`HES_Safety_${S.weekId}.txt`;a.click();showToast('Report downloaded');
+}
+function exportCSV(){
+  const hdr='Name,Role,Week,Topic,OSHA Ref,Signed,Quiz Score,Time,Latitude,Longitude\n';
+  const lr=LEADS.map(l=>{const s=S.leadSignoffs[l.name],loc=s?.location?.split(', ')||['',''];return`"${l.name}","Job Lead","${S.weekLabel}","${S.topic?.title||''}","${S.topic?.oshaRef||''}","${s?'YES':'NO'}","${s?.quizScore||'—'}","${s?.time||''}","${loc[0]}","${loc[1]}"`;});
+  const cr=CREW.map(c=>{const s=S.signoffs[c.name],loc=s?.location?.split(', ')||['',''];return`"${c.name}","Crew","${S.weekLabel}","${S.topic?.title||''}","${S.topic?.oshaRef||''}","${s?'YES':'NO'}","${s?.quizScore||'—'}","${s?.time||''}","${loc[0]}","${loc[1]}"`;});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([hdr+[...lr,...cr].join('\n')],{type:'text/csv'}));a.download=`HES_Safety_${S.weekId}.csv`;a.click();showToast('CSV exported');
+}
+if(S.topic)renderTopic();
+
+// ── INCIDENT REPORT ──
+let incidentType='injury';
+
+function renderIncident(){
+  // Populate dropdowns
+  const allPeople=[...LEADS,...CREW];
+  const person=document.getElementById('ir-person');
+  const lead=document.getElementById('ir-lead');
+  const filedby=document.getElementById('ir-filedby');
+  if(person&&person.options.length===1){
+    allPeople.forEach(p=>{
+      [person,filedby].forEach(sel=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});
+    });
+  }
+  if(lead&&lead.options.length===1){
+    LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;lead.appendChild(o);});
+  }
+  // Set default datetime to now
+  const dt=document.getElementById('ir-datetime');
+  if(dt&&!dt.value){
+    const now=new Date();
+    now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+    dt.value=now.toISOString().slice(0,16);
+  }
+}
+
+function selectType(btn,type){
+  document.querySelectorAll('.ir-type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  incidentType=type;
+  const injuryFields=document.getElementById('ir-injury-fields');
+  if(injuryFields)injuryFields.style.display=type==='injury'?'block':'none';
+}
+
+function submitIncident(){
+  const person=document.getElementById('ir-person')?.value;
+  const description=document.getElementById('ir-description')?.value;
+  const filedby=document.getElementById('ir-filedby')?.value;
+  if(!person){showToast('Select person involved');return;}
+  if(!description||description.trim().length<10){showToast('Please describe what happened');return;}
+  if(!filedby){showToast('Select who is filing this report');return;}
+
+  const now=new Date();
+  const report={
+    id:`IR-${Date.now()}`,
+    type:incidentType,
+    person,
+    lead:document.getElementById('ir-lead')?.value||'—',
+    datetime:document.getElementById('ir-datetime')?.value||now.toISOString(),
+    location:document.getElementById('ir-location')?.value||'Not specified',
+    bodypart:document.getElementById('ir-bodypart')?.value||'—',
+    injurytype:document.getElementById('ir-injurytype')?.value||'—',
+    medical:document.getElementById('ir-medical')?.value||'—',
+    description,
+    rootcause:document.getElementById('ir-rootcause')?.value||'—',
+    witnesses:document.getElementById('ir-witnesses')?.value||'—',
+    filedby,
+    filedAt:now.toLocaleString(),
+    gps:S.loc?`${S.loc.lat}, ${S.loc.lng}`:'N/A',
+  };
+
+  // Save to local storage
+  try{
+    const existing=JSON.parse(localStorage.getItem('hes_incidents_v1')||'[]');
+    existing.unshift(report);
+    localStorage.setItem('hes_incidents_v1',JSON.stringify(existing));
+  }catch(e){}
+
+  // Show submitted state
+  document.getElementById('incidentForm').style.display='none';
+  document.getElementById('incidentSubmitted').style.display='block';
+  document.getElementById('incidentSubmittedDetails').textContent=
+    `${report.id} · Filed by ${filedby} · ${now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+
+  // Auto-download report
+  exportIncidentReport(report);
+}
+
+function exportIncidentReport(r){
+  const typeLabel={injury:'INJURY REPORT',nearmiss:'NEAR-MISS REPORT',hazard:'HAZARD REPORT'}[r.type]||'INCIDENT REPORT';
+  const txt=`HOMESTEAD ELECTRIC — ${typeLabel}
+=========================================
+Report ID: ${r.id}
+Filed: ${r.filedAt}
+Filed by: ${r.filedby}
+GPS at filing: ${r.gps}
+
+INCIDENT DETAILS
+-----------------
+Type: ${typeLabel}
+Person involved: ${r.person}
+Job lead on site: ${r.lead}
+Date/time of incident: ${r.datetime}
+Location: ${r.location}
+
+${r.type==='injury'?`INJURY INFORMATION
+-----------------
+Body part: ${r.bodypart}
+Type of injury: ${r.injurytype}
+Medical attention: ${r.medical}
+
+`:''}DESCRIPTION
+-----------
+${r.description}
+
+Root cause: ${r.rootcause}
+Witnesses: ${r.witnesses}
+
+=========================================
+Maintained per OSHA 29 CFR 1904 recordkeeping requirements.
+Workers comp provider notification required within 24 hours for lost-time injuries.`;
+
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download=`HES_${r.id}.txt`;
+  a.click();
+}
+</script>
+</body>
+</html>
