@@ -29,7 +29,6 @@
   --mono:'Syne Mono',monospace;
   --body:'Inter',sans-serif;
 }
-
 body{
   font-family:var(--body);
   background:var(--void);
@@ -39,7 +38,6 @@ body{
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
-
 /* GRID BACKGROUND */
 body::before{
   content:'';
@@ -50,10 +48,8 @@ body::before{
   background-size:60px 60px;
   pointer-events:none;z-index:0;
 }
-
 .screen{display:none;min-height:100vh;flex-direction:column;position:relative;z-index:1;}
 .screen.active{display:flex;}
-
 /* ── HEADER ── */
 .header{
   background:var(--surface);
@@ -87,10 +83,8 @@ body::before{
   padding:5px 10px;letter-spacing:.1em;text-transform:uppercase;
   background:var(--lime-glow);
 }
-
 /* CONTENT */
 .content{flex:1;padding:28px 20px 40px;max-width:640px;margin:0 auto;width:100%;}
-
 /* PAGE HERO */
 .hero{margin-bottom:32px;position:relative;}
 .hero-eyebrow{
@@ -109,7 +103,6 @@ body::before{
 }
 .hero-title .accent{color:var(--lime);}
 .hero-sub{font-size:13px;color:var(--text2);margin-top:12px;font-weight:300;line-height:1.6;}
-
 /* ROLE CARDS */
 .role-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
 .role-card{
@@ -145,7 +138,6 @@ body::before{
 .rc-desc{font-size:12px;color:var(--text2);display:block;margin-top:3px;font-weight:300;}
 .rc-arrow{margin-left:auto;color:var(--surface3);font-size:20px;font-family:var(--mono);transition:color .2s;flex-shrink:0;}
 .role-card:hover .rc-arrow{color:var(--lime);}
-
 /* COMPLIANCE NOTE */
 .compliance{
   border:1px solid var(--surface3);
@@ -156,7 +148,6 @@ body::before{
 }
 .compliance-dot{width:5px;height:5px;background:var(--lime);border-radius:50%;flex-shrink:0;animation:blink 2s ease-in-out infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
-
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:24px;}
 .stat-card{
@@ -170,7 +161,6 @@ body::before{
 .stat-num.green{color:var(--green);}
 .stat-num.amber{color:var(--amber);}
 .stat-lbl{font-size:10px;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;}
-
 /* PROGRESS */
 .prog-block{margin-bottom:24px;}
 .prog-meta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
@@ -180,7 +170,6 @@ body::before{
 .prog-fill{height:100%;background:var(--lime);transition:width .6s cubic-bezier(.4,0,.2,1);position:relative;}
 .prog-fill.complete{background:var(--green);}
 .prog-glow{position:absolute;right:-2px;top:-6px;bottom:-6px;width:8px;background:var(--lime);filter:blur(4px);opacity:.3;}
-
 /* SECTION LABEL */
 .sec-label{
   font-family:var(--mono);font-size:10px;font-weight:500;
@@ -188,7 +177,6 @@ body::before{
   margin-bottom:12px;display:flex;align-items:center;gap:10px;
 }
 .sec-label::after{content:'';flex:1;height:1px;background:#E4E9F0;}
-
 /* TOPIC CARD */
 .topic-card{
   background:var(--surface);
@@ -230,7 +218,6 @@ body::before{
 .topic-loading{padding:48px 18px;text-align:center;color:var(--text2);}
 .spinner{width:24px;height:24px;border:2px solid var(--surface3);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
 /* CREW ROWS */
 .crew-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
 .crew-row{
@@ -255,7 +242,6 @@ body::before{
 .crew-name{font-family:var(--font);font-size:14px;font-weight:600;color:var(--white);display:block;}
 .crew-role-lbl{font-size:11px;color:var(--text2);display:block;font-family:var(--mono);letter-spacing:.03em;}
 .crew-time{font-size:10px;color:var(--green);font-family:var(--mono);display:block;margin-top:1px;letter-spacing:.03em;}
-
 /* BUTTONS */
 .btn-sign{
   background:var(--lime);color:#ffffff;border:none;
@@ -267,7 +253,6 @@ body::before{
 .btn-sign:hover{background:#5C9EFF;}
 .btn-sign:active{transform:scale(.97);}
 .signed-check{display:flex;align-items:center;gap:5px;color:var(--green);font-size:11px;font-weight:500;font-family:var(--mono);flex-shrink:0;letter-spacing:.04em;}
-
 .btn-primary{
   background:var(--lime);color:#ffffff;border:none;
   padding:15px 20px;font-size:13px;font-weight:700;
@@ -277,7 +262,6 @@ body::before{
 }
 .btn-primary:hover{background:#5C9EFF;}
 .btn-primary:active{transform:scale(.99);}
-
 .btn-outline{
   background:transparent;color:var(--text);
   border:1px solid var(--surface3);
@@ -287,9 +271,7 @@ body::before{
   transition:all .15s;width:100%;display:block;text-align:center;
 }
 .btn-outline:hover{border-color:rgba(41,121,255,0.3);color:var(--lime);}
-
 .btn-ghost{background:none;border:none;color:var(--text2);font-size:11px;cursor:pointer;padding:4px 0;font-family:var(--mono);text-decoration:underline;letter-spacing:.04em;}
-
 /* FIELDS */
 .field-lbl{display:block;font-size:10px;font-weight:500;color:var(--text2);margin-bottom:7px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;}
 .field-select{
@@ -304,11 +286,9 @@ body::before{
 }
 .field-select:focus{border-color:rgba(41,121,255,0.3);}
 .field-select option{background:#F0F3F7;}
-
 .check-row{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--surface3);padding:14px;cursor:pointer;}
 .check-row input{width:16px;height:16px;accent-color:var(--lime);margin-top:2px;flex-shrink:0;cursor:pointer;}
 .check-text{font-size:13px;color:var(--text);line-height:1.55;font-weight:300;}
-
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(8,12,16,0.85);backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
@@ -328,7 +308,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--surface3);pointer-events:none;transition:opacity .2s;white-space:nowrap;font-family:var(--mono);}
 .modal-actions{display:flex;gap:10px;margin-top:14px;}
 .modal-actions .btn-primary{flex:1;}
-
 /* EXPORT */
 .export-row{
   background:var(--surface);border:1px solid var(--surface3);
@@ -342,7 +321,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .exp-name{font-family:var(--font);font-size:14px;font-weight:700;display:block;text-transform:uppercase;letter-spacing:.02em;transition:color .15s;}
 .exp-desc{font-size:12px;color:var(--text2);display:block;margin-top:1px;font-weight:300;}
 .exp-chev{margin-left:auto;color:var(--text2);font-family:var(--mono);font-size:14px;}
-
 /* HISTORY */
 .hist-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--surface3);}
 .hist-row:first-child{border-top:1px solid var(--surface3);}
@@ -351,7 +329,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .hist-badge{font-size:11px;font-weight:500;padding:4px 10px;font-family:var(--mono);white-space:nowrap;flex-shrink:0;letter-spacing:.04em;border:1px solid;}
 .hist-badge.full{color:var(--green);border-color:var(--green-border);}
 .hist-badge.partial{color:var(--amber);border-color:rgba(255,179,0,.3);}
-
 /* NAV */
 .bottom-nav{
   background:var(--surface);
@@ -369,7 +346,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .nav-btn .ni{font-size:18px;}
 .nav-btn.active{color:var(--lime);}
 .nav-btn:hover{color:var(--white);}
-
 /* TOAST */
 .toast{
   position:fixed;bottom:80px;left:50%;
@@ -383,7 +359,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
   border:1px solid rgba(41,121,255,0.3);
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
 /* SUCCESS */
 .success-state{text-align:center;padding:48px 20px;}
 .success-icon{
@@ -393,7 +368,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 @keyframes popIn{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
 .success-title{font-family:var(--font);font-size:20px;font-weight:700;letter-spacing:.01em;color:var(--white);margin-bottom:6px;}
 .success-sub{font-size:11px;color:var(--text2);font-family:var(--mono);letter-spacing:.06em;}
-
 /* CONFIRM BANNER */
 .confirm-banner{
   background:var(--green-dim);border:1px solid var(--green-border);
@@ -403,14 +377,12 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .confirm-check{color:var(--green);font-size:20px;}
 .confirm-name{font-family:var(--font);font-size:14px;font-weight:700;color:var(--green);text-transform:uppercase;display:block;letter-spacing:.02em;}
 .confirm-time{font-size:10px;color:var(--text2);font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.04em;}
-
 .divider{height:1px;background:#E4E9F0;margin:24px 0;}
 .mb16{margin-bottom:16px;}
 .mb24{margin-bottom:24px;}
 .mt8{margin-top:8px;}
 .inline-row{display:flex;gap:8px;align-items:stretch;}
 .inline-row .field-select{flex:1;}
-
 /* ── QUIZ ── */
 .quiz-q{margin-bottom:20px;}
 .quiz-q-text{font-family:var(--font);font-size:16px;font-weight:600;color:#0F1923;line-height:1.4;margin-bottom:14px;letter-spacing:-.01em;}
@@ -448,7 +420,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .quiz-pip.done{background:#2979FF;}
 .quiz-pip.correct{background:#00C853;}
 .quiz-loading{padding:32px;text-align:center;color:#7A8FA8;font-family:var(--mono);font-size:12px;letter-spacing:.06em;}
-
 /* ── LEAD SCORECARD ── */
 .scorecard-row{
   background:#FFFFFF;border:1px solid #E4E9F0;
@@ -475,7 +446,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .scorecard-sublabel{font-size:10px;color:#7A8FA8;font-family:var(--mono);letter-spacing:.04em;}
 .scorecard-bar{height:3px;background:#E4E9F0;margin-top:8px;width:100%;}
 .scorecard-bar-fill{height:100%;transition:width .4s ease;}
-
 /* ── REPEAT OFFENDERS ── */
 .offender-row{
   background:#FFFFFF;border:1px solid #E4E9F0;
@@ -500,7 +470,36 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
   font-family:var(--mono);letter-spacing:.03em;
   display:flex;align-items:center;gap:10px;
 }
-
+.empty-state{
+  background:var(--surface);border:1px dashed var(--surface3);
+  padding:20px 16px;text-align:center;
+  font-size:12px;color:var(--text2);
+  font-family:var(--mono);letter-spacing:.04em;
+}
+/* ── EMPLOYEE MANAGEMENT ── */
+.emp-row{
+  background:var(--surface);border:1px solid var(--surface3);
+  padding:12px 14px;margin-bottom:6px;
+  display:flex;align-items:center;gap:12px;
+}
+.emp-row.is-lead{border-left:2px solid var(--lime);}
+.emp-row.is-crew{border-left:2px solid var(--text2);}
+.emp-name{font-family:var(--font);font-size:14px;font-weight:600;color:var(--white);display:block;}
+.emp-role{font-size:10px;color:var(--text2);font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.06em;text-transform:uppercase;}
+.btn-remove{
+  background:transparent;border:1px solid var(--surface3);
+  color:var(--text2);
+  padding:6px 10px;font-size:10px;font-weight:500;
+  cursor:pointer;font-family:var(--mono);
+  letter-spacing:.06em;text-transform:uppercase;
+  transition:all .15s;flex-shrink:0;
+}
+.btn-remove:hover{border-color:var(--red);color:var(--red);}
+.emp-add-form{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.emp-add-form .inline-row{gap:8px;}
+.emp-add-form input.field-select{flex:2;}
+.emp-add-form select.field-select{flex:1;}
+.emp-add-form button{flex-shrink:0;white-space:nowrap;width:auto;padding:12px 18px;}
 /* ── INCIDENT REPORT ── */
 .ir-section{margin-bottom:24px;}
 .ir-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
@@ -518,7 +517,6 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 textarea.field-select{font-family:var(--body);}
 input.field-select{font-family:var(--body);}
 input.field-select::placeholder{color:#B8B6B0;}
-
 .lead-quiz-q-text{font-family:var(--font);font-size:18px;font-weight:700;color:#0F1923;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;}
 .lead-quiz-q-num{font-family:var(--mono);font-size:10px;color:#2979FF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
 .lead-quiz-opts{display:flex;flex-direction:column;gap:6px;}
@@ -547,7 +545,6 @@ input.field-select::placeholder{color:#B8B6B0;}
 .lead-quiz-fb.correct{border-color:#00C853;color:#7DFFC0;}
 .lead-quiz-fb.wrong{border-color:#FF4444;color:#FFB3B3;}
 .lead-quiz-loading{padding:40px;text-align:center;color:#7A8FA8;font-family:var(--mono);font-size:12px;letter-spacing:.06em;}
-
 .quiz-pass-banner{
   background:#0F1923;
   padding:20px;
@@ -560,7 +557,6 @@ input.field-select::placeholder{color:#B8B6B0;}
 </style>
 </head>
 <body>
-
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screen-role">
   <header class="header">
@@ -577,9 +573,7 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="hero">
       <div class="hero-eyebrow">Toolbox Talk System</div>
       <div class="hero-title">Select<br>your role.</div>
-
     </div>
-
     <div class="role-grid">
       <button class="role-card" onclick="enterRole('lead')">
         <div class="rc-num">01</div>
@@ -614,7 +608,6 @@ input.field-select::placeholder{color:#B8B6B0;}
         <span class="rc-arrow" style="color:#FF4444;">→</span>
       </button>
     </div>
-
     <div style="margin-top:16px;">
       <div class="compliance">
         <div class="compliance-dot"></div>
@@ -623,7 +616,6 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
   </div>
 </div>
-
 <!-- ══ JOB LEAD ══ -->
 <div class="screen" id="screen-lead">
   <header class="header">
@@ -634,20 +626,16 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="header-tag">Job Lead</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
-
     <div class="hero" style="margin-bottom:24px;">
       <div class="hero-eyebrow">Wednesday Lead Meeting</div>
       <div class="hero-title" style="font-size:26px;">Knowledge<br>Check.</div>
     </div>
-
     <div class="sec-label">Wednesday Lead Meeting</div>
     <div style="font-size:13px;color:#7A8FA8;font-weight:300;margin-bottom:20px;">Answer the questions below to unlock your sign-off.</div>
-
     <!-- LEAD QUIZ -->
     <div id="leadQuizSection" style="margin-bottom:20px;">
       <div id="leadQuizInner"></div>
     </div>
-
     <!-- LEAD QUIZ PASS -->
     <div id="leadQuizPass" style="display:none; margin-bottom:20px;">
       <div class="quiz-pass-banner">
@@ -658,7 +646,6 @@ input.field-select::placeholder{color:#B8B6B0;}
         </div>
       </div>
     </div>
-
     <div class="sec-label">Your sign-off</div>
     <div id="leadSignSection" class="mb24" style="display:none;">
       <div class="mb16">
@@ -673,7 +660,6 @@ input.field-select::placeholder{color:#B8B6B0;}
       </div>
       <button class="btn-primary" onclick="openLeadSignModal()">Sign off as lead →</button>
     </div>
-
     <div id="leadSigned" style="display:none;" class="mb24">
       <div class="confirm-banner">
         <span class="confirm-check">✓</span>
@@ -683,15 +669,12 @@ input.field-select::placeholder{color:#B8B6B0;}
         </div>
       </div>
     </div>
-
     <div class="divider"></div>
-
     <div class="stats-row">
       <div class="stat-card"><span class="stat-num" id="lead-stat-total">12</span><span class="stat-lbl">Crew</span></div>
       <div class="stat-card"><span class="stat-num green" id="lead-stat-signed">0</span><span class="stat-lbl">Signed</span></div>
       <div class="stat-card"><span class="stat-num amber" id="lead-stat-pending">12</span><span class="stat-lbl">Pending</span></div>
     </div>
-
     <div class="prog-block">
       <div class="prog-meta">
         <span class="prog-lbl">Crew progress</span>
@@ -703,7 +686,6 @@ input.field-select::placeholder{color:#B8B6B0;}
         </div>
       </div>
     </div>
-
     <div class="sec-label">Crew sign-offs</div>
     <div class="crew-list" id="crewSignoffList"></div>
     <button class="btn-outline" onclick="shareLink()">Share sign-off link with crew</button>
@@ -713,7 +695,6 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
   </nav>
 </div>
-
 <!-- ══ CREW ══ -->
 <div class="screen" id="screen-crew">
   <header class="header">
@@ -736,7 +717,6 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div class="sec-label">Knowledge check</div>
       <div id="quizInner"></div>
     </div>
-
     <!-- QUIZ PASS -->
     <div id="crewQuizPass" style="display:none; margin-top:28px;">
       <div class="quiz-pass-banner">
@@ -747,7 +727,6 @@ input.field-select::placeholder{color:#B8B6B0;}
         </div>
       </div>
     </div>
-
     <div class="sec-label" style="margin-top:28px;">Your sign-off</div>
     <div id="crewSignSection" style="display:none;">
       <div class="mb16">
@@ -771,7 +750,6 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
   </div>
 </div>
-
 <!-- ══ ADMIN ══ -->
 <div class="screen" id="screen-admin">
   <header class="header">
@@ -786,23 +764,19 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div class="hero-eyebrow">Safety Lead</div>
       <div class="hero-title" style="font-size:26px;">Safety<br>Records.</div>
     </div>
-
     <div class="stats-row">
-      <div class="stat-card"><span class="stat-num">12</span><span class="stat-lbl">Weeks</span></div>
-      <div class="stat-card"><span class="stat-num green" id="admin-leads-signed">0/8</span><span class="stat-lbl">Leads</span></div>
-      <div class="stat-card"><span class="stat-num amber" id="admin-crew-signed">0/12</span><span class="stat-lbl">Crew</span></div>
+      <div class="stat-card"><span class="stat-num" id="admin-weeks">1</span><span class="stat-lbl">Weeks</span></div>
+      <div class="stat-card"><span class="stat-num green" id="admin-leads-signed">0/0</span><span class="stat-lbl">Leads</span></div>
+      <div class="stat-card"><span class="stat-num amber" id="admin-crew-signed">0/0</span><span class="stat-lbl">Crew</span></div>
     </div>
-
     <!-- LEAD SCORECARDS -->
     <div class="divider"></div>
-    <div class="sec-label">Lead scorecard — this week</div>
+    <div class="sec-label">Lead status — this week</div>
     <div id="leadScorecard"></div>
-
-    <!-- REPEAT OFFENDERS -->
+    <!-- PENDING THIS WEEK -->
     <div class="divider"></div>
-    <div class="sec-label">Needs attention</div>
+    <div class="sec-label">Pending this week</div>
     <div id="repeatOffenders"></div>
-
     <div class="divider"></div>
     <div class="sec-label">Export</div>
     <button class="export-row" onclick="exportReport()">
@@ -820,11 +794,26 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div><span class="exp-name">OSHA 300 log</span><span class="exp-desc">Pre-formatted for OSHA recordkeeping</span></div>
       <span class="exp-chev">→</span>
     </button>
-
     <div class="divider"></div>
     <div class="sec-label">Weekly history</div>
     <div id="weekHistory"></div>
-
+    <!-- ── EMPLOYEES ── -->
+    <div class="divider"></div>
+    <div class="sec-label">Employees</div>
+    <div style="font-size:13px;color:var(--text2);font-weight:300;margin-bottom:14px;">Add or remove leads and crew. Changes are saved automatically and apply to all sign-off lists.</div>
+    <div class="emp-add-form" style="margin-bottom:18px;">
+      <label class="field-lbl">Add new employee</label>
+      <div class="inline-row">
+        <input type="text" class="field-select" id="emp-new-name" placeholder="Full name (e.g. Jane Doe)">
+        <select class="field-select" id="emp-new-role">
+          <option value="lead">Job Lead</option>
+          <option value="crew" selected>Crew</option>
+        </select>
+        <button class="btn-primary" onclick="addEmployee()">Add</button>
+      </div>
+    </div>
+    <div id="empListLeads"></div>
+    <div id="empListCrew"></div>
     <div class="divider"></div>
     <div class="sec-label">Generate topic</div>
     <div class="inline-row mt8">
@@ -848,7 +837,6 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
   </nav>
 </div>
-
 <!-- ══ INCIDENT REPORT ══ -->
 <div class="screen" id="screen-incident">
   <header class="header">
@@ -859,12 +847,10 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="header-tag" style="color:#FF4444;border-color:rgba(255,68,68,0.4);">Incident</div>
   </header>
   <div class="content" style="padding-bottom:40px;">
-
     <div class="hero" style="margin-bottom:24px;">
       <div class="hero-eyebrow" style="color:#FF4444;">Incident Report</div>
       <div class="hero-title" style="font-size:26px;">File a<br>Report.</div>
     </div>
-
     <!-- Submitted state -->
     <div id="incidentSubmitted" style="display:none;">
       <div class="success-state">
@@ -874,9 +860,7 @@ input.field-select::placeholder{color:#B8B6B0;}
       </div>
       <button class="btn-outline" style="margin-top:16px;" onclick="goHome()">Back to home</button>
     </div>
-
     <div id="incidentForm">
-
       <!-- Type -->
       <div class="ir-section">
         <div class="sec-label">Type of report</div>
@@ -895,7 +879,6 @@ input.field-select::placeholder{color:#B8B6B0;}
           </button>
         </div>
       </div>
-
       <!-- Who -->
       <div class="ir-section">
         <div class="sec-label">Person involved</div>
@@ -912,7 +895,6 @@ input.field-select::placeholder{color:#B8B6B0;}
           </select>
         </div>
       </div>
-
       <!-- When & Where -->
       <div class="ir-section">
         <div class="sec-label">When &amp; where</div>
@@ -925,7 +907,6 @@ input.field-select::placeholder{color:#B8B6B0;}
           <input type="text" class="field-select" id="ir-location" placeholder="e.g. 1234 Main St, Site B">
         </div>
       </div>
-
       <!-- Injury specifics (shown for injury type) -->
       <div class="ir-section" id="ir-injury-fields">
         <div class="sec-label">Injury details</div>
@@ -973,7 +954,6 @@ input.field-select::placeholder{color:#B8B6B0;}
           </select>
         </div>
       </div>
-
       <!-- What happened -->
       <div class="ir-section">
         <div class="sec-label">What happened</div>
@@ -997,7 +977,6 @@ input.field-select::placeholder{color:#B8B6B0;}
           </select>
         </div>
       </div>
-
       <!-- Witnesses -->
       <div class="ir-section">
         <div class="sec-label">Witnesses <span style="color:#7A8FA8;font-weight:400;">(optional)</span></div>
@@ -1005,7 +984,6 @@ input.field-select::placeholder{color:#B8B6B0;}
           <input type="text" class="field-select" id="ir-witnesses" placeholder="Names of anyone who saw what happened">
         </div>
       </div>
-
       <!-- Reporter -->
       <div class="ir-section">
         <div class="sec-label">Filed by</div>
@@ -1015,18 +993,14 @@ input.field-select::placeholder{color:#B8B6B0;}
           </select>
         </div>
       </div>
-
       <div style="background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-left:3px solid #FF4444;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#CC3333;font-weight:300;line-height:1.6;">
         This report is submitted immediately to the Safety Lead and retained in OSHA records. Workers comp provider notification is handled separately by the Safety Lead.
       </div>
-
       <button class="btn-primary" style="background:#FF4444;" onclick="submitIncident()">Submit report →</button>
       <button class="btn-outline" style="margin-top:10px;width:100%;" onclick="goHome()">Cancel</button>
-
     </div>
   </div>
 </div>
-
 <!-- SIG MODAL -->
 <div class="modal-overlay" id="sigModal">
   <div class="modal">
@@ -1044,12 +1018,35 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-const TOPIC_BANK = [
+// ── EMPLOYEES (mutable, localStorage-backed) ──
+const DEFAULT_LEADS=[
+  {name:"Daegan Smith"},{name:"Keegan Wilkinson"},{name:"Braden Davis"},
+  {name:"Gage Lund"},{name:"Abraham Tristan"},{name:"Treycen Rollene"},
+  {name:"Louis Hoffman"},{name:"Jonathan Harding"},
+];
+const DEFAULT_CREW=[
+  {name:"Payton Bolda"},{name:"Callen Jakeman"},{name:"Noah Davis"},
+  {name:"Coleman Christen"},{name:"Asher Miller"},{name:"Braxton Raven"},
+  {name:"Bailey Smith"},{name:"Jacob Nuffer"},{name:"Austin Schut"},
+  {name:"Jacob Spackman"},{name:"Isaiah Miller"},{name:"Jacob Bingham"},
+];
+function loadEmployeeList(key,def){
+  try{const v=localStorage.getItem(key);if(v){const p=JSON.parse(v);if(Array.isArray(p))return p;}}catch(e){}
+  return def.map(p=>({...p}));
+}
+function saveEmployeeLists(){
+  try{
+    localStorage.setItem('hes_leads_v1',JSON.stringify(LEADS));
+    localStorage.setItem('hes_crew_v1',JSON.stringify(CREW));
+  }catch(e){}
+}
+let LEADS=loadEmployeeList('hes_leads_v1',DEFAULT_LEADS);
+let CREW=loadEmployeeList('hes_crew_v1',DEFAULT_CREW);
 
+// ── TOPIC BANK ──
+const TOPIC_BANK = [
   {week:1,title:"FALL PROTECTION FUNDAMENTALS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Falls are the <strong>number one killer</strong> in construction, accounting for over one-third of all fatalities every year. OSHA requires fall protection any time you are working 6 feet or more above a lower level — no exceptions.</p><p>Every worker at height must use a <strong>personal fall arrest system (PFAS)</strong>: a full-body harness, a connecting lanyard, and an anchor point rated for at least 5,000 lbs per attached worker.</p><ul><li>Inspect your harness before every single use — check for fraying, cuts, broken buckles, corroded hardware</li><li>Tie off only to rated anchor points — never to guardrails, conduit, or unrated structure</li><li>Keep your lanyard short enough that a fall won't result in contact with a lower level</li><li>Never remove fall protection, even briefly, without your lead's authorization</li><li>Report any equipment that has arrested a fall — it must be taken out of service immediately</li></ul><p>A fall from 15 feet takes less than one second. Your equipment must be right <strong>before</strong> you step out there.</p>",questions:[{q:"At what height does OSHA require fall protection on construction sites?",options:["4 feet","6 feet","8 feet","10 feet"],correct:1,explain:"OSHA 1926.502 requires fall protection at 6 feet or more above a lower level on construction sites."},{q:"What is the minimum load rating for a fall arrest anchor point?",options:["1,000 lbs","2,500 lbs","5,000 lbs per attached worker","3,000 lbs"],correct:2,explain:"Anchor points must be capable of supporting at least 5,000 lbs per attached worker."},{q:"What should you do with a harness that has arrested a fall?",options:["Inspect it and reuse if it looks okay","Return it to the tool crib","Take it out of service immediately","Have your lead inspect it before reuse"],correct:2,explain:"Any harness that has arrested a fall must be immediately removed from service — internal damage may not be visible."}]},
   {week:2,title:"LOCKOUT/TAGOUT PROCEDURES",oshaRef:"OSHA 29 CFR 1926.417",content:"<p>Lockout/Tagout (LOTO) ensures dangerous machines and electrical systems are <strong>properly shut off and cannot be re-energized</strong> before maintenance begins. Failure to follow LOTO is one of the most cited OSHA violations in construction.</p><p>Before working on any electrical panel or equipment — even for a quick fix — you must de-energize it, lock it out, and verify it is dead. Every worker on the job must apply their own personal lock. One lock per person.</p><ul><li>Notify all affected employees before shutting down equipment</li><li>Identify ALL energy sources — electrical, pneumatic, hydraulic, gravity, and stored spring energy</li><li>Apply your personal lock and tag to every energy source</li><li>Release all stored energy — bleed lines, block elevated parts, discharge capacitors</li><li>Verify the equipment is de-energized by attempting to start it before beginning work</li></ul><p>If you see someone else's lock on a panel and you don't know why — <strong>do not remove it</strong>. That lock may be the only thing keeping someone alive.</p>",questions:[{q:"Who should apply a lock during a lockout/tagout procedure?",options:["Only the lead on site","Only the person who shut down the equipment","Every worker exposed to the hazardous energy","One designated safety person"],correct:2,explain:"Each worker exposed to the hazard must apply their own personal lock — never rely on someone else's lock for your protection."},{q:"After locking out a system, what must you do before starting work?",options:["Check with your lead","Verify the equipment is de-energized by attempting to start it","Wait 5 minutes","Check the breaker position"],correct:1,explain:"You must verify de-energization by attempting to operate the equipment after applying your lock."},{q:"You find an unknown lock on a panel. What do you do?",options:["Remove it carefully","Call the power company","Do not remove it — find out who it belongs to","Use a bolt cutter if no one is around"],correct:2,explain:"Never remove an unknown lock. That lock may be protecting a worker's life. Find the owner before taking any action."}]},
   {week:3,title:"PPE SELECTION AND INSPECTION",oshaRef:"OSHA 29 CFR 1926.95",content:"<p>Personal Protective Equipment is your last line of defense — it doesn't eliminate hazards, it protects you when other controls fail. <strong>You are responsible for inspecting your PPE before every use.</strong></p><ul><li>Inspect hard hats for cracks, dents, and brittle plastic — replace after any impact</li><li>Check safety glasses for scratches, cracks, or missing side shields</li><li>Inspect gloves for cuts, holes, or worn areas before putting them on</li><li>Safety-toed boots must meet ASTM standards — check for separation and worn soles</li><li>High-vis vests must be clean and visible</li></ul><p>PPE is provided at no cost to you. If your equipment is damaged or worn out, report it to your lead and get a replacement. There is no acceptable reason to work with defective PPE.</p>",questions:[{q:"When should you inspect your PPE?",options:["Once a week","Only when it looks damaged","Before every use","Monthly"],correct:2,explain:"PPE must be inspected before every use — damage can occur between uses and may not be obvious until you look closely."},{q:"Your hard hat took a direct impact but looks undamaged. What do you do?",options:["Keep using it — it looks fine","Replace it immediately","Have your lead inspect it","Sand the impact point and reuse"],correct:1,explain:"A hard hat that has absorbed an impact must be replaced immediately — internal structure may be compromised even without visible damage."},{q:"Who pays for replacement PPE if yours is damaged on the job?",options:["You pay for it","The cost is split with your employer","Your employer provides it at no cost","Workers comp covers it"],correct:2,explain:"OSHA requires employers to provide required PPE at no cost to workers."}]},
@@ -1077,7 +1074,7 @@ const TOPIC_BANK = [
   {week:24,title:"EXTENSION CORD SAFETY",oshaRef:"OSHA 29 CFR 1926.405",content:"<p>Extension cords are responsible for a disproportionate number of electrical fires and electrocutions. <strong>Extension cords are for temporary use — they are not a permanent wiring solution.</strong></p><ul><li>Match the cord gauge to the tool's amperage draw — heavier tools need heavier cords (lower AWG number)</li><li>Never use indoor-rated cords outdoors</li><li>Inspect cords before every use — damaged insulation and missing ground prongs are immediate hazards</li><li>Never remove the ground prong from a three-prong cord</li><li>Fully uncoil extension cords before use under load — a coiled cord generates heat that can melt insulation</li></ul><p>If a cord feels warm or hot during use — stop using it. Heat means the cord is overloaded or has a problem.</p>",questions:[{q:"Why must extension cords be fully uncoiled before use under load?",options:["Coiled cords are a tripping hazard","Coiled cords under load generate heat that can melt insulation","It reduces voltage drop","OSHA requires fully uncoiled cords"],correct:1,explain:"A coiled extension cord under electrical load generates significant heat that can melt the insulation and create a fire hazard."},{q:"The ground prong on an extension cord is bent. What should you do?",options:["Bend it back into place","Remove it — two-prong works fine","Take it out of service immediately","Only use it with tools that don't require grounding"],correct:2,explain:"A bent or missing ground prong means the cord cannot provide grounding protection. Remove it from service immediately."},{q:"An extension cord feels warm during normal use. What does this indicate?",options:["Normal operation — cords warm up","The cord is overloaded or has a fault — stop using it","The ambient temperature is too high","The tool is drawing more power, which is fine"],correct:1,explain:"Warmth in an extension cord indicates it may be overloaded or have an internal fault. Stop using it immediately."}]},
   {week:25,title:"WORKING NEAR OVERHEAD POWER LINES",oshaRef:"OSHA 29 CFR 1926.1408",content:"<p>Contact with overhead power lines is one of the leading causes of electrocution deaths in construction. Power lines are NOT insulated — that coating is weatherproofing only. <strong>Any contact with an energized overhead line is potentially fatal.</strong> OSHA requires a minimum approach distance of 10 feet for lines up to 50kV.</p><ul><li>Identify all overhead power lines before beginning any work nearby</li><li>Assume all power lines are energized until the utility company confirms otherwise in writing</li><li>Maintain at least 10 feet of clearance from all overhead lines</li><li>Use a spotter when operating equipment near overhead lines</li><li>If equipment contacts a power line — stay in the cab, call 911, wait for utility to de-energize</li></ul>",questions:[{q:"What is the minimum approach distance from overhead power lines?",options:["3 feet","6 feet","10 feet","25 feet"],correct:2,explain:"OSHA requires a minimum clearance of 10 feet from all overhead power lines up to 50kV for workers, tools, equipment, and materials."},{q:"Your equipment contacts an overhead power line. You are in the cab. What do you do?",options:["Jump out immediately","Stay in the cab, call 911, wait for the utility to de-energize the line","Try to back the equipment away","Call your lead first"],correct:1,explain:"Stay in the cab — the equipment provides protection. Call 911 and wait for the utility company to de-energize the line."},{q:"The coating on overhead power lines is electrical insulation. True or false?",options:["True — overhead lines are insulated","True for distribution lines only","False — the coating is weatherproofing, not insulation","True if the lines are less than 15kV"],correct:2,explain:"The coating on overhead power lines is weatherproofing — NOT electrical insulation. Treat all overhead lines as bare, energized conductors."}]},
   {week:26,title:"PERSONAL FALL ARREST SYSTEM INSPECTION",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Your PFAS is only as good as the condition it's in when you need it. A harness exposed to chemicals or UV damage <strong>may appear fine but fail catastrophically under load.</strong> The harness, connecting device, and anchor must all be inspected independently.</p><ul><li>Harness webbing: look for cuts, tears, fraying, abrasion, heat or chemical damage, and discoloration</li><li>Hardware: check all D-rings, buckles, and snaps for cracks, distortion, and corrosion</li><li>Energy absorber: inspect for tears, damage, or signs that it has been deployed</li><li>Self-retracting lifelines: test the locking mechanism by giving a sharp tug</li><li>Lanyards: inspect for cuts, fraying, and damaged snap hooks at both ends</li></ul>",questions:[{q:"A harness shows no visible damage but was stored in a hot vehicle for months. Is it safe to use?",options:["Yes — if there's no visible damage it's fine","Possibly — inspect carefully for UV and heat degradation before use","No — any heat or UV exposure means immediate replacement","Yes if it has not arrested a fall"],correct:1,explain:"Heat and UV exposure can degrade harness webbing even without visible damage. Inspect carefully for discoloration, stiffness, and brittleness."},{q:"What should you check on a snaphook during inspection?",options:["Only check the locking gate","Check for cracks, distortion, corrosion, and that the gate locks positively","Only visual inspection is needed","Check only the load-bearing end"],correct:1,explain:"Snaphooks must be inspected for cracks, distortion, corrosion, and proper gate function. The gate must lock positively."},{q:"If a self-retracting lifeline does not lock when you give it a sharp tug, what should you do?",options:["Use it carefully for low-height work only","Test it again — one failure could be a fluke","Take it out of service immediately","Have your lead test it before deciding"],correct:2,explain:"An SRL that fails to lock on a sharp tug must be immediately removed from service. A failed SRL will not stop a fall."}]},
-{week:27,title:"GUARDRAIL AND SAFETY NET SYSTEMS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Guardrail systems and safety nets are passive fall protection — they protect workers without requiring any action by the worker. The top rail must withstand <strong>200 pounds of force</strong> applied in any downward or outward direction.</p><ul><li>Top rail must be 42 inches high (plus or minus 3 inches) from the walking/working surface</li><li>Mid-rails must be installed halfway between the top rail and the walking surface</li><li>Toe boards are required to prevent tools and materials from falling onto workers below</li><li>Guardrail openings must be protected with self-closing gates or chains</li><li>Inspect guardrails daily — look for missing sections, damaged components, and loose connections</li></ul><p>If you see a guardrail section missing or damaged — report it immediately and barricade the area.</p>",questions:[{q:"What is the required height of the top rail in a guardrail system?",options:["36 inches","48 inches","42 inches plus or minus 3 inches","40 inches minimum"],correct:2,explain:"The top rail must be 42 inches high, plus or minus 3 inches, measured from the walking/working surface."},{q:"How much force must a guardrail top rail withstand?",options:["100 pounds","150 pounds","200 pounds in any downward or outward direction","500 pounds"],correct:2,explain:"OSHA requires the top rail to withstand at least 200 pounds of force applied in any downward or outward direction at any point."},{q:"A guardrail section is missing at a material delivery point. What is required?",options:["Leave it open but mark the edge","Barricade the area and report it — alternative protection is required","Put up a warning sign","It's acceptable if material deliveries are brief"],correct:1,explain:"Any missing guardrail section creates an open edge hazard. The area must be immediately barricaded and alternative fall protection put in place."}]},
+  {week:27,title:"GUARDRAIL AND SAFETY NET SYSTEMS",oshaRef:"OSHA 29 CFR 1926.502",content:"<p>Guardrail systems and safety nets are passive fall protection — they protect workers without requiring any action by the worker. The top rail must withstand <strong>200 pounds of force</strong> applied in any downward or outward direction.</p><ul><li>Top rail must be 42 inches high (plus or minus 3 inches) from the walking/working surface</li><li>Mid-rails must be installed halfway between the top rail and the walking surface</li><li>Toe boards are required to prevent tools and materials from falling onto workers below</li><li>Guardrail openings must be protected with self-closing gates or chains</li><li>Inspect guardrails daily — look for missing sections, damaged components, and loose connections</li></ul><p>If you see a guardrail section missing or damaged — report it immediately and barricade the area.</p>",questions:[{q:"What is the required height of the top rail in a guardrail system?",options:["36 inches","48 inches","42 inches plus or minus 3 inches","40 inches minimum"],correct:2,explain:"The top rail must be 42 inches high, plus or minus 3 inches, measured from the walking/working surface."},{q:"How much force must a guardrail top rail withstand?",options:["100 pounds","150 pounds","200 pounds in any downward or outward direction","500 pounds"],correct:2,explain:"OSHA requires the top rail to withstand at least 200 pounds of force applied in any downward or outward direction at any point."},{q:"A guardrail section is missing at a material delivery point. What is required?",options:["Leave it open but mark the edge","Barricade the area and report it — alternative protection is required","Put up a warning sign","It's acceptable if material deliveries are brief"],correct:1,explain:"Any missing guardrail section creates an open edge hazard. The area must be immediately barricaded and alternative fall protection put in place."}]},
   {week:28,title:"GENERATOR AND TEMPORARY POWER SAFETY",oshaRef:"OSHA 29 CFR 1926.405",content:"<p>Generators and temporary power systems are the backbone of construction site electrical supply — and they are also a significant source of electrocution, fire, and carbon monoxide fatalities when misused. <strong>A generator running in an enclosed or semi-enclosed space can kill in minutes.</strong> CO is colorless, odorless, and gives no warning before it incapacitates you.</p><p>Temporary power systems must be treated with the same respect as permanent electrical systems. The fact that they are temporary does not reduce the voltage, the fault current, or the hazard.</p><ul><li>Never operate a generator indoors, in a garage, or near any opening that leads inside — CO accumulates rapidly</li><li>Keep generators at least 20 feet from windows, doors, and vents</li><li>All generator outputs must be GFCI-protected — connect through GFCI outlets or cord sets</li><li>Bond and ground the generator frame before connecting any loads</li><li>Never backfeed a generator into a building's electrical system — it can energize lines that utility workers believe are de-energized and kill them</li><li>Fuel generators only when cool — spilling fuel on a hot engine creates an immediate fire hazard</li></ul><p>If a generator trips its breaker repeatedly — don't reset and ignore it. That breaker is protecting you from a real fault. Find the cause before restoring power.</p>",questions:[{q:"Why must generators never be operated indoors or near building openings?",options:["They are a fire hazard only","They produce carbon monoxide which accumulates and can kill rapidly","They create too much electrical noise","OSHA only restricts them in confined spaces"],correct:1,explain:"Generators produce carbon monoxide — a colorless, odorless gas that can reach lethal concentrations indoors in minutes. Always operate generators at least 20 feet from any building opening."},{q:"What must be done before connecting loads to a generator?",options:["Run it for 10 minutes to warm up","Check the fuel level","Bond and ground the generator frame","Get lead approval"],correct:2,explain:"The generator frame must be bonded and grounded before connecting any electrical loads. This provides a path for fault current and protects against shock hazards."},{q:"A generator keeps tripping its breaker. What should you do?",options:["Reset it — breakers sometimes trip for no reason","Reset it and reduce the load","Find the cause of the fault before restoring power","Bypass the breaker temporarily"],correct:2,explain:"A repeatedly tripping breaker is detecting a real fault. Find and fix the cause before resetting — the breaker is protecting you from an electrical hazard."}]},
   {week:29,title:"ARC FLASH BOUNDARIES AND APPROACH DISTANCES",oshaRef:"OSHA 29 CFR 1926.403",content:"<p>Arc flash boundaries define how close you can get to energized electrical equipment before the risk of injury from an arc flash event becomes unacceptable. These boundaries are calculated based on the incident energy that equipment can release — and they must be respected every single time you work near energized equipment. <strong>The arc flash boundary is not a suggestion — it is the line between a safe distance and a potentially fatal one.</strong></p><p>There are four key boundaries: the Arc Flash Boundary (where exposure causes a second-degree burn without PPE), the Limited Approach Boundary, the Restricted Approach Boundary, and the Prohibited Approach Boundary. Each requires different levels of PPE and training to cross.</p><ul><li>Check the arc flash label on every panel before opening it — it lists the incident energy level, required PPE, and boundary distances specific to that equipment</li><li>If there is no arc flash label, treat the equipment as the highest hazard category until it is properly evaluated</li><li>Do not cross the Limited Approach Boundary unless you are a qualified person — unqualified persons must stay outside it</li><li>Do not cross the Restricted Approach Boundary without energized electrical work PPE and a permit</li><li>Arc flash PPE must match the calculated incident energy — using 8-cal gear on a 40-cal system is not protection</li><li>Boundaries change based on the system voltage and available fault current — never assume last week's distances apply to a different panel</li></ul><p>The arc flash label is your first line of defense. Read it before you touch anything. If it's missing or unreadable, stop and get the equipment evaluated before proceeding.</p>",questions:[{q:"What information does an arc flash label on a panel provide?",options:["Only the panel voltage","The incident energy level, required PPE, and boundary distances for that specific equipment","The date of the last inspection","The panel's maximum amperage"],correct:1,explain:"Arc flash labels provide equipment-specific information: the calculated incident energy level, the PPE category required, and the arc flash boundary distance. Read it before touching anything."},{q:"There is no arc flash label on a panel you need to open. What do you do?",options:["Open it carefully since it's probably low voltage","Treat it as the highest hazard category until it is properly evaluated","Use standard PPE and proceed","Ask a coworker if they know the rating"],correct:1,explain:"A missing or unreadable arc flash label means the hazard level is unknown. Treat it as the highest hazard category and get it properly evaluated before proceeding."},{q:"Can you use 8-cal arc flash PPE on a panel rated at 40 cal/cm²?",options:["Yes — any arc flash PPE is better than none","Yes if you work quickly","No — PPE must match or exceed the calculated incident energy level","Only for brief tasks under 30 seconds"],correct:2,explain:"Arc flash PPE must be rated at or above the calculated incident energy level of the equipment. Using under-rated PPE provides inadequate protection and creates a false sense of safety."}]},
   {week:30,title:"WORKING SAFELY IN OCCUPIED BUILDINGS",oshaRef:"OSHA 29 CFR 1926.416",content:"<p>Electrical work in occupied buildings — schools, hospitals, offices, retail spaces — introduces hazards that don't exist on ground-up construction sites. People who have no safety training are moving through your work area. Dust, noise, and debris that are normal on a construction site become serious problems when they reach occupied spaces. And electrical systems that must remain partially energized while you work nearby require more caution, not less. <strong>Your professionalism in an occupied building protects the public and protects Homestead Electric.</strong></p><p>Coordination is everything in occupied buildings. Shutdowns must be scheduled, communicated, and completed on time. A school that loses power because an electrician ran long has a very different relationship with Homestead Electric after that job.</p><ul><li>Always identify and communicate with the building's facilities contact before beginning work that may affect occupants</li><li>Barricade and secure your work area so that occupants — especially children — cannot enter</li><li>Cover all floor penetrations and openings at the end of every shift, even temporarily</li><li>Coordinate all power shutdowns in advance — unannounced outages in occupied buildings are unacceptable</li><li>Clean up daily — occupied building standards are higher than ground-up construction sites</li><li>Treat all existing electrical systems as energized until verified otherwise — occupied buildings often have unlabeled or incorrectly labeled circuits</li><li>Keep noise and dust to minimum during occupied hours — use barriers, schedule loud or dusty work for unoccupied times</li></ul><p>In a hospital or care facility, an unplanned power disruption can directly endanger patients on life-sustaining equipment. Treat every shutdown in a healthcare setting as a life-safety event.</p>",questions:[{q:"Before beginning work that may affect occupants in an occupied building, what must you do first?",options:["Begin work and notify them if issues arise","Identify and communicate with the building's facilities contact","Check with your lead only","Post a warning sign at the entrance"],correct:1,explain:"Always coordinate with the building's facilities contact before any work that may affect occupants. Unannounced disruptions are unprofessional and can create serious problems."},{q:"Why must existing electrical circuits in occupied buildings be treated as energized until verified?",options:["Occupied buildings have higher voltage systems","Circuits are often unlabeled or incorrectly labeled in occupied buildings","Building owners require it","OSHA requires it for all buildings over 5 years old"],correct:1,explain:"Occupied buildings frequently have unlabeled, mislabeled, or incorrectly wired circuits that have been modified over the years. Never assume a circuit is de-energized based on labels alone — always verify."},{q:"At the end of every shift in an occupied building, what must be done with all floor penetrations and openings?",options:["Mark them with tape","Leave them if work continues the next day","Cover and secure them — every shift, every time","Only cover them if the building will be occupied overnight"],correct:2,explain:"All floor penetrations and openings must be covered and secured at the end of every shift in an occupied building — not just when work is complete. Occupants, especially children, can fall into unprotected openings."}]},
@@ -1104,24 +1101,12 @@ const TOPIC_BANK = [
   {week:51,title:"NEW EMPLOYEE JOBSITE ORIENTATION",oshaRef:"OSHA 29 CFR 1926.21",content:"<p>New employees — including experienced workers starting at a new company or job site — are at dramatically higher risk of injury in their first days and weeks. <strong>A 20-year veteran on their first day at a new site is at elevated risk.</strong> Generic safety training is not sufficient — workers must be trained on the specific conditions and hazards of the site where they work.</p><ul><li>Review site layout — entry and exit points, material staging areas, traffic patterns, and no-go zones</li><li>Identify the location of first aid kits, fire extinguishers, eyewash stations, and emergency exits</li><li>Receive a briefing on site-specific hazards — active excavations, overhead work, restricted areas</li><li>Review the Emergency Action Plan — evacuation routes and assembly points</li><li>Ask questions about anything you're unsure of — there are no stupid questions about safety</li></ul>",questions:[{q:"Why do experienced workers still need site-specific orientation at every new job site?",options:["OSHA requires it for paperwork purposes","Experience from other sites doesn't prepare workers for site-specific hazards, layouts, and procedures","Only workers new to the trade need orientation","Experienced workers only need a shortened orientation"],correct:1,explain:"Every job site has unique hazards, layouts, and procedures. Experience at other sites doesn't provide the site-specific knowledge needed to work safely."},{q:"What should you do if you start a new site and no orientation is provided?",options:["Begin work — orientation is optional for experienced workers","Ask a coworker to show you around informally","Ask your lead for a proper orientation — you have the right to know your site's hazards","Wait — orientation will happen eventually"],correct:2,explain:"Every worker has the right to be informed about the hazards of their work environment before beginning work. If orientation is not provided, ask your lead."},{q:"During orientation, what is the most important question to ask if you are unsure about something?",options:["How long until I'm fully trained","What are the overtime rules","Ask whatever you need to — there are no stupid questions about safety","How does this compare to your last job site"],correct:2,explain:"There are no stupid questions about safety. Asking about something you're unsure of is the professional and correct response."}]},
   {week:52,title:"ANNUAL SAFETY PROGRAM REVIEW",oshaRef:"OSHA 29 CFR 1926.20",content:"<p>We've completed a full year of weekly toolbox talks covering the most important safety topics for electrical construction workers. Homestead Electric's safety program exists for one reason: <strong>to make sure everyone goes home at the end of every shift.</strong></p><ul><li>Review the incidents and near-misses from the past year — what patterns do you see?</li><li>Identify any gaps in training — are there specific hazards on your work that weren't covered?</li><li>Review your incident reporting records — are you capturing near-misses as well as injuries?</li><li>Discuss what's working — which safety practices have become second nature?</li><li>Discuss what still needs work — honest conversation about gaps is what makes programs improve</li><li>Look ahead — what new projects, new equipment, or new hazards will require additional training next year?</li></ul><p>Safety is not a compliance exercise. It is a commitment that every person on this crew makes to every other person on this crew.</p>",questions:[{q:"What is the primary purpose of Homestead Electric's safety program?",options:["To satisfy OSHA inspection requirements","To reduce workers comp costs","To ensure everyone goes home at the end of every shift","To meet general contractor requirements"],correct:2,explain:"The primary purpose is simple: everyone goes home safely. OSHA compliance and documentation are the byproducts of a real safety culture."},{q:"Why should near-miss incidents be reported even when no one was hurt?",options:["OSHA requires near-miss reporting","Near-misses reveal hazards that will eventually cause an injury if not corrected","Only to satisfy paperwork requirements","So workers can be disciplined if at fault"],correct:1,explain:"Near-misses reveal real hazards that will eventually cause a real injury if not corrected. Reporting near-misses is how safety programs prevent injuries before they happen."},{q:"What makes a safety program genuinely effective rather than just compliant?",options:["Having the most detailed written program","Conducting more inspections than required","Building a culture where workers genuinely look out for each other — not just documentation","Having the most safety signs posted on site"],correct:2,explain:"A genuinely effective safety program is built on culture: workers who look out for each other, speak up about hazards, and take safety personally."}]}
 ];
-
-const LEADS=[
-  {name:"Daegan Smith"},{name:"Keegan Wilkinson"},{name:"Braden Davis"},
-  {name:"Gage Lund"},{name:"Abraham Tristan"},{name:"Treycen Rollene"},
-  {name:"Louis Hoffman"},{name:"Jonathan Harding"},
-];
-const CREW=[
-  {name:"Payton Bolda"},{name:"Callen Jakeman"},{name:"Noah Davis"},
-  {name:"Coleman Christen"},{name:"Asher Miller"},{name:"Braxton Raven"},
-  {name:"Bailey Smith"},{name:"Jacob Nuffer"},{name:"Austin Schut"},
-  {name:"Jacob Spackman"},{name:"Isaiah Miller"},{name:"Jacob Bingham"},
-];
 const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
 function wkLabel(){const d=new Date(),s=new Date(d);s.setDate(d.getDate()-d.getDay());return`Week of ${s.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;}
 function wkId(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return`${d.getFullYear()}-W${Math.ceil(((d-j)/86400000+j.getDay()+1)/7)}`;}
-const S={signoffs:{},leadSignoffs:{},topic:null,quiz:null,role:null,signing:null,signingType:null,loc:null,weekLabel:wkLabel(),weekId:wkId()};
-try{const sv=localStorage.getItem('hes_safety_v3');if(sv){const p=JSON.parse(sv);if(p.weekId===S.weekId){S.signoffs=p.signoffs||{};S.leadSignoffs=p.leadSignoffs||{};S.topic=p.topic||null;S.quiz=p.quiz||null;}}}catch(e){}
-function save(){try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz}));}catch(e){}}
+const S={signoffs:{},leadSignoffs:{},topic:null,quiz:null,role:null,signing:null,signingType:null,loc:null,weekLabel:wkLabel(),weekId:wkId(),history:[]};
+try{const sv=localStorage.getItem('hes_safety_v3');if(sv){const p=JSON.parse(sv);if(p.weekId===S.weekId){S.signoffs=p.signoffs||{};S.leadSignoffs=p.leadSignoffs||{};S.topic=p.topic||null;S.quiz=p.quiz||null;}else if(p.weekId&&p.weekId!==S.weekId){/* archive previous week */S.history=p.history||[];S.history.unshift({weekId:p.weekId,weekLabel:p.weekLabel||p.weekId,topic:p.topic?.title||'—',signoffs:p.signoffs||{},leadSignoffs:p.leadSignoffs||{}});if(S.history.length>52)S.history=S.history.slice(0,52);}else if(p.history){S.history=p.history;}}}catch(e){}
+function save(){try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,weekLabel:S.weekLabel,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz,history:S.history}));}catch(e){}}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 function goHome(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-role').classList.add('active');}
 function getLoc(){navigator.geolocation?.getCurrentPosition(p=>{S.loc={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};},()=>{S.loc={lat:'N/A',lng:'N/A'};});}
@@ -1144,14 +1129,12 @@ function renderTopic(){
 function renderLead(){
   renderTopic();
   const sel=document.getElementById('leadNameSelect');
-  if(sel&&sel.options.length===1){LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;sel.appendChild(o);});}
+  if(sel){sel.innerHTML='<option value="">Select your name…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;sel.appendChild(o);});}
   renderCrewSignoffList();updateLeadStats();
   loadLeadQuiz();
 }
-
-// ── LEAD QUIZ (separate state from crew quiz) ──
+// ── LEAD QUIZ ──
 let leadQuiz={questions:[],current:0,correct:0,answered:[]};
-
 function loadLeadQuiz(){
   if(!S.topic)return;
   document.getElementById('leadQuizInner').innerHTML='<div class="lead-quiz-loading"><div class="spinner" style="border-top-color:#2979FF;margin:0 auto 10px;"></div>Loading questions…</div>';
@@ -1160,7 +1143,6 @@ function loadLeadQuiz(){
     leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
     renderLeadQuiz();return;
   }
-  // Fallback to topic bank questions
   const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
   const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
   const idx=(weekNum-1)%TOPIC_BANK.length;
@@ -1171,7 +1153,6 @@ function loadLeadQuiz(){
   leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
   renderLeadQuiz();
 }
-
 function renderLeadQuiz(){
   const qs=leadQuiz.questions;
   if(!qs||!qs.length)return;
@@ -1189,7 +1170,6 @@ function renderLeadQuiz(){
     </div>
     <div id="leadQuizFeedback"></div>`;
 }
-
 function answerLeadQuiz(chosen){
   const q=leadQuiz.questions[leadQuiz.current];
   const opts=document.querySelectorAll('#leadQuizOpts .lead-quiz-opt');
@@ -1205,7 +1185,6 @@ function answerLeadQuiz(chosen){
   fb.innerHTML=`<div class="lead-quiz-fb ${isCorrect?'correct':'wrong'}">${isCorrect?'✓ ':'✗ '}${q.explain}</div>
     <button class="btn-primary quiz-next" onclick="nextLeadQuiz()">${leadQuiz.current+1<leadQuiz.questions.length?'Next →':'Results →'}</button>`;
 }
-
 function nextLeadQuiz(){
   leadQuiz.current++;
   if(leadQuiz.current>=leadQuiz.questions.length){
@@ -1230,37 +1209,34 @@ function nextLeadQuiz(){
     renderLeadQuiz();
   }
 }
-
 function retryLeadQuiz(){
   leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
   renderLeadQuiz();
 }
 function renderCrewSignoffList(){
   const list=document.getElementById('crewSignoffList');if(!list)return;
-  list.innerHTML=CREW.map(c=>{const s=S.signoffs[c.name];return`<div class="crew-row ${s?'is-signed':''}"><div class="crew-left"><div class="avatar">${ini(c.name)}</div><div><span class="crew-name">${c.name}</span>${s?`<span class="crew-time">✓ ${s.time}</span>`:`<span class="crew-role-lbl">Crew</span>`}</div></div>${s?`<div class="signed-check">✓ Signed</div>`:`<button class="btn-sign" onclick="openSigFor('${c.name}','crew')">Sign</button>`}</div>`;}).join('');
+  if(!CREW.length){list.innerHTML='<div class="empty-state">No crew members yet. Add some from the Safety Lead screen.</div>';return;}
+  list.innerHTML=CREW.map(c=>{const s=S.signoffs[c.name];return`<div class="crew-row ${s?'is-signed':''}"><div class="crew-left"><div class="avatar">${ini(c.name)}</div><div><span class="crew-name">${c.name}</span>${s?`<span class="crew-time">✓ ${s.time}</span>`:`<span class="crew-role-lbl">Crew</span>`}</div></div>${s?`<div class="signed-check">✓ Signed</div>`:`<button class="btn-sign" onclick="openSigFor('${c.name.replace(/'/g,"\\'")}','crew')">Sign</button>`}</div>`;}).join('');
 }
 function updateLeadStats(){
-  const total=CREW.length,signed=Object.keys(S.signoffs).length,pending=total-signed,pct=Math.round((signed/total)*100);
+  const total=CREW.length,signed=Object.keys(S.signoffs).filter(n=>CREW.some(c=>c.name===n)).length,pending=total-signed,pct=total?Math.round((signed/total)*100):0;
   const $=id=>document.getElementById(id);
   if($('lead-stat-total'))$('lead-stat-total').textContent=total;
   if($('lead-stat-signed'))$('lead-stat-signed').textContent=signed;
   if($('lead-stat-pending'))$('lead-stat-pending').textContent=pending;
-  if($('leadProgressBar')){$('leadProgressBar').style.width=pct+'%';if(pct===100)$('leadProgressBar').classList.add('complete');}
+  if($('leadProgressBar')){$('leadProgressBar').style.width=pct+'%';if(pct===100)$('leadProgressBar').classList.add('complete');else $('leadProgressBar').classList.remove('complete');}
   if($('lead-progress-pct'))$('lead-progress-pct').textContent=pct+'%';
 }
 function openLeadSignModal(){const name=document.getElementById('leadNameSelect')?.value;const ok=document.getElementById('leadConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you attended the meeting');return;}S.signing=name;S.signingType='lead';openSigModal(name,'Job Lead');}
 function renderCrew(){
   document.getElementById('crewWeekLabel').textContent=S.weekLabel;
   const sel=document.getElementById('crewNameSelect');
-  if(sel&&sel.options.length===1){CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;sel.appendChild(o);});}
+  if(sel){sel.innerHTML='<option value="">Select your name…</option>';CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;sel.appendChild(o);});}
   renderTopic();
-  // Start quiz load after topic renders
   loadQuiz();
 }
-
 // ── QUIZ ──
 let quiz={questions:[],current:0,correct:0,answered:[]};
-
 function loadQuiz(){
   if(!S.topic)return;
   if(S.quiz&&S.quiz.topicTitle===S.topic.title){quiz.questions=S.quiz.questions;renderQuiz();return;}
@@ -1274,7 +1250,6 @@ function loadQuiz(){
   quiz.current=0;quiz.correct=0;quiz.answered=[];
   renderQuiz();
 }
-
 function renderQuiz(){
   const qs=quiz.questions;
   if(!qs||!qs.length)return;
@@ -1297,37 +1272,31 @@ function renderQuiz(){
       <div id="quizFeedback"></div>
     </div>`;
 }
-
 function answerQuiz(chosen){
   const q=quiz.questions[quiz.current];
   const opts=document.querySelectorAll('.quiz-opt');
   const isCorrect=chosen===q.correct;
   if(isCorrect)quiz.correct++;
   quiz.answered.push({chosen,correct:q.correct,isCorrect});
-
   opts.forEach((opt,i)=>{
     if(i===q.correct)opt.classList.add('correct');
     else if(i===chosen&&!isCorrect)opt.classList.add('wrong');
     else opt.classList.add('dimmed');
     opt.classList.add('answered');
   });
-
   const fb=document.getElementById('quizFeedback');
   fb.innerHTML=`<div class="quiz-feedback ${isCorrect?'correct':'wrong'}">${isCorrect?'✓ Correct — ':'✗ Not quite — '}${q.explain}</div>
     <button class="btn-primary quiz-next" onclick="nextQuiz()">${quiz.current+1<quiz.questions.length?'Next question →':'See results →'}</button>`;
 }
-
 function nextQuiz(){
   quiz.current++;
   if(quiz.current>=quiz.questions.length){
-    // Done — show pass/fail
     document.getElementById('crewQuizSection').style.display='none';
     if(quiz.correct>=2){
       document.getElementById('crewQuizPass').style.display='block';
       document.getElementById('quizScoreLabel').textContent=`${quiz.correct}/3 correct · Sign-off unlocked`;
       document.getElementById('crewSignSection').style.display='block';
     } else {
-      // Retry
       document.getElementById('quizInner').innerHTML=`
         <div class="quiz-pass-banner" style="background:#1a0a0a;border-top-color:#FF4444;">
           <div style="font-size:36px;">✗</div>
@@ -1343,7 +1312,6 @@ function nextQuiz(){
     renderQuiz();
   }
 }
-
 function retryQuiz(){
   quiz.current=0;quiz.correct=0;quiz.answered=[];
   renderQuiz();
@@ -1351,94 +1319,55 @@ function retryQuiz(){
 function openSignModal(){const name=document.getElementById('crewNameSelect')?.value;const ok=document.getElementById('crewConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you reviewed the topic');return;}S.signing=name;S.signingType='crew';openSigModal(name,'Crew Member');}
 function openSigFor(name,type){S.signing=name;S.signingType=type;openSigModal(name,type==='lead'?'Job Lead':'Crew Member');}
 function shareLink(){showToast('Sign-off link copied');}
+
+// ── ADMIN ──
 function renderAdmin(){
   const $=id=>document.getElementById(id);
-  const hist=[
-    {week:'Apr 7, 2026',topic:'FALL PROTECTION — KNOW THE RULES',signed:20,total:20},
-    {week:'Mar 31, 2026',topic:'ELECTRICAL SAFETY & LOCKOUT/TAGOUT',signed:19,total:20},
-    {week:'Mar 24, 2026',topic:'PPE SELECTION & CARE',signed:20,total:20},
-    {week:'Mar 17, 2026',topic:'EXCAVATION HAZARDS',signed:18,total:20},
-  ];
-
-  // Weekly history
-  if($('weekHistory'))$('weekHistory').innerHTML=hist.map(w=>`
-    <div class="hist-row">
-      <div><div class="hist-topic">${w.topic}</div><div class="hist-week">${w.week}</div></div>
-      <span class="hist-badge ${w.signed===w.total?'full':'partial'}">${w.signed}/${w.total}</span>
-    </div>`).join('');
-
-  // Stats
-  if($('admin-leads-signed'))$('admin-leads-signed').textContent=Object.keys(S.leadSignoffs).length+'/'+LEADS.length;
-  if($('admin-crew-signed'))$('admin-crew-signed').textContent=Object.keys(S.signoffs).length+'/'+CREW.length;
-
-  // ── LEAD SCORECARD ──
-  // Mock historical data — weeks signed + quiz pass rate per lead
-  const leadHistory={
-    'Daegan Smith':    {weeks:[true,true,true,true], crewPct:[100,92,100,83], quizPass:[true,true,true,true]},
-    'Keegan Wilkinson':{weeks:[true,true,false,true],crewPct:[100,100,0,100], quizPass:[true,true,false,true]},
-    'Braden Davis':    {weeks:[true,true,true,true], crewPct:[75,100,100,100],quizPass:[true,true,true,true]},
-    'Gage Lund':       {weeks:[true,false,true,true],crewPct:[100,0,100,100], quizPass:[true,false,true,true]},
-    'Abraham Tristan': {weeks:[true,true,true,true], crewPct:[100,100,100,100],quizPass:[true,true,true,true]},
-    'Treycen Rollene': {weeks:[true,true,true,false],crewPct:[83,92,75,0],    quizPass:[true,true,false,false]},
-    'Louis Hoffman':   {weeks:[true,true,true,true], crewPct:[100,100,83,100],quizPass:[true,true,true,true]},
-    'Jonathan Harding':{weeks:[false,true,true,true],crewPct:[0,100,100,92], quizPass:[false,true,true,true]},
-  };
-
-  // This week's sign-off status
+  // Stats (real data)
+  if($('admin-weeks'))$('admin-weeks').textContent=(S.history?.length||0)+1;
+  if($('admin-leads-signed'))$('admin-leads-signed').textContent=Object.keys(S.leadSignoffs).filter(n=>LEADS.some(l=>l.name===n)).length+'/'+LEADS.length;
+  if($('admin-crew-signed'))$('admin-crew-signed').textContent=Object.keys(S.signoffs).filter(n=>CREW.some(c=>c.name===n)).length+'/'+CREW.length;
+  // ── LEAD STATUS THIS WEEK (real data only) ──
   const scorecardEl=$('leadScorecard');
   if(scorecardEl){
-    scorecardEl.innerHTML=LEADS.map(l=>{
-      const signed=!!S.leadSignoffs[l.name];
-      const hist=leadHistory[l.name];
-      const weeksSigned=hist?hist.weeks.filter(Boolean).length:0;
-      const avgCrew=hist?Math.round(hist.crewPct.reduce((a,b)=>a+b,0)/hist.crewPct.length):0;
-      const statusClass=signed?'perfect':weeksSigned>=3?'partial':'none';
-      const pctColor=avgCrew===100?'green':avgCrew>=80?'amber':'red';
-      const barColor=avgCrew===100?'#00C853':avgCrew>=80?'#FFB300':'#FF4444';
-      return`<div class="scorecard-row ${statusClass}">
-        <div class="scorecard-avatar">${ini(l.name)}</div>
-        <div style="flex:1;min-width:0;">
-          <span class="scorecard-name">${l.name}</span>
-          <span class="scorecard-detail">${weeksSigned}/4 weeks signed · ${signed?'✓ This week':'Not signed yet'}</span>
-          <div class="scorecard-bar"><div class="scorecard-bar-fill" style="width:${avgCrew}%;background:${barColor};"></div></div>
-        </div>
-        <div class="scorecard-right">
-          <span class="scorecard-pct ${pctColor}">${avgCrew}%</span>
-          <span class="scorecard-sublabel">crew avg</span>
-        </div>
-      </div>`;
-    }).join('');
+    if(!LEADS.length){
+      scorecardEl.innerHTML='<div class="empty-state">No leads yet. Add some below.</div>';
+    } else {
+      scorecardEl.innerHTML=LEADS.map(l=>{
+        const s=S.leadSignoffs[l.name];
+        const signed=!!s;
+        const statusClass=signed?'perfect':'none';
+        const detail=signed?`Signed ${s.time}`:'Not signed yet';
+        return`<div class="scorecard-row ${statusClass}">
+          <div class="scorecard-avatar">${ini(l.name)}</div>
+          <div style="flex:1;min-width:0;">
+            <span class="scorecard-name">${l.name}</span>
+            <span class="scorecard-detail">${detail}</span>
+          </div>
+          <div class="scorecard-right">
+            <span class="scorecard-pct ${signed?'green':''}">${signed?'✓':'—'}</span>
+            <span class="scorecard-sublabel">${signed?'this week':'pending'}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
   }
-
-  // ── REPEAT OFFENDERS ──
+  // ── PENDING THIS WEEK (real data only) ──
   const offendersEl=$('repeatOffenders');
   if(offendersEl){
-    const issues=[];
-
-    // Leads who missed 2+ weeks
-    LEADS.forEach(l=>{
-      const hist=leadHistory[l.name];
-      if(!hist)return;
-      const missed=hist.weeks.filter(w=>!w).length;
-      const failedQuiz=hist.quizPass.filter(p=>!p).length;
-      if(missed>=2) issues.push({name:l.name,role:'Job Lead',issue:`Missed ${missed} of last 4 meetings`,severity:'high'});
-      else if(failedQuiz>=2) issues.push({name:l.name,role:'Job Lead',issue:`Failed quiz ${failedQuiz} times recently`,severity:'medium'});
-      else if(hist.crewPct.slice(-2).some(p=>p<80)) issues.push({name:l.name,role:'Job Lead',issue:'Crew sign-off rate below 80% recently',severity:'medium'});
-    });
-
-    // Crew who haven't signed this week AND missed last week too
-    const knownMissed=['Braxton Raven','Jacob Nuffer']; // mock — would be real data with backend
-    knownMissed.forEach(name=>{
-      if(!S.signoffs[name]) issues.push({name,role:'Crew',issue:'No sign-off 2+ weeks in a row',severity:'high'});
-    });
-
-    if(issues.length===0){
-      offendersEl.innerHTML=`<div class="no-issues"><span>✓</span>No issues flagged — everyone is current</div>`;
+    const pendingLeads=LEADS.filter(l=>!S.leadSignoffs[l.name]);
+    const pendingCrew=CREW.filter(c=>!S.signoffs[c.name]);
+    if(pendingLeads.length===0&&pendingCrew.length===0){
+      offendersEl.innerHTML='<div class="no-issues"><span>✓</span>Everyone has signed off this week.</div>';
     } else {
-      offendersEl.innerHTML=issues.map(i=>`
+      const items=[
+        ...pendingLeads.map(l=>({name:l.name,role:'Job Lead',issue:'No sign-off this week'})),
+        ...pendingCrew.map(c=>({name:c.name,role:'Crew',issue:'No sign-off this week'})),
+      ];
+      offendersEl.innerHTML=items.map(i=>`
         <div class="offender-row">
           <div class="scorecard-avatar" style="border-color:rgba(255,68,68,0.3);color:#FF4444;">${ini(i.name)}</div>
-          <div>
+          <div style="flex:1;min-width:0;">
             <span class="offender-name">${i.name}</span>
             <span class="offender-detail">${i.issue}</span>
           </div>
@@ -1446,7 +1375,86 @@ function renderAdmin(){
         </div>`).join('');
     }
   }
+  // ── WEEKLY HISTORY (real archived weeks) ──
+  const histEl=$('weekHistory');
+  if(histEl){
+    if(!S.history||S.history.length===0){
+      histEl.innerHTML='<div class="empty-state">No past weeks yet. History will appear here as weeks complete.</div>';
+    } else {
+      histEl.innerHTML=S.history.map(w=>{
+        const total=(LEADS.length+CREW.length);
+        const signed=Object.keys(w.signoffs||{}).length+Object.keys(w.leadSignoffs||{}).length;
+        return`<div class="hist-row">
+          <div><div class="hist-topic">${w.topic||'—'}</div><div class="hist-week">${w.weekLabel||w.weekId}</div></div>
+          <span class="hist-badge ${signed>=total?'full':'partial'}">${signed}/${total}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+  // ── EMPLOYEE LISTS ──
+  renderEmployeeLists();
 }
+function renderEmployeeLists(){
+  const leadsEl=document.getElementById('empListLeads');
+  const crewEl=document.getElementById('empListCrew');
+  if(leadsEl){
+    leadsEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Job Leads (${LEADS.length})</div>`+
+      (LEADS.length?LEADS.map((l,i)=>`<div class="emp-row is-lead"><div class="avatar">${ini(l.name)}</div><div style="flex:1;min-width:0;"><span class="emp-name">${l.name}</span><span class="emp-role">Job Lead</span></div><button class="btn-remove" onclick="removeEmployee('lead',${i})">Remove</button></div>`).join(''):'<div class="empty-state">No leads yet.</div>');
+  }
+  if(crewEl){
+    crewEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Crew (${CREW.length})</div>`+
+      (CREW.length?CREW.map((c,i)=>`<div class="emp-row is-crew"><div class="avatar">${ini(c.name)}</div><div style="flex:1;min-width:0;"><span class="emp-name">${c.name}</span><span class="emp-role">Crew</span></div><button class="btn-remove" onclick="removeEmployee('crew',${i})">Remove</button></div>`).join(''):'<div class="empty-state">No crew yet.</div>');
+  }
+}
+function addEmployee(){
+  const nameEl=document.getElementById('emp-new-name');
+  const roleEl=document.getElementById('emp-new-role');
+  const name=(nameEl?.value||'').trim();
+  const role=roleEl?.value||'crew';
+  if(!name){showToast('Enter a name');return;}
+  if(name.length<2){showToast('Name is too short');return;}
+  const exists=[...LEADS,...CREW].some(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(exists){showToast('That name already exists');return;}
+  if(role==='lead')LEADS.push({name});else CREW.push({name});
+  saveEmployeeLists();
+  nameEl.value='';
+  showToast(`${name} added as ${role==='lead'?'lead':'crew'}`);
+  renderAdmin();
+  // Refresh dropdowns on other screens
+  refreshAllNamePickers();
+}
+function removeEmployee(role,idx){
+  const list=role==='lead'?LEADS:CREW;
+  const person=list[idx];
+  if(!person)return;
+  if(!confirm(`Remove ${person.name}? Their existing sign-offs will be kept in the records but they won't appear in lists going forward.`))return;
+  list.splice(idx,1);
+  saveEmployeeLists();
+  showToast(`${person.name} removed`);
+  renderAdmin();
+  refreshAllNamePickers();
+}
+function refreshAllNamePickers(){
+  // Crew sign-off list (lead screen)
+  if(document.getElementById('screen-lead').classList.contains('active')){
+    renderCrewSignoffList();
+    const sel=document.getElementById('leadNameSelect');
+    if(sel){sel.innerHTML='<option value="">Select your name…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;sel.appendChild(o);});}
+    updateLeadStats();
+  }
+  // Crew screen name picker
+  const crewSel=document.getElementById('crewNameSelect');
+  if(crewSel){crewSel.innerHTML='<option value="">Select your name…</option>';CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;crewSel.appendChild(o);});}
+  // Incident report dropdowns
+  const allPeople=[...LEADS,...CREW];
+  ['ir-person','ir-filedby'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(sel){sel.innerHTML='<option value="">Select name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});}
+  });
+  const irLead=document.getElementById('ir-lead');
+  if(irLead){irLead.innerHTML='<option value="">Select lead…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;irLead.appendChild(o);});}
+}
+
 function generateNewTopic(){
   const cat=document.getElementById('topicCategory')?.value||'general';
   const catTopics=TOPIC_BANK.filter(t=>cat==='general'||t.oshaRef.toLowerCase().includes(cat)||t.title.toLowerCase().includes(cat));
@@ -1499,25 +1507,16 @@ function exportCSV(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([hdr+[...lr,...cr].join('\n')],{type:'text/csv'}));a.download=`HES_Safety_${S.weekId}.csv`;a.click();showToast('CSV exported');
 }
 if(S.topic)renderTopic();
-
 // ── INCIDENT REPORT ──
 let incidentType='injury';
-
 function renderIncident(){
-  // Populate dropdowns
   const allPeople=[...LEADS,...CREW];
   const person=document.getElementById('ir-person');
   const lead=document.getElementById('ir-lead');
   const filedby=document.getElementById('ir-filedby');
-  if(person&&person.options.length===1){
-    allPeople.forEach(p=>{
-      [person,filedby].forEach(sel=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});
-    });
-  }
-  if(lead&&lead.options.length===1){
-    LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;lead.appendChild(o);});
-  }
-  // Set default datetime to now
+  if(person){person.innerHTML='<option value="">Select name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;person.appendChild(o);});}
+  if(filedby){filedby.innerHTML='<option value="">Select your name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;filedby.appendChild(o);});}
+  if(lead){lead.innerHTML='<option value="">Select lead…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;lead.appendChild(o);});}
   const dt=document.getElementById('ir-datetime');
   if(dt&&!dt.value){
     const now=new Date();
@@ -1525,7 +1524,6 @@ function renderIncident(){
     dt.value=now.toISOString().slice(0,16);
   }
 }
-
 function selectType(btn,type){
   document.querySelectorAll('.ir-type-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
@@ -1533,7 +1531,6 @@ function selectType(btn,type){
   const injuryFields=document.getElementById('ir-injury-fields');
   if(injuryFields)injuryFields.style.display=type==='injury'?'block':'none';
 }
-
 function submitIncident(){
   const person=document.getElementById('ir-person')?.value;
   const description=document.getElementById('ir-description')?.value;
@@ -1541,7 +1538,6 @@ function submitIncident(){
   if(!person){showToast('Select person involved');return;}
   if(!description||description.trim().length<10){showToast('Please describe what happened');return;}
   if(!filedby){showToast('Select who is filing this report');return;}
-
   const now=new Date();
   const report={
     id:`IR-${Date.now()}`,
@@ -1560,24 +1556,17 @@ function submitIncident(){
     filedAt:now.toLocaleString(),
     gps:S.loc?`${S.loc.lat}, ${S.loc.lng}`:'N/A',
   };
-
-  // Save to local storage
   try{
     const existing=JSON.parse(localStorage.getItem('hes_incidents_v1')||'[]');
     existing.unshift(report);
     localStorage.setItem('hes_incidents_v1',JSON.stringify(existing));
   }catch(e){}
-
-  // Show submitted state
   document.getElementById('incidentForm').style.display='none';
   document.getElementById('incidentSubmitted').style.display='block';
   document.getElementById('incidentSubmittedDetails').textContent=
     `${report.id} · Filed by ${filedby} · ${now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
-
-  // Auto-download report
   exportIncidentReport(report);
 }
-
 function exportIncidentReport(r){
   const typeLabel={injury:'INJURY REPORT',nearmiss:'NEAR-MISS REPORT',hazard:'HAZARD REPORT'}[r.type]||'INCIDENT REPORT';
   const txt=`HOMESTEAD ELECTRIC — ${typeLabel}
@@ -1586,7 +1575,6 @@ Report ID: ${r.id}
 Filed: ${r.filedAt}
 Filed by: ${r.filedby}
 GPS at filing: ${r.gps}
-
 INCIDENT DETAILS
 -----------------
 Type: ${typeLabel}
@@ -1594,24 +1582,19 @@ Person involved: ${r.person}
 Job lead on site: ${r.lead}
 Date/time of incident: ${r.datetime}
 Location: ${r.location}
-
 ${r.type==='injury'?`INJURY INFORMATION
 -----------------
 Body part: ${r.bodypart}
 Type of injury: ${r.injurytype}
 Medical attention: ${r.medical}
-
 `:''}DESCRIPTION
 -----------
 ${r.description}
-
 Root cause: ${r.rootcause}
 Witnesses: ${r.witnesses}
-
 =========================================
 Maintained per OSHA 29 CFR 1904 recordkeeping requirements.
 Workers comp provider notification required within 24 hours for lost-time injuries.`;
-
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
   a.download=`HES_${r.id}.txt`;
