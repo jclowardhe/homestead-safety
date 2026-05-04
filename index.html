@@ -446,6 +446,17 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .scorecard-sublabel{font-size:10px;color:#7A8FA8;font-family:var(--mono);letter-spacing:.04em;}
 .scorecard-bar{height:3px;background:#E4E9F0;margin-top:8px;width:100%;}
 .scorecard-bar-fill{height:100%;transition:width .4s ease;}
+/* ── ROLE STATUS COLUMNS ── */
+.role-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;}
+.role-columns > div{min-width:0;}
+.col-heading{font-family:var(--font);font-size:11px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--lime-border);}
+.role-columns .scorecard-row{padding:10px 12px;gap:8px;}
+.role-columns .scorecard-avatar{width:28px;height:28px;font-size:9px;}
+.role-columns .scorecard-name{font-size:12px;}
+.role-columns .scorecard-detail{font-size:10px;}
+.role-columns .scorecard-pct{font-size:16px;}
+.role-columns .scorecard-sublabel{font-size:9px;}
+@media (max-width:500px){.role-columns{grid-template-columns:1fr;gap:18px;}}
 /* ── REPEAT OFFENDERS ── */
 .offender-row{
   background:#FFFFFF;border:1px solid #E4E9F0;
@@ -769,10 +780,19 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div class="stat-card"><span class="stat-num green" id="admin-leads-signed">0/0</span><span class="stat-lbl">Leads</span></div>
       <div class="stat-card"><span class="stat-num amber" id="admin-crew-signed">0/0</span><span class="stat-lbl">Crew</span></div>
     </div>
-    <!-- LEAD SCORECARDS -->
+    <!-- ROLE STATUS COLUMNS -->
     <div class="divider"></div>
-    <div class="sec-label">Lead status — this week</div>
-    <div id="leadScorecard"></div>
+    <div class="sec-label">This week's status</div>
+    <div class="role-columns">
+      <div>
+        <div class="col-heading">Leads</div>
+        <div id="leadScorecard"></div>
+      </div>
+      <div>
+        <div class="col-heading">Apprentices</div>
+        <div id="apprenticeScorecard"></div>
+      </div>
+    </div>
     <!-- PENDING THIS WEEK -->
     <div class="divider"></div>
     <div class="sec-label">Pending this week</div>
@@ -814,6 +834,15 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
     <div id="empListLeads"></div>
     <div id="empListCrew"></div>
+    <div class="divider"></div>
+    <div class="sec-label">This week's topic</div>
+    <div id="adminCurrentTopic" style="background:var(--surface);border:1px solid var(--surface3);padding:14px 16px;margin-bottom:10px;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Currently showing</div>
+      <div id="adminCurrentTopicTitle" style="font-family:var(--font);font-size:14px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:.01em;">—</div>
+      <div id="adminCurrentTopicRef" style="font-family:var(--mono);font-size:10px;color:var(--lime);letter-spacing:.04em;margin-top:3px;">—</div>
+    </div>
+    <button class="btn-outline" onclick="skipTopic()">Skip this topic — move to back of rotation →</button>
+    <button class="btn-ghost" style="margin-top:8px;" onclick="resetTopicOrder()">Reset rotation to original order</button>
     <div class="divider"></div>
     <div class="sec-label">Generate topic</div>
     <div class="inline-row mt8">
@@ -1104,22 +1133,49 @@ const TOPIC_BANK = [
 const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
 function wkLabel(){const d=new Date(),s=new Date(d);s.setDate(d.getDate()-d.getDay());return`Week of ${s.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;}
 function wkId(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return`${d.getFullYear()}-W${Math.ceil(((d-j)/86400000+j.getDay()+1)/7)}`;}
-const S={signoffs:{},leadSignoffs:{},topic:null,quiz:null,role:null,signing:null,signingType:null,loc:null,weekLabel:wkLabel(),weekId:wkId(),history:[]};
-try{const sv=localStorage.getItem('hes_safety_v3');if(sv){const p=JSON.parse(sv);if(p.weekId===S.weekId){S.signoffs=p.signoffs||{};S.leadSignoffs=p.leadSignoffs||{};S.topic=p.topic||null;S.quiz=p.quiz||null;}else if(p.weekId&&p.weekId!==S.weekId){/* archive previous week */S.history=p.history||[];S.history.unshift({weekId:p.weekId,weekLabel:p.weekLabel||p.weekId,topic:p.topic?.title||'—',signoffs:p.signoffs||{},leadSignoffs:p.leadSignoffs||{}});if(S.history.length>52)S.history=S.history.slice(0,52);}else if(p.history){S.history=p.history;}}}catch(e){}
-function save(){try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,weekLabel:S.weekLabel,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz,history:S.history}));}catch(e){}}
+const S={signoffs:{},leadSignoffs:{},topic:null,quiz:null,role:null,signing:null,signingType:null,loc:null,weekLabel:wkLabel(),weekId:wkId(),history:[],topicOrder:null};
+try{const sv=localStorage.getItem('hes_safety_v3');if(sv){const p=JSON.parse(sv);if(Array.isArray(p.topicOrder))S.topicOrder=p.topicOrder;if(p.weekId===S.weekId){S.signoffs=p.signoffs||{};S.leadSignoffs=p.leadSignoffs||{};S.topic=p.topic||null;S.quiz=p.quiz||null;S.history=p.history||[];}else if(p.weekId&&p.weekId!==S.weekId){/* archive previous week */S.history=p.history||[];S.history.unshift({weekId:p.weekId,weekLabel:p.weekLabel||p.weekId,topic:p.topic?.title||'—',signoffs:p.signoffs||{},leadSignoffs:p.leadSignoffs||{}});if(S.history.length>52)S.history=S.history.slice(0,52);}else if(p.history){S.history=p.history;}}}catch(e){}
+if(!Array.isArray(S.topicOrder)||S.topicOrder.length!==TOPIC_BANK.length){S.topicOrder=TOPIC_BANK.map((_,i)=>i);}
+function save(){try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,weekLabel:S.weekLabel,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz,history:S.history,topicOrder:S.topicOrder}));}catch(e){}}
+function currentTopicSlot(){const d=new Date(),j=new Date(d.getFullYear(),0,1);const weekNum=Math.ceil(((d-j)/86400000+j.getDay()+1)/7);return (weekNum-1)%S.topicOrder.length;}
+function currentTopicIndex(){return S.topicOrder[currentTopicSlot()] ?? 0;}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 function goHome(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-role').classList.add('active');}
 function getLoc(){navigator.geolocation?.getCurrentPosition(p=>{S.loc={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};},()=>{S.loc={lat:'N/A',lng:'N/A'};});}
 function enterRole(r){S.role=r;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');getLoc();if(!S.topic)loadTopic();if(r==='lead')renderLead();else if(r==='crew')renderCrew();else if(r==='admin')renderAdmin();else if(r==='incident')renderIncident();}
 function loadTopic(cat){
-  const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
-  const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
-  const idx=(weekNum-1)%TOPIC_BANK.length;
+  const idx=currentTopicIndex();
   const t=TOPIC_BANK[idx];
   S.topic={title:t.title,oshaRef:t.oshaRef,content:t.content,questions:t.questions};
   S.quiz={topicTitle:t.title,questions:t.questions};
   save();
   renderTopic();
+}
+function skipTopic(){
+  if(!confirm("Skip this week's topic? It moves to the back of the rotation and the next topic loads now.")) return;
+  const slot=currentTopicSlot();
+  const moved=S.topicOrder.splice(slot,1)[0];
+  S.topicOrder.push(moved);
+  S.topic=null;S.quiz=null;
+  save();
+  loadTopic();
+  // Reset quiz state
+  if(typeof quiz!=='undefined'){quiz.questions=S.quiz?.questions||[];quiz.current=0;quiz.correct=0;quiz.answered=[];}
+  if(typeof leadQuiz!=='undefined'){leadQuiz.questions=S.quiz?.questions||[];leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];}
+  showToast('Topic skipped');
+  // Re-render whichever screen is visible
+  if(document.getElementById('screen-admin')?.classList.contains('active'))renderAdmin();
+  if(document.getElementById('screen-crew')?.classList.contains('active'))renderCrew();
+  if(document.getElementById('screen-lead')?.classList.contains('active'))renderLead();
+}
+function resetTopicOrder(){
+  if(!confirm('Reset the topic rotation to its original order? Any skips will be undone.'))return;
+  S.topicOrder=TOPIC_BANK.map((_,i)=>i);
+  S.topic=null;S.quiz=null;
+  save();
+  loadTopic();
+  showToast('Topic order reset');
+  if(document.getElementById('screen-admin')?.classList.contains('active'))renderAdmin();
 }
 function renderTopic(){
   const t=S.topic;if(!t)return;
@@ -1143,9 +1199,7 @@ function loadLeadQuiz(){
     leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
     renderLeadQuiz();return;
   }
-  const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
-  const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
-  const idx=(weekNum-1)%TOPIC_BANK.length;
+  const idx=currentTopicIndex();
   const t=TOPIC_BANK[idx];
   leadQuiz.questions=t.questions;
   S.quiz={topicTitle:S.topic.title,questions:t.questions};
@@ -1240,9 +1294,7 @@ let quiz={questions:[],current:0,correct:0,answered:[]};
 function loadQuiz(){
   if(!S.topic)return;
   if(S.quiz&&S.quiz.topicTitle===S.topic.title){quiz.questions=S.quiz.questions;renderQuiz();return;}
-  const d=new Date(),jan1=new Date(d.getFullYear(),0,1);
-  const weekNum=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
-  const idx=(weekNum-1)%TOPIC_BANK.length;
+  const idx=currentTopicIndex();
   const t=TOPIC_BANK[idx];
   quiz.questions=t.questions;
   S.quiz={topicTitle:S.topic.title,questions:t.questions};
@@ -1331,7 +1383,7 @@ function renderAdmin(){
   const scorecardEl=$('leadScorecard');
   if(scorecardEl){
     if(!LEADS.length){
-      scorecardEl.innerHTML='<div class="empty-state">No leads yet. Add some below.</div>';
+      scorecardEl.innerHTML='<div class="empty-state">No leads yet.</div>';
     } else {
       scorecardEl.innerHTML=LEADS.map(l=>{
         const s=S.leadSignoffs[l.name];
@@ -1342,6 +1394,31 @@ function renderAdmin(){
           <div class="scorecard-avatar">${ini(l.name)}</div>
           <div style="flex:1;min-width:0;">
             <span class="scorecard-name">${l.name}</span>
+            <span class="scorecard-detail">${detail}</span>
+          </div>
+          <div class="scorecard-right">
+            <span class="scorecard-pct ${signed?'green':''}">${signed?'✓':'—'}</span>
+            <span class="scorecard-sublabel">${signed?'this week':'pending'}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+  // ── APPRENTICE STATUS THIS WEEK ──
+  const apprenticeEl=$('apprenticeScorecard');
+  if(apprenticeEl){
+    if(!CREW.length){
+      apprenticeEl.innerHTML='<div class="empty-state">No apprentices yet.</div>';
+    } else {
+      apprenticeEl.innerHTML=CREW.map(c=>{
+        const s=S.signoffs[c.name];
+        const signed=!!s;
+        const statusClass=signed?'perfect':'none';
+        const detail=signed?`Signed ${s.time}`:'Not signed yet';
+        return`<div class="scorecard-row ${statusClass}">
+          <div class="scorecard-avatar">${ini(c.name)}</div>
+          <div style="flex:1;min-width:0;">
+            <span class="scorecard-name">${c.name}</span>
             <span class="scorecard-detail">${detail}</span>
           </div>
           <div class="scorecard-right">
@@ -1391,6 +1468,11 @@ function renderAdmin(){
       }).join('');
     }
   }
+  // ── CURRENT TOPIC DISPLAY ──
+  const t=S.topic||(TOPIC_BANK[currentTopicIndex()]||null);
+  const titleEl=$('adminCurrentTopicTitle'),refEl=$('adminCurrentTopicRef');
+  if(titleEl)titleEl.textContent=t?.title||'—';
+  if(refEl)refEl.textContent=t?.oshaRef||'—';
   // ── EMPLOYEE LISTS ──
   renderEmployeeLists();
 }
