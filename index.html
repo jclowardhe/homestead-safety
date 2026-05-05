@@ -720,24 +720,16 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div class="hero-title"><span class="lang-en">Select your role.</span><span class="lang-es">Selecciona tu rol.</span></div>
     </div>
     <div class="role-grid">
-      <button class="role-card" data-color="yellow" onclick="enterRole('lead')">
+      <button class="role-card" data-color="yellow" onclick="enterRole('crew')">
         <div class="rc-num">01</div>
         <div>
-          <span class="rc-name"><span class="lang-en">Job Lead</span><span class="lang-es">Líder de Obra</span></span>
-          <span class="rc-desc"><span class="lang-en">Wednesday lead meeting · sign off · collect crew</span><span class="lang-es">Reunión del miércoles · firma · recopila la cuadrilla</span></span>
-        </div>
-        <span class="rc-arrow">→</span>
-      </button>
-      <button class="role-card" data-color="blue" onclick="enterRole('crew')">
-        <div class="rc-num">02</div>
-        <div>
-          <span class="rc-name"><span class="lang-en">Crew Member</span><span class="lang-es">Miembro de Cuadrilla</span></span>
-          <span class="rc-desc"><span class="lang-en">Read this week's topic · sign off</span><span class="lang-es">Lee el tema de la semana · firma</span></span>
+          <span class="rc-name"><span class="lang-en">Sign Off</span><span class="lang-es">Firmar</span></span>
+          <span class="rc-desc"><span class="lang-en">Read this week's topic · take the quiz · sign off</span><span class="lang-es">Lee el tema de la semana · responde el quiz · firma</span></span>
         </div>
         <span class="rc-arrow">→</span>
       </button>
       <button class="role-card" data-color="black" onclick="enterRole('admin')">
-        <div class="rc-num">03</div>
+        <div class="rc-num">02</div>
         <div>
           <span class="rc-name"><span class="lang-en">Safety Lead</span><span class="lang-es">Encargado de Seguridad</span></span>
           <span class="rc-desc"><span class="lang-en">Records · exports · topic management</span><span class="lang-es">Registros · exportaciones · gestión de temas</span></span>
@@ -745,7 +737,7 @@ input.field-select::placeholder{color:#B8B6B0;}
         <span class="rc-arrow">→</span>
       </button>
       <button class="role-card" data-color="red" onclick="enterRole('incident')">
-        <div class="rc-num">04</div>
+        <div class="rc-num">03</div>
         <div>
           <span class="rc-name"><span class="lang-en">Incident Report</span><span class="lang-es">Reporte de Incidente</span></span>
           <span class="rc-desc"><span class="lang-en">Report an injury, near-miss, or hazard</span><span class="lang-es">Reporta una lesión, cuasi-accidente o peligro</span></span>
@@ -847,7 +839,7 @@ input.field-select::placeholder{color:#B8B6B0;}
 <div class="screen" id="screen-crew">
   <header class="header">
     <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
-    <div class="header-tag" id="crewWeekLabelTag"><span class="lang-en">Crew</span><span class="lang-es">Cuadrilla</span></div>
+    <div class="header-tag" id="crewWeekLabelTag"><span class="lang-en">Sign Off</span><span class="lang-es">Firmar</span></div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
@@ -1170,6 +1162,23 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="nav-btn active"><span class="ni">⚠️</span>Report</button>
     <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
   </nav>
+</div>
+<!-- ADMIN AUTH MODAL -->
+<div class="modal-overlay" id="adminAuthModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title" id="adminAuthTitle">Safety Lead Access</h2>
+    <p class="modal-sub" id="adminAuthSub">Enter the Safety Lead PIN to continue.</p>
+    <div class="mb16">
+      <label class="field-lbl"><span class="lang-en">Safety Lead PIN</span><span class="lang-es">PIN del Encargado de Seguridad</span></label>
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" class="pin-input" id="adminPinInput" placeholder="••••">
+      <div class="pin-mode-msg" id="adminPinMsg"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" style="flex-shrink:0;" onclick="closeAdminAuth()"><span class="lang-en">Cancel</span><span class="lang-es">Cancelar</span></button>
+      <button class="btn-primary" onclick="submitAdminAuth()"><span class="lang-en">Enter →</span><span class="lang-es">Entrar →</span></button>
+    </div>
+  </div>
 </div>
 <!-- SIG MODAL -->
 <div class="modal-overlay" id="sigModal">
@@ -1511,7 +1520,100 @@ function getLoc(){
     ()=>{S.loc=null;}
   );
 }
-function enterRole(r){S.role=r;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');getLoc();if(!S.topic)loadTopic();if(r==='lead')renderLead();else if(r==='crew')renderCrew();else if(r==='admin')renderAdmin();else if(r==='incident')renderIncident();}
+async function enterRole(r){
+  if(r==='admin'){
+    const ok=await checkAdminAccess();
+    if(!ok)return;
+  }
+  S.role=r;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');
+  getLoc();
+  if(!S.topic)loadTopic();
+  if(r==='lead')renderLead();
+  else if(r==='crew')renderCrew();
+  else if(r==='admin')renderAdmin();
+  else if(r==='incident')renderIncident();
+}
+
+// ════════ ADMIN PIN GATE ════════
+let _adminAuthResolver=null;
+function checkAdminAccess(){
+  // Already authenticated this session
+  if(sessionStorage.getItem('hes_admin_ok')==='1')return Promise.resolve(true);
+  return new Promise(resolve=>{
+    _adminAuthResolver=resolve;
+    const modal=document.getElementById('adminAuthModal');
+    const title=document.getElementById('adminAuthTitle');
+    const sub=document.getElementById('adminAuthSub');
+    const input=document.getElementById('adminPinInput');
+    const msg=document.getElementById('adminPinMsg');
+    input.value='';msg.textContent='';msg.className='pin-mode-msg';
+    // Determine if admin PIN exists in app_meta
+    (async()=>{
+      let storedHash=null;
+      if(sb){
+        try{
+          const {data}=await sb.from('app_meta').select('value').eq('key','admin_pin_hash').maybeSingle();
+          if(data&&data.value)storedHash=data.value;
+        }catch(e){console.error('admin pin lookup',e);}
+      }
+      if(!storedHash){
+        // First-time setup
+        title.textContent=window.LANG==='es'?'Crear PIN del Encargado':'Create Safety Lead PIN';
+        sub.textContent=window.LANG==='es'?'Crea un PIN para acceder al panel del Encargado de Seguridad. Solo necesitas hacerlo una vez.':'Create a PIN that protects the Safety Lead panel. You only need to do this once.';
+      }else{
+        title.textContent=window.LANG==='es'?'Acceso del Encargado':'Safety Lead Access';
+        sub.textContent=window.LANG==='es'?'Ingresa el PIN del Encargado para continuar.':'Enter the Safety Lead PIN to continue.';
+      }
+      modal.classList.add('open');
+      input.focus();
+    })();
+  });
+}
+function closeAdminAuth(){
+  document.getElementById('adminAuthModal').classList.remove('open');
+  if(_adminAuthResolver){_adminAuthResolver(false);_adminAuthResolver=null;}
+}
+async function submitAdminAuth(){
+  const input=document.getElementById('adminPinInput');
+  const msg=document.getElementById('adminPinMsg');
+  const pin=(input.value||'').trim();
+  if(!/^\d{4,6}$/.test(pin)){
+    msg.className='pin-mode-msg error';
+    msg.textContent=window.LANG==='es'?'El PIN debe ser de 4-6 dígitos':'PIN must be 4-6 digits';
+    return;
+  }
+  const hash=await hashPin(pin);
+  let storedHash=null;
+  if(sb){
+    try{
+      const {data}=await sb.from('app_meta').select('value').eq('key','admin_pin_hash').maybeSingle();
+      if(data&&data.value)storedHash=data.value;
+    }catch(e){console.error('admin pin lookup',e);}
+  }
+  if(!storedHash){
+    // First-time creation
+    if(sb){
+      const {error}=await sb.from('app_meta').upsert({key:'admin_pin_hash',value:hash},{onConflict:'key'});
+      if(error){msg.className='pin-mode-msg error';msg.textContent=window.LANG==='es'?'No se pudo guardar el PIN':'Failed to save PIN';return;}
+    }
+    sessionStorage.setItem('hes_admin_ok','1');
+    document.getElementById('adminAuthModal').classList.remove('open');
+    if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
+    showToast(window.LANG==='es'?'PIN del Encargado creado':'Safety Lead PIN created');
+    return;
+  }
+  if(hash===storedHash){
+    sessionStorage.setItem('hes_admin_ok','1');
+    document.getElementById('adminAuthModal').classList.remove('open');
+    if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
+  }else{
+    msg.className='pin-mode-msg error';
+    msg.textContent=window.LANG==='es'?'PIN incorrecto':'Incorrect PIN';
+    input.value='';input.focus();
+  }
+}
 function loadTopic(cat){
   const idx=currentTopicIndex();
   const t_en=TOPIC_BANK[idx];
@@ -1665,7 +1767,12 @@ async function openLeadSignModal(){
 function renderCrew(){
   const wk=document.getElementById('crewWeekLabel');if(wk)wk.textContent=S.weekLabel;
   const sel=document.getElementById('crewNameSelect');
-  if(sel){sel.innerHTML='<option value="">Select your name…</option>';CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;sel.appendChild(o);});}
+  if(sel){
+    const placeholder=window.LANG==='es'?'Selecciona tu nombre…':'Select your name…';
+    sel.innerHTML=`<option value="">${placeholder}</option>`;
+    // Unified flow: dropdown shows ALL employees (leads + crew). Role is determined from each person's record at sign-off time.
+    [...LEADS,...CREW].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});
+  }
   renderTopic();
   loadQuiz();
 }
@@ -1753,14 +1860,17 @@ async function openSignModal(){
   const ok=document.getElementById('crewConfirm')?.checked;
   if(!name){showToast(window.LANG==='es'?'Selecciona tu nombre':'Select your name');return;}
   if(!ok){showToast(window.LANG==='es'?'Confirma que revisaste el tema':'Confirm you reviewed the topic');return;}
-  const pinOk=await ensurePinValid('crew',name);
+  // Determine role from employee record (lead or crew) — same screen serves both.
+  const roleResolved=LEADS.some(l=>l.name===name)?'lead':'crew';
+  const pinOk=await ensurePinValid(roleResolved,name);
   if(!pinOk)return;
-  S.signing=name;S.signingType='crew';openSigModal(name,'Crew Member');
+  S.signing=name;S.signingType=roleResolved;
+  openSigModal(name,roleResolved==='lead'?'Job Lead':'Crew Member');
 }
 
 // ════════ PIN AUTH UI HELPERS ════════
 function onNameChange(role){
-  const list=role==='lead'?LEADS:CREW;
+  // role here is the SCREEN ('lead' or 'crew') — but for the unified crew screen we look up across both lists
   const selectId=role==='lead'?'leadNameSelect':'crewNameSelect';
   const pinRow=document.getElementById(role==='lead'?'leadPinRow':'crewPinRow');
   const pinInput=document.getElementById(role==='lead'?'leadPinInput':'crewPinInput');
@@ -1769,7 +1879,7 @@ function onNameChange(role){
   pinInput.value='';pinMsg.textContent='';pinMsg.className='pin-mode-msg';
   const name=document.getElementById(selectId)?.value;
   if(!name){pinRow.classList.remove('visible');return;}
-  const employee=list.find(p=>p.name===name);
+  const employee=[...LEADS,...CREW].find(p=>p.name===name);
   if(!employee||!employee.id){pinRow.classList.remove('visible');return;}
   if(isDeviceVerified(employee.id)){
     pinRow.classList.remove('visible');
@@ -1784,8 +1894,8 @@ function onNameChange(role){
 }
 
 async function ensurePinValid(role,name){
-  const list=role==='lead'?LEADS:CREW;
-  const employee=list.find(p=>p.name===name);
+  // Look across both lists — unified flow needs to find leads or crew by name
+  const employee=[...LEADS,...CREW].find(p=>p.name===name);
   // No Supabase ID → legacy/local-only employee, no PIN check possible
   if(!employee||!employee.id)return true;
   // This device already verified → skip
