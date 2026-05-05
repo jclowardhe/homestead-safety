@@ -208,7 +208,7 @@ body::before{
 .header{
   background:var(--surface);
   padding:0 20px;
-  height:108px;
+  height:88px;
   display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:100;
   border-bottom:2px solid var(--line-border,#000000);
@@ -221,9 +221,9 @@ body::before{
 }
 /* Full logo in the home page header */
 .brand-logo{
-  height:96px;
+  height:76px;
   width:auto;
-  max-width:340px;
+  max-width:280px;
   display:block;
   flex-shrink:0;
 }
@@ -811,9 +811,12 @@ input.field-select::placeholder{color:#B8B6B0;}
 <div class="screen active" id="screen-role">
   <header class="header">
     <img src="./logo.png" alt="Homestead Electric" class="brand-logo">
-    <button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
-      <span class="lang-en">Español</span><span class="lang-es">English</span>
-    </button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
+        <span class="lang-en">Español</span><span class="lang-es">English</span>
+      </button>
+      <div class="header-tag">OSHA 1926</div>
+    </div>
   </header>
   <div class="content">
     <div class="hero">
