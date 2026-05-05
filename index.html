@@ -61,6 +61,22 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
+/* PIN input — used during sign-off */
+.pin-row{margin-bottom:16px;display:none;}
+.pin-row.visible{display:block;}
+.pin-input{
+  width:100%;
+  font-size:24px;font-weight:600;text-align:center;letter-spacing:.6em;
+  padding:14px 14px 14px 24px;
+  border:1.5px solid #000000;border-radius:6px;
+  font-family:var(--body);color:#000000;background:#FFFFFF;
+  outline:none;
+}
+.pin-input:focus{box-shadow:0 0 0 3px rgba(0,0,0,0.06);}
+.pin-mode-msg{font-size:12px;color:var(--text2);margin-top:8px;font-weight:500;}
+.pin-mode-msg.error{color:#7F2222;}
+.pin-mode-msg.success{color:#3F6B3F;}
+
 /* Language toggle — single button that shows the OTHER language */
 .lang-toggle{
   background:#FFFFFF;border:1.5px solid #000000;border-radius:999px;
@@ -776,16 +792,21 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="sec-label">Your sign-off</div>
     <div id="leadSignSection" class="mb24" style="display:none;">
       <div class="mb16">
-        <label class="field-lbl">Your name</label>
-        <select class="field-select" id="leadNameSelect"><option value="">Select your name…</option></select>
+        <label class="field-lbl"><span class="lang-en">Your name</span><span class="lang-es">Tu nombre</span></label>
+        <select class="field-select" id="leadNameSelect" onchange="onNameChange('lead')"><option value="">Select your name…</option></select>
+      </div>
+      <div class="pin-row" id="leadPinRow">
+        <label class="field-lbl"><span class="lang-en">PIN (4 digits)</span><span class="lang-es">PIN (4 dígitos)</span></label>
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" class="pin-input" id="leadPinInput" placeholder="••••">
+        <div class="pin-mode-msg" id="leadPinMsg"></div>
       </div>
       <div class="mb16">
         <label class="check-row">
           <input type="checkbox" id="leadConfirm">
-          <span class="check-text">I confirm I attended this week's lead safety meeting and understand the topic presented.</span>
+          <span class="check-text"><span class="lang-en">I confirm I attended this week's lead safety meeting and understand the topic presented.</span><span class="lang-es">Confirmo que asistí a la reunión de seguridad de líderes de esta semana y entiendo el tema presentado.</span></span>
         </label>
       </div>
-      <button class="btn-primary" onclick="openLeadSignModal()">Sign off as lead →</button>
+      <button class="btn-primary" onclick="openLeadSignModal()"><span class="lang-en">Sign off as lead →</span><span class="lang-es">Firmar como líder →</span></button>
     </div>
     <div id="leadSigned" style="display:none;" class="mb24">
       <div class="confirm-banner">
@@ -854,16 +875,21 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="sec-label" style="margin-top:28px;">Your sign-off</div>
     <div id="crewSignSection" style="display:none;">
       <div class="mb16">
-        <label class="field-lbl">Your name</label>
-        <select class="field-select" id="crewNameSelect"><option value="">Select your name…</option></select>
+        <label class="field-lbl"><span class="lang-en">Your name</span><span class="lang-es">Tu nombre</span></label>
+        <select class="field-select" id="crewNameSelect" onchange="onNameChange('crew')"><option value="">Select your name…</option></select>
+      </div>
+      <div class="pin-row" id="crewPinRow">
+        <label class="field-lbl"><span class="lang-en">PIN (4 digits)</span><span class="lang-es">PIN (4 dígitos)</span></label>
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" class="pin-input" id="crewPinInput" placeholder="••••">
+        <div class="pin-mode-msg" id="crewPinMsg"></div>
       </div>
       <div class="mb16">
         <label class="check-row">
           <input type="checkbox" id="crewConfirm">
-          <span class="check-text">I confirm I reviewed this week's safety topic and understand the information presented.</span>
+          <span class="check-text"><span class="lang-en">I confirm I reviewed this week's safety topic and understand the information presented.</span><span class="lang-es">Confirmo que revisé el tema de seguridad de esta semana y entiendo la información presentada.</span></span>
         </label>
       </div>
-      <button class="btn-primary" onclick="openSignModal()">Sign &amp; submit →</button>
+      <button class="btn-primary" onclick="openSignModal()"><span class="lang-en">Sign &amp; submit →</span><span class="lang-es">Firmar y enviar →</span></button>
     </div>
     <div id="crewSigned" style="display:none;">
       <div class="success-state">
@@ -1272,7 +1298,7 @@ const db={
         if(allEmps.length>0){
           LEADS.length=0;CREW.length=0;
           allEmps.forEach(e=>{
-            (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name});
+            (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name,pinHash:e.pin_hash||null});
           });
           saveEmployeeLists();
         }
@@ -1329,6 +1355,35 @@ const db={
       .subscribe();
   },
 };
+
+// ════════ PIN AUTH HELPERS ════════
+async function hashPin(pin){
+  const buf=new TextEncoder().encode('hes_v1_'+pin);
+  const hash=await crypto.subtle.digest('SHA-256',buf);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function isDeviceVerified(empId){
+  if(!empId)return true; // legacy/local-only employees with no Supabase ID skip PIN
+  try{
+    const list=JSON.parse(localStorage.getItem('hes_verified_employees')||'[]');
+    return list.includes(empId);
+  }catch(e){return false;}
+}
+function markDeviceVerified(empId){
+  if(!empId)return;
+  try{
+    const list=JSON.parse(localStorage.getItem('hes_verified_employees')||'[]');
+    if(!list.includes(empId)){list.push(empId);localStorage.setItem('hes_verified_employees',JSON.stringify(list));}
+  }catch(e){}
+}
+function unmarkDeviceVerified(empId){
+  if(!empId)return;
+  try{
+    const list=JSON.parse(localStorage.getItem('hes_verified_employees')||'[]');
+    const idx=list.indexOf(empId);
+    if(idx>=0){list.splice(idx,1);localStorage.setItem('hes_verified_employees',JSON.stringify(list));}
+  }catch(e){}
+}
 
 // ── EMPLOYEES (mutable, localStorage-backed) ──
 const DEFAULT_LEADS=[
@@ -1598,7 +1653,15 @@ function updateLeadStats(){
   if($('leadProgressBar')){$('leadProgressBar').style.width=pct+'%';if(pct===100)$('leadProgressBar').classList.add('complete');else $('leadProgressBar').classList.remove('complete');}
   if($('lead-progress-pct'))$('lead-progress-pct').textContent=pct+'%';
 }
-function openLeadSignModal(){const name=document.getElementById('leadNameSelect')?.value;const ok=document.getElementById('leadConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you attended the meeting');return;}S.signing=name;S.signingType='lead';openSigModal(name,'Job Lead');}
+async function openLeadSignModal(){
+  const name=document.getElementById('leadNameSelect')?.value;
+  const ok=document.getElementById('leadConfirm')?.checked;
+  if(!name){showToast(window.LANG==='es'?'Selecciona tu nombre':'Select your name');return;}
+  if(!ok){showToast(window.LANG==='es'?'Confirma que asististe':'Confirm you attended the meeting');return;}
+  const pinOk=await ensurePinValid('lead',name);
+  if(!pinOk)return;
+  S.signing=name;S.signingType='lead';openSigModal(name,'Job Lead');
+}
 function renderCrew(){
   const wk=document.getElementById('crewWeekLabel');if(wk)wk.textContent=S.weekLabel;
   const sel=document.getElementById('crewNameSelect');
@@ -1685,7 +1748,89 @@ function retryQuiz(){
   quiz.current=0;quiz.correct=0;quiz.answered=[];
   renderQuiz();
 }
-function openSignModal(){const name=document.getElementById('crewNameSelect')?.value;const ok=document.getElementById('crewConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you reviewed the topic');return;}S.signing=name;S.signingType='crew';openSigModal(name,'Crew Member');}
+async function openSignModal(){
+  const name=document.getElementById('crewNameSelect')?.value;
+  const ok=document.getElementById('crewConfirm')?.checked;
+  if(!name){showToast(window.LANG==='es'?'Selecciona tu nombre':'Select your name');return;}
+  if(!ok){showToast(window.LANG==='es'?'Confirma que revisaste el tema':'Confirm you reviewed the topic');return;}
+  const pinOk=await ensurePinValid('crew',name);
+  if(!pinOk)return;
+  S.signing=name;S.signingType='crew';openSigModal(name,'Crew Member');
+}
+
+// ════════ PIN AUTH UI HELPERS ════════
+function onNameChange(role){
+  const list=role==='lead'?LEADS:CREW;
+  const selectId=role==='lead'?'leadNameSelect':'crewNameSelect';
+  const pinRow=document.getElementById(role==='lead'?'leadPinRow':'crewPinRow');
+  const pinInput=document.getElementById(role==='lead'?'leadPinInput':'crewPinInput');
+  const pinMsg=document.getElementById(role==='lead'?'leadPinMsg':'crewPinMsg');
+  if(!pinRow)return;
+  pinInput.value='';pinMsg.textContent='';pinMsg.className='pin-mode-msg';
+  const name=document.getElementById(selectId)?.value;
+  if(!name){pinRow.classList.remove('visible');return;}
+  const employee=list.find(p=>p.name===name);
+  if(!employee||!employee.id){pinRow.classList.remove('visible');return;}
+  if(isDeviceVerified(employee.id)){
+    pinRow.classList.remove('visible');
+    return;
+  }
+  pinRow.classList.add('visible');
+  if(employee.pinHash){
+    pinMsg.textContent=window.LANG==='es'?'Ingresa tu PIN':'Enter your PIN';
+  }else{
+    pinMsg.textContent=window.LANG==='es'?'Crea un PIN de 4 dígitos (memoriza este)':'Create a 4-digit PIN (remember this one)';
+  }
+}
+
+async function ensurePinValid(role,name){
+  const list=role==='lead'?LEADS:CREW;
+  const employee=list.find(p=>p.name===name);
+  // No Supabase ID → legacy/local-only employee, no PIN check possible
+  if(!employee||!employee.id)return true;
+  // This device already verified → skip
+  if(isDeviceVerified(employee.id))return true;
+  // Need to validate or create a PIN
+  const pinInput=document.getElementById(role==='lead'?'leadPinInput':'crewPinInput');
+  const pinMsg=document.getElementById(role==='lead'?'leadPinMsg':'crewPinMsg');
+  const pin=(pinInput?.value||'').trim();
+  if(!/^\d{4}$/.test(pin)){
+    pinMsg.className='pin-mode-msg error';
+    pinMsg.textContent=window.LANG==='es'?'El PIN debe ser de 4 dígitos':'PIN must be 4 digits';
+    pinInput?.focus();
+    return false;
+  }
+  const hash=await hashPin(pin);
+  if(employee.pinHash){
+    // Verify
+    if(hash===employee.pinHash){
+      markDeviceVerified(employee.id);
+      pinMsg.className='pin-mode-msg success';
+      pinMsg.textContent=window.LANG==='es'?'PIN correcto ✓':'PIN verified ✓';
+      return true;
+    }else{
+      pinMsg.className='pin-mode-msg error';
+      pinMsg.textContent=window.LANG==='es'?'PIN incorrecto':'Incorrect PIN';
+      pinInput.value='';pinInput.focus();
+      return false;
+    }
+  }else{
+    // Create — save hash to Supabase
+    if(sb){
+      const updated=await db.updateEmployee(employee.id,{pin_hash:hash});
+      if(!updated){
+        pinMsg.className='pin-mode-msg error';
+        pinMsg.textContent=window.LANG==='es'?'No se pudo guardar el PIN':'Failed to save PIN';
+        return false;
+      }
+    }
+    employee.pinHash=hash;
+    markDeviceVerified(employee.id);
+    pinMsg.className='pin-mode-msg success';
+    pinMsg.textContent=window.LANG==='es'?'PIN creado ✓':'PIN created ✓';
+    return true;
+  }
+}
 function openSigFor(name,type){S.signing=name;S.signingType=type;openSigModal(name,type==='lead'?'Job Lead':'Crew Member');}
 function shareLink(){showToast('Sign-off link copied');}
 
@@ -1821,15 +1966,32 @@ function empRowHTML(person,role,idx){
     </div>`;
   }
   const roleLbl=role==='lead'?'Job Lead':'Apprentice';
+  const pinBadge=person.pinHash?'<span style="font-size:10px;color:var(--text2);font-weight:500;letter-spacing:.04em;text-transform:uppercase;">PIN ✓</span>':'<span style="font-size:10px;color:#A8A29E;font-weight:500;letter-spacing:.04em;text-transform:uppercase;">no PIN</span>';
   return`<div class="emp-row is-${role}">
     <div class="avatar">${ini(person.name)}</div>
     <div style="flex:1;min-width:0;">
       <span class="emp-name">${person.name}</span>
-      <span class="emp-role">${roleLbl}</span>
+      <span class="emp-role">${roleLbl} · ${pinBadge}</span>
     </div>
     <button class="btn-edit" onclick="startEditEmployee('${role}',${idx})">Edit</button>
+    <button class="btn-edit" onclick="resetEmployeePin('${role}',${idx})" title="Reset PIN">PIN</button>
     <button class="btn-remove" onclick="removeEmployee('${role}',${idx})">Remove</button>
   </div>`;
+}
+async function resetEmployeePin(role,idx){
+  const list=role==='lead'?LEADS:CREW;
+  const person=list[idx];
+  if(!person)return;
+  if(!confirm(`Reset PIN for ${person.name}? They'll be asked to create a new one the next time they sign on a new device.`))return;
+  if(sb&&person.id){
+    const updated=await db.updateEmployee(person.id,{pin_hash:null});
+    if(!updated){showToast('Failed to reset PIN');return;}
+  }
+  person.pinHash=null;
+  unmarkDeviceVerified(person.id);
+  saveEmployeeLists();
+  showToast(`${person.name} — PIN reset`);
+  renderEmployeeLists();
 }
 function renderEmployeeLists(){
   const leadsEl=document.getElementById('empListLeads');
