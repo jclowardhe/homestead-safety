@@ -720,7 +720,7 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
     <div class="header-tag">Crew</div>
   </header>
-  <div class="content" style="padding-bottom:40px;">
+  <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
       <div class="hero-eyebrow">Safety Topic</div>
       <div class="hero-title" style="font-size:26px;">This<br>Week's<br>Talk.</div>
@@ -765,6 +765,10 @@ input.field-select::placeholder{color:#B8B6B0;}
       </div>
     </div>
   </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active"><span class="ni">📋</span>Topic</button>
+    <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
+  </nav>
 </div>
 <!-- ══ ADMIN ══ -->
 <div class="screen" id="screen-admin">
@@ -880,7 +884,7 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
     <div class="header-tag" style="color:#FF4444;border-color:rgba(255,68,68,0.4);">Incident</div>
   </header>
-  <div class="content" style="padding-bottom:40px;">
+  <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
       <div class="hero-eyebrow" style="color:#FF4444;">Incident Report</div>
       <div class="hero-title" style="font-size:26px;">File a<br>Report.</div>
@@ -1034,6 +1038,10 @@ input.field-select::placeholder{color:#B8B6B0;}
       <button class="btn-outline" style="margin-top:10px;width:100%;" onclick="goHome()">Cancel</button>
     </div>
   </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active"><span class="ni">⚠️</span>Report</button>
+    <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
+  </nav>
 </div>
 <!-- SIG MODAL -->
 <div class="modal-overlay" id="sigModal">
@@ -1069,7 +1077,12 @@ const db={
   async insertEmployee(person){
     if(!sb)return null;
     const {data,error}=await sb.from('employees').insert({name:person.name,role:person.role}).select().single();
-    if(error){console.error('insertEmployee',error);return null;}
+    if(error){
+      console.error('insertEmployee',error);
+      if(/duplicate|unique/i.test(error.message||''))showToast(`${person.name} already exists in database`);
+      else showToast('Database error saving employee');
+      return null;
+    }
     return data;
   },
   async updateEmployee(id,fields){
@@ -1099,7 +1112,10 @@ const db={
       topic_title:rec.topicTitle,
       topic_osha_ref:rec.topicOshaRef,
     },{onConflict:'employee_name,week_id,role_at_sign'});
-    if(error)console.error('insertSignoff',error);
+    if(error){
+      console.error('insertSignoff',error);
+      showToast('Sync error — sign-off saved locally only');
+    }
   },
   async insertIncident(report){
     if(!sb)return;
@@ -1129,27 +1145,32 @@ const db={
   async hydrate(){
     if(!sb)return;
     try{
-      // Employees
+      // Employees — fetch from Supabase, then upload any local-only people
+      // (so additions made before Supabase wiring, or while offline, sync up).
       const {data:emps}=await sb.from('employees').select('*').eq('active',true).order('created_at');
-      if(emps&&emps.length>0){
-        LEADS.length=0;CREW.length=0;
-        emps.forEach(e=>{
-          (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name});
-        });
-      } else if(emps&&emps.length===0&&(LEADS.length>0||CREW.length>0)){
-        // First-time setup: Supabase is empty but the local cache has the
-        // defaults. Seed Supabase from local so we don't wipe everyone out.
-        const seed=[
-          ...LEADS.map(p=>({name:p.name,role:'lead'})),
-          ...CREW.map(p=>({name:p.name,role:'crew'})),
+      if(emps){
+        const cloudNames=new Set(emps.map(e=>e.name.toLowerCase()));
+        const orphans=[
+          ...LEADS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'lead'})),
+          ...CREW.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'crew'})),
         ];
-        const {data:seeded,error:seedErr}=await sb.from('employees').insert(seed).select();
-        if(seedErr){console.error('seed employees',seedErr);}
-        else if(seeded){
+        let allEmps=emps;
+        if(orphans.length>0){
+          const {data:inserted,error:upErr}=await sb.from('employees').insert(orphans).select();
+          if(upErr){
+            console.error('Upload local-only employees failed:',upErr);
+            showToast('Some employees failed to sync — see console');
+          } else if(inserted){
+            allEmps=[...emps,...inserted];
+            console.log(`Synced ${inserted.length} local-only employee(s) to Supabase`);
+          }
+        }
+        if(allEmps.length>0){
           LEADS.length=0;CREW.length=0;
-          seeded.forEach(e=>{(e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name});});
+          allEmps.forEach(e=>{
+            (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name});
+          });
           saveEmployeeLists();
-          console.log('Seeded',seeded.length,'employees from local cache');
         }
       }
       // This week's sign-offs
@@ -1817,35 +1838,38 @@ function clearSig(){cx.clearRect(0,0,cv.width,cv.height);hasMark=false;document.
 function submitSignature(){
   if(!hasMark){showToast('Please sign before submitting');return;}
   if(!S.signing)return;
+  // Capture identifiers up front — closeSigModal() resets S.signing/S.signingType
+  const signingName=S.signing;
+  const signingType=S.signingType;
   const now=new Date(),ts=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),ds=now.toLocaleDateString('en-US',{month:'short',day:'numeric'}),loc=S.loc?`${S.loc.lat}, ${S.loc.lng}`:'Location N/A';
   const sigData=cv.toDataURL();
   const rec={time:`${ds} ${ts}`,location:loc,sigData,weekId:S.weekId,topic:S.topic?.title||''};
   // Find employee row to get the id (for Supabase FK)
-  const empList=S.signingType==='lead'?LEADS:CREW;
-  const employee=empList.find(p=>p.name===S.signing);
+  const empList=signingType==='lead'?LEADS:CREW;
+  const employee=empList.find(p=>p.name===signingName);
   // Persist to Supabase (fire-and-forget, but capture the data)
   if(sb){
     db.insertSignoff({
       employeeId:employee?.id||null,
-      name:S.signing,
+      name:signingName,
       weekId:S.weekId,
       weekLabel:S.weekLabel,
-      role:S.signingType,
+      role:signingType,
       signedAt:now.toISOString(),
       lat:S.loc?.lat,
       lng:S.loc?.lng,
       sigData,
-      quizScore:S.signingType==='lead'?`${leadQuiz.correct}/3`:`${quiz.correct}/3`,
+      quizScore:signingType==='lead'?`${leadQuiz.correct}/3`:`${quiz.correct}/3`,
       topicTitle:S.topic?.title||'',
       topicOshaRef:S.topic?.oshaRef||'',
     });
   }
-  if(S.signingType==='lead'){
+  if(signingType==='lead'){
     rec.quizScore=`${leadQuiz.correct}/3`;
-    S.leadSignoffs[S.signing]=rec;save();closeSigModal();showToast(`${S.signing} signed`);document.getElementById('leadSignSection').style.display='none';document.getElementById('leadSigned').style.display='block';document.getElementById('leadSignedName').textContent=S.signing;document.getElementById('leadSignedDetails').textContent=`${ds} ${ts} · ${loc}`;
+    S.leadSignoffs[signingName]=rec;save();closeSigModal();showToast(`${signingName} signed`);document.getElementById('leadSignSection').style.display='none';document.getElementById('leadSigned').style.display='block';document.getElementById('leadSignedName').textContent=signingName;document.getElementById('leadSignedDetails').textContent=`${ds} ${ts} · ${loc}`;
   } else {
     rec.quizScore=`${quiz.correct}/3`;
-    S.signoffs[S.signing]=rec;save();closeSigModal();showToast(`${S.signing} signed`);if(S.role==='lead'){renderCrewSignoffList();updateLeadStats();}else if(S.role==='crew'){document.getElementById('crewSignSection').style.display='none';document.getElementById('crewSigned').style.display='block';document.getElementById('crewSignedDetails').textContent=`${S.signing} · ${ds} ${ts}`;}
+    S.signoffs[signingName]=rec;save();closeSigModal();showToast(`${signingName} signed`);if(S.role==='lead'){renderCrewSignoffList();updateLeadStats();}else if(S.role==='crew'){document.getElementById('crewSignSection').style.display='none';document.getElementById('crewSigned').style.display='block';document.getElementById('crewSignedDetails').textContent=`${signingName} · ${ds} ${ts}`;}
   }
 }
 function exportReport(){
