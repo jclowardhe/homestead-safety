@@ -3354,11 +3354,11 @@ if(HAS_SUPABASE){
   db.hydrate().then(()=>db.subscribe()).then(()=>flushSignoffQueue());
 }
 
-// ════════ PWA — SERVICE WORKER + OFFLINE QUEUE ════════
+// ════════ PWA temporarily disabled — kill any existing service worker + caches ════════
+// (Re-enable later by switching this block back to navigator.serviceWorker.register('./sw.js').)
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('SW register failed',err));
-  });
+  navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister())).catch(()=>{});
+  if(window.caches){caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{});}
 }
 // Offline indicator
 function updateOnlineBadge(){
