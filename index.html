@@ -959,6 +959,7 @@ input.field-select::placeholder{color:#B8B6B0;}
         <input type="text" class="field-select" id="emp-new-name" placeholder="Full name (e.g. Jane Doe)">
         <select class="field-select" id="emp-new-role">
           <option value="lead">Job Lead</option>
+          <option value="foreman">Foreman</option>
           <option value="crew" selected>Apprentice</option>
           <option value="admin">Admin (office staff)</option>
         </select>
@@ -966,6 +967,7 @@ input.field-select::placeholder{color:#B8B6B0;}
       </div>
     </div>
     <div id="empListLeads"></div>
+    <div id="empListForemen"></div>
     <div id="empListCrew"></div>
     <div id="empListAdmins"></div>
     <div class="divider"></div>
@@ -1299,6 +1301,7 @@ const db={
           ...LEADS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'lead'})),
           ...CREW.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'crew'})),
           ...ADMINS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'admin',is_admin:true})),
+          ...FOREMEN.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'foreman'})),
         ];
         let allEmps=emps;
         if(orphans.length>0){
@@ -1312,9 +1315,9 @@ const db={
           }
         }
         if(allEmps.length>0){
-          LEADS.length=0;CREW.length=0;ADMINS.length=0;
+          LEADS.length=0;CREW.length=0;ADMINS.length=0;FOREMEN.length=0;
           allEmps.forEach(e=>{
-            const bucket=e.role==='admin'?ADMINS:(e.role==='lead'?LEADS:CREW);
+            const bucket=e.role==='admin'?ADMINS:(e.role==='lead'?LEADS:(e.role==='foreman'?FOREMEN:CREW));
             // Admin role implies admin permission
             const isAdmin=e.role==='admin'?true:!!e.is_admin;
             bucket.push({id:e.id,name:e.name,pinHash:e.pin_hash||null,isAdmin});
@@ -1425,11 +1428,13 @@ function saveEmployeeLists(){
     localStorage.setItem('hes_leads_v1',JSON.stringify(LEADS));
     localStorage.setItem('hes_crew_v1',JSON.stringify(CREW));
     localStorage.setItem('hes_admins_v1',JSON.stringify(ADMINS));
+    localStorage.setItem('hes_foremen_v1',JSON.stringify(FOREMEN));
   }catch(e){}
 }
 let LEADS=loadEmployeeList('hes_leads_v1',DEFAULT_LEADS);
 let CREW=loadEmployeeList('hes_crew_v1',DEFAULT_CREW);
 let ADMINS=loadEmployeeList('hes_admins_v1',[]);
+let FOREMEN=loadEmployeeList('hes_foremen_v1',[]);
 
 // ── TOPIC BANK ──
 const TOPIC_BANK = [
@@ -1563,7 +1568,7 @@ async function checkAdminAccess(){
     const sel=document.getElementById('adminAuthNameSelect');
     input.value='';msg.textContent='';msg.className='pin-mode-msg';
     // Build dropdown: anyone who can admin (admin role + lead/crew with isAdmin flag) + Master Access fallback
-    const admins=[...LEADS,...CREW,...ADMINS].filter(p=>p.isAdmin);
+    const admins=[...LEADS,...FOREMEN,...CREW,...ADMINS].filter(p=>p.isAdmin);
     sel.innerHTML='';
     admins.forEach(p=>{
       const o=document.createElement('option');o.value='emp:'+p.id;o.textContent=p.name;
@@ -1630,7 +1635,7 @@ async function submitAdminAuth(){
   }
   // Per-employee admin flow
   const empId=choice.replace(/^emp:/,'');
-  const employee=[...LEADS,...CREW,...ADMINS].find(p=>p.id===empId);
+  const employee=[...LEADS,...FOREMEN,...CREW,...ADMINS].find(p=>p.id===empId);
   if(!employee||!employee.isAdmin){
     msg.className='pin-mode-msg error';
     msg.textContent=window.LANG==='es'?'No tienes acceso de administración':'You do not have admin access';
@@ -1652,7 +1657,7 @@ async function submitAdminAuth(){
   }
 }
 async function toggleEmployeeAdmin(role,idx){
-  const list=role==='lead'?LEADS:(role==='admin'?ADMINS:CREW);
+  const list=bucketForRole(role);
   const person=list[idx];
   if(role==='admin'){showToast('Admin role already has admin access');return;}
   if(!person)return;
@@ -1824,8 +1829,8 @@ function renderCrew(){
   if(sel){
     const placeholder=window.LANG==='es'?'Selecciona tu nombre…':'Select your name…';
     sel.innerHTML=`<option value="">${placeholder}</option>`;
-    // Unified flow: dropdown shows ALL employees (leads + crew). Role is determined from each person's record at sign-off time.
-    [...LEADS,...CREW].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});
+    // Unified flow: every employee can sign off. Role at sign-off time is derived from each person's record.
+    [...LEADS,...FOREMEN,...CREW,...ADMINS].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});
   }
   renderTopic();
   loadQuiz();
@@ -1914,8 +1919,9 @@ async function openSignModal(){
   const ok=document.getElementById('crewConfirm')?.checked;
   if(!name){showToast(window.LANG==='es'?'Selecciona tu nombre':'Select your name');return;}
   if(!ok){showToast(window.LANG==='es'?'Confirma que revisaste el tema':'Confirm you reviewed the topic');return;}
-  // Determine role from employee record (lead or crew) — same screen serves both.
-  const roleResolved=LEADS.some(l=>l.name===name)?'lead':'crew';
+  // Determine sign-off bucket from employee record. Lead-tier (lead, foreman) → 'lead'; everyone else → 'crew'.
+  const isLeadTier=LEADS.some(l=>l.name===name)||FOREMEN.some(f=>f.name===name);
+  const roleResolved=isLeadTier?'lead':'crew';
   const pinOk=await ensurePinValid(roleResolved,name);
   if(!pinOk)return;
   S.signing=name;S.signingType=roleResolved;
@@ -2120,6 +2126,7 @@ function empRowHTML(person,role,idx){
         <label class="field-lbl">Role</label>
         <select class="field-select" id="edit-role">
           <option value="lead" ${role==='lead'?'selected':''}>Job Lead</option>
+          <option value="foreman" ${role==='foreman'?'selected':''}>Foreman</option>
           <option value="crew" ${role==='crew'?'selected':''}>Apprentice</option>
           <option value="admin" ${role==='admin'?'selected':''}>Admin (office staff)</option>
         </select>
@@ -2148,7 +2155,7 @@ function empRowHTML(person,role,idx){
   </div>`;
 }
 async function resetEmployeePin(role,idx){
-  const list=role==='lead'?LEADS:(role==='admin'?ADMINS:CREW);
+  const list=bucketForRole(role);
   const person=list[idx];
   if(!person)return;
   if(!confirm(`Reset PIN for ${person.name}? They'll be asked to create a new one the next time they sign on a new device.`))return;
@@ -2164,12 +2171,17 @@ async function resetEmployeePin(role,idx){
 }
 function renderEmployeeLists(){
   const leadsEl=document.getElementById('empListLeads');
+  const foremenEl=document.getElementById('empListForemen');
   const crewEl=document.getElementById('empListCrew');
   const adminsEl=document.getElementById('empListAdmins');
   const sectionHeader=lbl=>`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">${lbl}</div>`;
   if(leadsEl){
     leadsEl.innerHTML=sectionHeader(`Job Leads (${LEADS.length})`)+
       (LEADS.length?LEADS.map((l,i)=>empRowHTML(l,'lead',i)).join(''):'<div class="empty-state">No leads yet.</div>');
+  }
+  if(foremenEl){
+    foremenEl.innerHTML=sectionHeader(`Foremen (${FOREMEN.length})`)+
+      (FOREMEN.length?FOREMEN.map((f,i)=>empRowHTML(f,'foreman',i)).join(''):'<div class="empty-state">No foremen yet.</div>');
   }
   if(crewEl){
     crewEl.innerHTML=sectionHeader(`Apprentices (${CREW.length})`)+
@@ -2193,13 +2205,12 @@ async function saveEditEmployee(originalRole,originalIdx){
   const newRole=document.getElementById('edit-role')?.value||originalRole;
   if(!newName){showToast('Enter a name');return;}
   if(newName.length<2){showToast('Name is too short');return;}
-  const bucketFor=(r)=>r==='lead'?LEADS:(r==='admin'?ADMINS:CREW);
-  const originalList=bucketFor(originalRole);
+  const originalList=bucketForRole(originalRole);
   const person=originalList[originalIdx];
   if(!person)return;
   const oldName=person.name;
   // Duplicate check (excluding the person being edited)
-  const allNames=[...LEADS,...CREW,...ADMINS].filter(p=>p!==person).map(p=>p.name.toLowerCase());
+  const allNames=[...LEADS,...CREW,...ADMINS,...FOREMEN].filter(p=>p!==person).map(p=>p.name.toLowerCase());
   if(allNames.includes(newName.toLowerCase())){showToast('That name already exists');return;}
   // Admin role implies admin permission
   const newIsAdmin=newRole==='admin'?true:!!person.isAdmin;
@@ -2212,14 +2223,18 @@ async function saveEditEmployee(originalRole,originalIdx){
     if(S.signoffs[oldName]){S.signoffs[newName]=S.signoffs[oldName];delete S.signoffs[oldName];}
     if(S.leadSignoffs[oldName]){S.leadSignoffs[newName]=S.leadSignoffs[oldName];delete S.leadSignoffs[oldName];}
   }
-  // Move sign-off between buckets if role changed
+  // Move sign-off between buckets if role tier changed (lead-tier vs not)
+  const wasLeadTier=originalRole==='lead'||originalRole==='foreman';
+  const isLeadTier=newRole==='lead'||newRole==='foreman';
+  if(wasLeadTier!==isLeadTier){
+    if(wasLeadTier&&S.leadSignoffs[newName]){S.signoffs[newName]=S.leadSignoffs[newName];delete S.leadSignoffs[newName];}
+    else if(!wasLeadTier&&S.signoffs[newName]){S.leadSignoffs[newName]=S.signoffs[newName];delete S.signoffs[newName];}
+  }
+  // Move person to the right list if role changed
   if(originalRole!==newRole){
-    if(originalRole==='lead'&&S.leadSignoffs[newName]){S.signoffs[newName]=S.leadSignoffs[newName];delete S.leadSignoffs[newName];}
-    else if(originalRole==='crew'&&S.signoffs[newName]){S.leadSignoffs[newName]=S.signoffs[newName];delete S.signoffs[newName];}
-    // Move person to the right list
     originalList.splice(originalIdx,1);
     const updated={...person,name:newName,isAdmin:newIsAdmin};
-    bucketFor(newRole).push(updated);
+    bucketForRole(newRole).push(updated);
   } else {
     person.name=newName;
     person.isAdmin=newIsAdmin;
@@ -2231,6 +2246,7 @@ async function saveEditEmployee(originalRole,originalIdx){
   renderAdmin();
   refreshAllNamePickers();
 }
+function bucketForRole(r){return r==='admin'?ADMINS:(r==='lead'?LEADS:(r==='foreman'?FOREMEN:CREW));}
 async function addEmployee(){
   const nameEl=document.getElementById('emp-new-name');
   const roleEl=document.getElementById('emp-new-role');
@@ -2238,23 +2254,21 @@ async function addEmployee(){
   const role=roleEl?.value||'crew';
   if(!name){showToast('Enter a name');return;}
   if(name.length<2){showToast('Name is too short');return;}
-  const exists=[...LEADS,...CREW,...ADMINS].some(p=>p.name.toLowerCase()===name.toLowerCase());
+  const exists=[...LEADS,...CREW,...ADMINS,...FOREMEN].some(p=>p.name.toLowerCase()===name.toLowerCase());
   if(exists){showToast('That name already exists');return;}
   // Admin role implies admin permission
   const insertFields=role==='admin'?{name,role,is_admin:true}:{name,role};
   const inserted=sb?await db.insertEmployee(insertFields):null;
   const newPerson=inserted?{id:inserted.id,name:inserted.name,isAdmin:role==='admin'}:{name,isAdmin:role==='admin'};
-  const bucket=role==='admin'?ADMINS:(role==='lead'?LEADS:CREW);
-  bucket.push(newPerson);
+  bucketForRole(role).push(newPerson);
   saveEmployeeLists();
   nameEl.value='';
-  const label=role==='admin'?'admin':(role==='lead'?'lead':'crew');
-  showToast(`${name} added as ${label}`);
+  showToast(`${name} added as ${role}`);
   renderAdmin();
   refreshAllNamePickers();
 }
 async function removeEmployee(role,idx){
-  const list=role==='lead'?LEADS:(role==='admin'?ADMINS:CREW);
+  const list=bucketForRole(role);
   const person=list[idx];
   if(!person)return;
   if(!confirm(`Remove ${person.name}? Their existing sign-offs will be kept in the records but they won't appear in lists going forward.`))return;
@@ -2266,24 +2280,24 @@ async function removeEmployee(role,idx){
   refreshAllNamePickers();
 }
 function refreshAllNamePickers(){
-  // Crew sign-off list (lead screen)
-  if(document.getElementById('screen-lead').classList.contains('active')){
-    renderCrewSignoffList();
-    const sel=document.getElementById('leadNameSelect');
-    if(sel){sel.innerHTML='<option value="">Select your name…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;sel.appendChild(o);});}
-    updateLeadStats();
-  }
-  // Crew screen name picker
+  // Sign Off (unified) screen name picker — everyone
   const crewSel=document.getElementById('crewNameSelect');
-  if(crewSel){crewSel.innerHTML='<option value="">Select your name…</option>';CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;crewSel.appendChild(o);});}
+  if(crewSel){
+    crewSel.innerHTML='<option value="">Select your name…</option>';
+    [...LEADS,...FOREMEN,...CREW,...ADMINS].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;crewSel.appendChild(o);});
+  }
   // Incident report dropdowns
-  const allPeople=[...LEADS,...CREW];
+  const allPeople=[...LEADS,...FOREMEN,...CREW,...ADMINS];
   ['ir-person','ir-filedby'].forEach(id=>{
     const sel=document.getElementById(id);
     if(sel){sel.innerHTML='<option value="">Select name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});}
   });
+  // Incident report "lead on site" — leads + foremen
   const irLead=document.getElementById('ir-lead');
-  if(irLead){irLead.innerHTML='<option value="">Select lead…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;irLead.appendChild(o);});}
+  if(irLead){
+    irLead.innerHTML='<option value="">Select lead…</option>';
+    [...LEADS,...FOREMEN].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;irLead.appendChild(o);});
+  }
 }
 
 function generateNewTopic(){
