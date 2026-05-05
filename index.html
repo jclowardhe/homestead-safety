@@ -1682,11 +1682,7 @@ async function checkAdminAccess(){
     input.value='';msg.textContent='';msg.className='pin-mode-msg';
     // Build dropdown: anyone who can admin (admin role + lead/crew with isAdmin flag) + Master Access fallback
     const admins=[...LEADS,...FOREMEN,...CREW,...ADMINS].filter(p=>p.isAdmin);
-    sel.innerHTML='';
-    admins.forEach(p=>{
-      const o=document.createElement('option');o.value='emp:'+p.id;o.textContent=p.name;
-      sel.appendChild(o);
-    });
+    populateNameSelect(sel,{filter:p=>p.isAdmin,valuePrefix:'emp:'});
     const masterOpt=document.createElement('option');
     masterOpt.value='master';
     masterOpt.textContent=(window.LANG==='es'?'Acceso maestro (PIN único)':'Master access (single PIN)');
@@ -1829,12 +1825,7 @@ function renderTopic(){
 function renderCrew(){
   const wk=document.getElementById('crewWeekLabel');if(wk)wk.textContent=S.weekLabel;
   const sel=document.getElementById('crewNameSelect');
-  if(sel){
-    const placeholder=window.LANG==='es'?'Selecciona tu nombre…':'Select your name…';
-    sel.innerHTML=`<option value="">${placeholder}</option>`;
-    // Unified flow: every employee can sign off. Role at sign-off time is derived from each person's record.
-    [...LEADS,...FOREMEN,...CREW,...ADMINS].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});
-  }
+  populateNameSelect(sel,{placeholder:window.LANG==='es'?'Selecciona tu nombre…':'Select your name…'});
   renderTopic();
   loadQuiz();
 }
@@ -2522,6 +2513,38 @@ async function saveEditEmployee(originalRole,originalIdx){
   refreshAllNamePickers();
 }
 function bucketForRole(r){return r==='admin'?ADMINS:(r==='lead'?LEADS:(r==='foreman'?FOREMEN:CREW));}
+
+// Populate a <select> with role-grouped, alphabetized employee options.
+// opts: { placeholder, leadsOnly, includeAdmins (default true), filter, valuePrefix }
+function populateNameSelect(sel,opts){
+  if(!sel)return;
+  sel.innerHTML='';
+  if(opts&&opts.placeholder!==undefined){
+    const o=document.createElement('option');o.value='';o.textContent=opts.placeholder;sel.appendChild(o);
+  }
+  const filter=(opts&&opts.filter)||(()=>true);
+  const valuePrefix=(opts&&opts.valuePrefix)||'';
+  const groups=[];
+  groups.push({label:'Job Leads',items:LEADS.filter(filter)});
+  groups.push({label:'Foremen',items:FOREMEN.filter(filter)});
+  if(!(opts&&opts.leadsOnly)){
+    groups.push({label:'Apprentices',items:CREW.filter(filter)});
+    if(!opts||opts.includeAdmins!==false){
+      groups.push({label:'Admin',items:ADMINS.filter(filter)});
+    }
+  }
+  groups.forEach(g=>{
+    if(!g.items.length)return;
+    const og=document.createElement('optgroup');og.label=g.label;
+    [...g.items].sort((a,b)=>a.name.localeCompare(b.name)).forEach(p=>{
+      const o=document.createElement('option');
+      o.value=valuePrefix?(valuePrefix+(p.id||'')):p.name;
+      o.textContent=p.name;
+      og.appendChild(o);
+    });
+    sel.appendChild(og);
+  });
+}
 async function addEmployee(){
   const nameEl=document.getElementById('emp-new-name');
   const roleEl=document.getElementById('emp-new-role');
@@ -2555,24 +2578,13 @@ async function removeEmployee(role,idx){
   refreshAllNamePickers();
 }
 function refreshAllNamePickers(){
-  // Sign Off (unified) screen name picker — everyone
-  const crewSel=document.getElementById('crewNameSelect');
-  if(crewSel){
-    crewSel.innerHTML='<option value="">Select your name…</option>';
-    [...LEADS,...FOREMEN,...CREW,...ADMINS].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;crewSel.appendChild(o);});
-  }
-  // Incident report dropdowns
-  const allPeople=[...LEADS,...FOREMEN,...CREW,...ADMINS];
-  ['ir-person','ir-filedby'].forEach(id=>{
-    const sel=document.getElementById(id);
-    if(sel){sel.innerHTML='<option value="">Select name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);});}
-  });
-  // Incident report "lead on site" — leads + foremen
-  const irLead=document.getElementById('ir-lead');
-  if(irLead){
-    irLead.innerHTML='<option value="">Select lead…</option>';
-    [...LEADS,...FOREMEN].forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;irLead.appendChild(o);});
-  }
+  // Sign Off — everyone, grouped + alphabetized
+  populateNameSelect(document.getElementById('crewNameSelect'),{placeholder:window.LANG==='es'?'Selecciona tu nombre…':'Select your name…'});
+  // Incident report — person involved + filed by
+  populateNameSelect(document.getElementById('ir-person'),{placeholder:'Select name…'});
+  populateNameSelect(document.getElementById('ir-filedby'),{placeholder:'Select your name…'});
+  // Incident report "Job lead on site" — leads + foremen only
+  populateNameSelect(document.getElementById('ir-lead'),{placeholder:'Select lead…',leadsOnly:true});
 }
 
 function generateNewTopic(){
@@ -2764,13 +2776,12 @@ if(S.topic)renderTopic();
 // ── INCIDENT REPORT ──
 let incidentType='injury';
 function renderIncident(){
-  const allPeople=[...LEADS,...CREW];
   const person=document.getElementById('ir-person');
   const lead=document.getElementById('ir-lead');
   const filedby=document.getElementById('ir-filedby');
-  if(person){person.innerHTML='<option value="">Select name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;person.appendChild(o);});}
-  if(filedby){filedby.innerHTML='<option value="">Select your name…</option>';allPeople.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name;filedby.appendChild(o);});}
-  if(lead){lead.innerHTML='<option value="">Select lead…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;lead.appendChild(o);});}
+  if(person)populateNameSelect(person,{placeholder:'Select name…'});
+  if(filedby)populateNameSelect(filedby,{placeholder:'Select your name…'});
+  if(lead)populateNameSelect(lead,{placeholder:'Select lead…',leadsOnly:true});
   const dt=document.getElementById('ir-datetime');
   if(dt&&!dt.value){
     const now=new Date();
