@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Homestead Electric — Safety</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -1098,6 +1098,8 @@ const db={
   },
   async insertSignoff(rec){
     if(!sb)return;
+    // Coerce lat/lng to real numbers (or null) — Postgres numeric columns reject "N/A" or other strings.
+    const safeNum=v=>{const n=typeof v==='number'?v:parseFloat(v);return Number.isFinite(n)?n:null;};
     const {error}=await sb.from('weekly_signoffs').upsert({
       employee_id:rec.employeeId||null,
       employee_name:rec.name,
@@ -1105,8 +1107,8 @@ const db={
       week_label:rec.weekLabel,
       role_at_sign:rec.role,
       signed_at:rec.signedAt,
-      location_lat:rec.lat||null,
-      location_lng:rec.lng||null,
+      location_lat:safeNum(rec.lat),
+      location_lng:safeNum(rec.lng),
       signature_data:rec.sigData,
       quiz_score:rec.quizScore,
       topic_title:rec.topicTitle,
@@ -1326,7 +1328,13 @@ function currentTopicSlot(){const d=new Date(),j=new Date(d.getFullYear(),0,1);c
 function currentTopicIndex(){return S.topicOrder[currentTopicSlot()] ?? 0;}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 function goHome(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-role').classList.add('active');}
-function getLoc(){navigator.geolocation?.getCurrentPosition(p=>{S.loc={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};},()=>{S.loc={lat:'N/A',lng:'N/A'};});}
+function getLoc(){
+  if(!navigator.geolocation){S.loc=null;return;}
+  navigator.geolocation.getCurrentPosition(
+    p=>{S.loc={lat:parseFloat(p.coords.latitude.toFixed(5)),lng:parseFloat(p.coords.longitude.toFixed(5))};},
+    ()=>{S.loc=null;}
+  );
+}
 function enterRole(r){S.role=r;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');getLoc();if(!S.topic)loadTopic();if(r==='lead')renderLead();else if(r==='crew')renderCrew();else if(r==='admin')renderAdmin();else if(r==='incident')renderIncident();}
 function loadTopic(cat){
   const idx=currentTopicIndex();
