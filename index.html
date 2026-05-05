@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Homestead Electric — Safety</title>
-<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -34,8 +34,8 @@
   --green-border:#000000;
   --red:#7F2222;                /* deep barn red */
 
-  /* Type — Alfa Slab One for headlines, Inter for body */
-  --font:'Alfa Slab One','Inter',serif;
+  /* Type — system serif for headlines (matches Cowork preview), Inter for body */
+  --font:Georgia,'Times New Roman',Times,serif;
   --mono:'Inter',sans-serif;
   --body:'Inter',sans-serif;
 
@@ -59,13 +59,13 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
-/* Skull watermark — fixed, faint, behind everything */
+/* Skull watermark — fixed, large, faint, behind everything */
 body::before{
   content:'';
   position:fixed;
   inset:0;
-  background:url('./skull.png') center 55% / min(85vw,560px) auto no-repeat;
-  opacity:0.05;
+  background:url('./skull.png') center 50% / min(110vw,920px) auto no-repeat;
+  opacity:0.06;
   pointer-events:none;
   z-index:0;
 }
@@ -84,6 +84,14 @@ body::before{
 .bolt-wrap{
   width:72px;height:48px;
   background:url('./skull.png') center/contain no-repeat;
+  flex-shrink:0;
+}
+/* Full logo in the home page header */
+.brand-logo{
+  height:52px;
+  width:auto;
+  max-width:200px;
+  display:block;
   flex-shrink:0;
 }
 /* Back button used in inner page headers */
@@ -664,19 +672,13 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screen-role">
   <header class="header">
-    <div class="wordmark">
-      <div class="bolt-wrap"></div>
-      <div>
-        <span class="wm-text">Homestead Electric</span>
-        <span class="wm-sub">Safety Program</span>
-      </div>
-    </div>
+    <img src="./logo.png" alt="Homestead Electric" class="brand-logo">
     <div class="header-tag">OSHA 1926</div>
   </header>
   <div class="content">
-    <div class="home-hero">
-      <img src="./logo.png" alt="Homestead Electric" class="home-logo">
-      <div class="home-tag">Toolbox Talk · OSHA 1926</div>
+    <div class="hero">
+      <div class="hero-eyebrow">Toolbox Talk · OSHA 1926</div>
+      <div class="hero-title">Select your role.</div>
     </div>
     <div class="role-grid">
       <button class="role-card" data-color="yellow" onclick="enterRole('lead')">
