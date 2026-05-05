@@ -61,6 +61,25 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
+/* Language toggle — pill in top right of every screen */
+.lang-toggle{
+  position:fixed;top:14px;right:18px;z-index:101;
+  display:flex;background:#FFFFFF;border:1.5px solid #000000;border-radius:999px;overflow:hidden;
+  font-family:var(--body);font-size:11px;font-weight:600;letter-spacing:.05em;
+}
+.lang-toggle button{
+  background:none;border:none;color:#000000;cursor:pointer;
+  padding:5px 12px;font-family:inherit;font-size:inherit;font-weight:inherit;
+  letter-spacing:inherit;text-transform:uppercase;
+}
+.lang-toggle button.active{background:#000000;color:#FFFFFF;}
+.lang-toggle button:hover:not(.active){background:#F7F5F2;}
+
+/* Show/hide content based on document language */
+:root[data-lang="en"] .lang-es,
+:root:not([data-lang="es"]) .lang-es{display:none;}
+:root[data-lang="es"] .lang-en{display:none;}
+
 /* Skull watermark — fixed, large, faint, behind everything */
 body::before{
   content:'';
@@ -671,6 +690,11 @@ input.field-select::placeholder{color:#B8B6B0;}
 </style>
 </head>
 <body>
+<!-- LANGUAGE TOGGLE (fixed, on every screen) -->
+<div class="lang-toggle">
+  <button data-set-lang="en" class="active">EN</button>
+  <button data-set-lang="es">ES</button>
+</div>
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screen-role">
   <header class="header">
@@ -679,39 +703,39 @@ input.field-select::placeholder{color:#B8B6B0;}
   </header>
   <div class="content">
     <div class="hero">
-      <div class="hero-eyebrow">Toolbox Talk · OSHA 1926</div>
-      <div class="hero-title">Select your role.</div>
+      <div class="hero-eyebrow"><span class="lang-en">Toolbox Talk · OSHA 1926</span><span class="lang-es">Charla de Seguridad · OSHA 1926</span></div>
+      <div class="hero-title"><span class="lang-en">Select your role.</span><span class="lang-es">Selecciona tu rol.</span></div>
     </div>
     <div class="role-grid">
       <button class="role-card" data-color="yellow" onclick="enterRole('lead')">
         <div class="rc-num">01</div>
         <div>
-          <span class="rc-name">Job Lead</span>
-          <span class="rc-desc">Wednesday lead meeting · sign off · collect crew</span>
+          <span class="rc-name"><span class="lang-en">Job Lead</span><span class="lang-es">Líder de Obra</span></span>
+          <span class="rc-desc"><span class="lang-en">Wednesday lead meeting · sign off · collect crew</span><span class="lang-es">Reunión del miércoles · firma · recopila la cuadrilla</span></span>
         </div>
         <span class="rc-arrow">→</span>
       </button>
       <button class="role-card" data-color="blue" onclick="enterRole('crew')">
         <div class="rc-num">02</div>
         <div>
-          <span class="rc-name">Crew Member</span>
-          <span class="rc-desc">Read this week's topic · sign off</span>
+          <span class="rc-name"><span class="lang-en">Crew Member</span><span class="lang-es">Miembro de Cuadrilla</span></span>
+          <span class="rc-desc"><span class="lang-en">Read this week's topic · sign off</span><span class="lang-es">Lee el tema de la semana · firma</span></span>
         </div>
         <span class="rc-arrow">→</span>
       </button>
       <button class="role-card" data-color="black" onclick="enterRole('admin')">
         <div class="rc-num">03</div>
         <div>
-          <span class="rc-name">Safety Lead</span>
-          <span class="rc-desc">Records · exports · topic management</span>
+          <span class="rc-name"><span class="lang-en">Safety Lead</span><span class="lang-es">Encargado de Seguridad</span></span>
+          <span class="rc-desc"><span class="lang-en">Records · exports · topic management</span><span class="lang-es">Registros · exportaciones · gestión de temas</span></span>
         </div>
         <span class="rc-arrow">→</span>
       </button>
       <button class="role-card" data-color="red" onclick="enterRole('incident')">
         <div class="rc-num">04</div>
         <div>
-          <span class="rc-name">Incident Report</span>
-          <span class="rc-desc">Report an injury, near-miss, or hazard</span>
+          <span class="rc-name"><span class="lang-en">Incident Report</span><span class="lang-es">Reporte de Incidente</span></span>
+          <span class="rc-desc"><span class="lang-en">Report an injury, near-miss, or hazard</span><span class="lang-es">Reporta una lesión, cuasi-accidente o peligro</span></span>
         </div>
         <span class="rc-arrow">→</span>
       </button>
@@ -719,7 +743,8 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div style="margin-top:16px;">
       <div class="compliance">
         <div class="compliance-dot"></div>
-        System active · OSHA 29 CFR 1926 compliant
+        <span class="lang-en">System active · OSHA 29 CFR 1926 compliant</span>
+        <span class="lang-es">Sistema activo · cumple con OSHA 29 CFR 1926</span>
       </div>
     </div>
   </div>
@@ -727,8 +752,8 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ JOB LEAD ══ -->
 <div class="screen" id="screen-lead">
   <header class="header">
-    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
-    <div class="header-tag">Job Lead</div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
+    <div class="header-tag"><span class="lang-en">Job Lead</span><span class="lang-es">Líder</span></div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
@@ -803,8 +828,8 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ CREW ══ -->
 <div class="screen" id="screen-crew">
   <header class="header">
-    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
-    <div class="header-tag" id="crewWeekLabelTag">Crew</div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
+    <div class="header-tag" id="crewWeekLabelTag"><span class="lang-en">Crew</span><span class="lang-es">Cuadrilla</span></div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
@@ -859,8 +884,8 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ ADMIN ══ -->
 <div class="screen" id="screen-admin">
   <header class="header">
-    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
-    <div class="header-tag">Admin</div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
+    <div class="header-tag"><span class="lang-en">Admin</span><span class="lang-es">Admin</span></div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
@@ -961,8 +986,8 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ INCIDENT REPORT ══ -->
 <div class="screen" id="screen-incident">
   <header class="header">
-    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
-    <div class="header-tag" style="color:#7F2222;border-color:rgba(127,34,34,0.4);">Incident</div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
+    <div class="header-tag" style="color:#7F2222;border-color:rgba(127,34,34,0.4);"><span class="lang-en">Incident</span><span class="lang-es">Incidente</span></div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
@@ -1389,6 +1414,25 @@ const TOPIC_BANK = [
   {week:51,title:"NEW EMPLOYEE JOBSITE ORIENTATION",oshaRef:"OSHA 29 CFR 1926.21",content:"<p>New employees — including experienced workers starting at a new company or job site — are at dramatically higher risk of injury in their first days and weeks. <strong>A 20-year veteran on their first day at a new site is at elevated risk.</strong> Generic safety training is not sufficient — workers must be trained on the specific conditions and hazards of the site where they work.</p><ul><li>Review site layout — entry and exit points, material staging areas, traffic patterns, and no-go zones</li><li>Identify the location of first aid kits, fire extinguishers, eyewash stations, and emergency exits</li><li>Receive a briefing on site-specific hazards — active excavations, overhead work, restricted areas</li><li>Review the Emergency Action Plan — evacuation routes and assembly points</li><li>Ask questions about anything you're unsure of — there are no stupid questions about safety</li></ul>",questions:[{q:"Why do experienced workers still need site-specific orientation at every new job site?",options:["OSHA requires it for paperwork purposes","Experience from other sites doesn't prepare workers for site-specific hazards, layouts, and procedures","Only workers new to the trade need orientation","Experienced workers only need a shortened orientation"],correct:1,explain:"Every job site has unique hazards, layouts, and procedures. Experience at other sites doesn't provide the site-specific knowledge needed to work safely."},{q:"What should you do if you start a new site and no orientation is provided?",options:["Begin work — orientation is optional for experienced workers","Ask a coworker to show you around informally","Ask your lead for a proper orientation — you have the right to know your site's hazards","Wait — orientation will happen eventually"],correct:2,explain:"Every worker has the right to be informed about the hazards of their work environment before beginning work. If orientation is not provided, ask your lead."},{q:"During orientation, what is the most important question to ask if you are unsure about something?",options:["How long until I'm fully trained","What are the overtime rules","Ask whatever you need to — there are no stupid questions about safety","How does this compare to your last job site"],correct:2,explain:"There are no stupid questions about safety. Asking about something you're unsure of is the professional and correct response."}]},
   {week:52,title:"ANNUAL SAFETY PROGRAM REVIEW",oshaRef:"OSHA 29 CFR 1926.20",content:"<p>We've completed a full year of weekly toolbox talks covering the most important safety topics for electrical construction workers. Homestead Electric's safety program exists for one reason: <strong>to make sure everyone goes home at the end of every shift.</strong></p><ul><li>Review the incidents and near-misses from the past year — what patterns do you see?</li><li>Identify any gaps in training — are there specific hazards on your work that weren't covered?</li><li>Review your incident reporting records — are you capturing near-misses as well as injuries?</li><li>Discuss what's working — which safety practices have become second nature?</li><li>Discuss what still needs work — honest conversation about gaps is what makes programs improve</li><li>Look ahead — what new projects, new equipment, or new hazards will require additional training next year?</li></ul><p>Safety is not a compliance exercise. It is a commitment that every person on this crew makes to every other person on this crew.</p>",questions:[{q:"What is the primary purpose of Homestead Electric's safety program?",options:["To satisfy OSHA inspection requirements","To reduce workers comp costs","To ensure everyone goes home at the end of every shift","To meet general contractor requirements"],correct:2,explain:"The primary purpose is simple: everyone goes home safely. OSHA compliance and documentation are the byproducts of a real safety culture."},{q:"Why should near-miss incidents be reported even when no one was hurt?",options:["OSHA requires near-miss reporting","Near-misses reveal hazards that will eventually cause an injury if not corrected","Only to satisfy paperwork requirements","So workers can be disciplined if at fault"],correct:1,explain:"Near-misses reveal real hazards that will eventually cause a real injury if not corrected. Reporting near-misses is how safety programs prevent injuries before they happen."},{q:"What makes a safety program genuinely effective rather than just compliant?",options:["Having the most detailed written program","Conducting more inspections than required","Building a culture where workers genuinely look out for each other — not just documentation","Having the most safety signs posted on site"],correct:2,explain:"A genuinely effective safety program is built on culture: workers who look out for each other, speak up about hazards, and take safety personally."}]}
 ];
+
+// ════════ TOPIC BANK — SPANISH ════════
+// Parallel array. Indexes match TOPIC_BANK.
+// First 13 weeks translated; remaining slots are null and fall back to English.
+const TOPIC_BANK_ES = [
+  {week:1,title:"FUNDAMENTOS DE PROTECCIÓN CONTRA CAÍDAS",content:"<p>Las caídas son el <strong>asesino número uno</strong> en la construcción, representando más de un tercio de todas las muertes cada año. OSHA requiere protección contra caídas cuando se trabaja a 6 pies o más sobre un nivel inferior — sin excepciones.</p><p>Todo trabajador en altura debe usar un <strong>sistema personal de detención de caídas (PFAS)</strong>: arnés de cuerpo completo, cuerda de conexión y un punto de anclaje con capacidad mínima de 5,000 lbs por trabajador conectado.</p><ul><li>Inspecciona tu arnés antes de cada uso — busca deshilachado, cortes, hebillas rotas, herrajes corroídos</li><li>Asegúrate solo a puntos de anclaje calificados — nunca a barandas, conduit o estructura sin calificación</li><li>Mantén tu cuerda corta para que una caída no resulte en contacto con un nivel inferior</li><li>Nunca remuevas la protección contra caídas, ni siquiera brevemente, sin autorización de tu líder</li><li>Reporta cualquier equipo que haya detenido una caída — debe retirarse del servicio de inmediato</li></ul><p>Una caída de 15 pies toma menos de un segundo. Tu equipo debe estar correcto <strong>antes</strong> de pisar ahí afuera.</p>",questions:[{q:"¿A qué altura requiere OSHA protección contra caídas en obras de construcción?",options:["4 pies","6 pies","8 pies","10 pies"],correct:1,explain:"OSHA 1926.502 requiere protección contra caídas a 6 pies o más sobre un nivel inferior en obras de construcción."},{q:"¿Cuál es la capacidad mínima de carga para un punto de anclaje de detención de caídas?",options:["1,000 lbs","2,500 lbs","5,000 lbs por trabajador conectado","3,000 lbs"],correct:2,explain:"Los puntos de anclaje deben soportar al menos 5,000 lbs por trabajador conectado."},{q:"¿Qué debes hacer con un arnés que ha detenido una caída?",options:["Inspeccionarlo y reusarlo si se ve bien","Devolverlo a la bodega","Retirarlo del servicio inmediatamente","Pedirle a tu líder que lo inspeccione antes de reusarlo"],correct:2,explain:"Cualquier arnés que haya detenido una caída debe retirarse del servicio de inmediato — el daño interno puede no ser visible."}]},
+  {week:2,title:"PROCEDIMIENTOS DE BLOQUEO/ETIQUETADO (LOTO)",content:"<p>El Bloqueo/Etiquetado (LOTO) garantiza que las máquinas y sistemas eléctricos peligrosos estén <strong>correctamente apagados y no puedan re-energizarse</strong> antes del mantenimiento. No seguir LOTO es una de las violaciones de OSHA más citadas en la construcción.</p><p>Antes de trabajar en cualquier panel o equipo eléctrico — incluso para un arreglo rápido — debes desenergizar, bloquear y verificar que esté muerto. Cada trabajador debe colocar su propio candado personal. Un candado por persona.</p><ul><li>Notifica a todos los empleados afectados antes de apagar el equipo</li><li>Identifica TODAS las fuentes de energía — eléctrica, neumática, hidráulica, gravedad y energía de resorte almacenada</li><li>Coloca tu candado y etiqueta personal en cada fuente de energía</li><li>Libera toda la energía almacenada — purga las líneas, bloquea las partes elevadas, descarga los capacitores</li><li>Verifica que el equipo esté desenergizado intentando arrancarlo antes de comenzar</li></ul><p>Si ves el candado de otra persona en un panel y no sabes por qué — <strong>no lo remuevas</strong>. Ese candado puede ser lo único que mantiene viva a alguien.</p>",questions:[{q:"¿Quién debe colocar un candado durante un procedimiento de bloqueo/etiquetado?",options:["Solo el líder en el sitio","Solo la persona que apagó el equipo","Cada trabajador expuesto a la energía peligrosa","Una persona designada de seguridad"],correct:2,explain:"Cada trabajador expuesto al peligro debe colocar su propio candado personal — nunca dependas del candado de otra persona para tu protección."},{q:"Después de bloquear un sistema, ¿qué debes hacer antes de comenzar a trabajar?",options:["Consultar con tu líder","Verificar que el equipo esté desenergizado intentando arrancarlo","Esperar 5 minutos","Revisar la posición del breaker"],correct:1,explain:"Debes verificar la desenergización intentando operar el equipo después de colocar tu candado."},{q:"Encuentras un candado desconocido en un panel. ¿Qué haces?",options:["Removerlo con cuidado","Llamar a la compañía eléctrica","No lo remuevas — averigua de quién es","Usar un cortador de pernos si no hay nadie"],correct:2,explain:"Nunca remuevas un candado desconocido. Ese candado puede estar protegiendo la vida de un trabajador. Encuentra al dueño antes de actuar."}]},
+  {week:3,title:"SELECCIÓN E INSPECCIÓN DE EPP",content:"<p>El Equipo de Protección Personal es tu última línea de defensa — no elimina los peligros, te protege cuando otros controles fallan. <strong>Tú eres responsable de inspeccionar tu EPP antes de cada uso.</strong></p><ul><li>Inspecciona los cascos buscando grietas, abolladuras y plástico quebradizo — reemplázalo después de cualquier impacto</li><li>Revisa los lentes de seguridad por rayones, grietas o protectores laterales faltantes</li><li>Inspecciona los guantes por cortes, agujeros o áreas desgastadas antes de ponértelos</li><li>Las botas con puntera de seguridad deben cumplir con ASTM — revisa por separación y suelas desgastadas</li><li>Los chalecos de alta visibilidad deben estar limpios y visibles</li></ul><p>El EPP se proporciona sin costo para ti. Si tu equipo está dañado o desgastado, repórtalo a tu líder y obtén un reemplazo. No hay razón aceptable para trabajar con EPP defectuoso.</p>",questions:[{q:"¿Cuándo debes inspeccionar tu EPP?",options:["Una vez por semana","Solo cuando se vea dañado","Antes de cada uso","Mensualmente"],correct:2,explain:"El EPP debe inspeccionarse antes de cada uso — el daño puede ocurrir entre usos y puede no ser obvio hasta que se examine de cerca."},{q:"Tu casco recibió un impacto directo pero parece intacto. ¿Qué haces?",options:["Sigue usándolo — se ve bien","Reemplázalo de inmediato","Pídele a tu líder que lo inspeccione","Lija el punto de impacto y reúsalo"],correct:1,explain:"Un casco que ha absorbido un impacto debe reemplazarse de inmediato — la estructura interna puede estar comprometida sin daño visible."},{q:"¿Quién paga el reemplazo del EPP si el tuyo se daña en el trabajo?",options:["Tú lo pagas","El costo se divide con tu empleador","Tu empleador lo proporciona sin costo","Lo cubre la compensación al trabajador"],correct:2,explain:"OSHA requiere que los empleadores proporcionen el EPP requerido sin costo para los trabajadores."}]},
+  {week:4,title:"FUNDAMENTOS DE SEGURIDAD ELÉCTRICA",content:"<p>La electricidad es el centro de lo que hace Homestead Electric — y uno de los peligros más implacables en cualquier obra. <strong>Una corriente tan baja como 100 miliamperios puede matar.</strong> No puedes ver, oler ni escuchar la electricidad antes de que te lastime.</p><p>Cada sistema eléctrico energizado debe tratarse como vivo hasta verificarse desenergizado con un medidor calibrado. La frase 'creo que está apagado' ha costado vidas.</p><ul><li>Siempre usa herramientas y EPP con la calificación de voltaje correcta</li><li>Inspecciona todos los cables antes de usar — cortes, deshilachado o falta de pin de tierra son peligros inmediatos</li><li>Mantén el equipo eléctrico lejos del agua y superficies mojadas</li><li>Nunca anules ni elimines una conexión a tierra</li><li>Mantén las distancias requeridas de partes energizadas — mínimo 3 pies para sistemas de 0-50V</li></ul><p>Si no estás seguro de si algo está energizado — <strong>trátalo como si lo estuviera</strong>.</p>",questions:[{q:"¿Cuánta corriente puede causar electrocución fatal?",options:["500 miliamperios","1 amperio","100 miliamperios","Solo el alto voltaje importa"],correct:2,explain:"Corrientes tan bajas como 100 miliamperios (0.1 amperios) pueden ser fatales — mucho menos de lo que un circuito estándar de 15 amperios puede entregar."},{q:"No estás seguro si un circuito está desenergizado. ¿Qué haces?",options:["Asumir que está apagado y proceder con cuidado","Probarlo con un medidor calibrado antes de tocar","Preguntarle a un compañero","Revisar el panel de breakers"],correct:1,explain:"Siempre verifica la desenergización con un medidor calibrado. Las suposiciones sobre sistemas eléctricos pueden ser fatales."},{q:"¿Por qué nunca debes anular o quitar una conexión a tierra?",options:["Reduce la eficiencia eléctrica","Solo se requiere para trabajo de alto voltaje","La tierra mantiene la corriente de falla fuera del equipo y fuera de ti","Solo importa durante inspecciones"],correct:2,explain:"La conexión a tierra proporciona una vía segura para la corriente de falla — eliminarla significa que la corriente de falla puede fluir a través de la persona más cercana al equipo."}]},
+  {week:5,title:"SEGURIDAD CON ESCALERAS",content:"<p>Las escaleras están involucradas en más muertes en construcción que casi cualquier otro equipo. La <strong>regla 4 a 1</strong>: por cada 4 pies de altura, la base debe estar 1 pie alejada de la pared. La parte superior debe extenderse al menos 3 pies sobre el punto de aterrizaje.</p><ul><li>Inspecciona las escaleras antes de cada uso — busca grietas, rieles doblados, peldaños faltantes, herrajes flojos</li><li>Nunca uses una escalera dañada — etiquétala fuera de servicio de inmediato</li><li>Voltea hacia la escalera al subir y bajar — mantén tres puntos de contacto</li><li>No cargues herramientas o materiales en las manos al subir</li><li>Nunca te pares en los dos peldaños superiores de una escalera de tijera o los tres superiores de una de extensión</li></ul><p>Si algo se siente como un estiramiento — bájate y reposiciona. Los pocos segundos que toma valen tu vida.</p>",questions:[{q:"Usando la regla 4 a 1, ¿qué tan lejos debe colocarse la base de una escalera de 20 pies?",options:["2 pies","3 pies","5 pies","4 pies"],correct:2,explain:"La regla 4 a 1: por cada 4 pies de altura, la base debe estar 1 pie alejada. 20 dividido entre 4 es 5 pies."},{q:"¿Qué tan alto debe extenderse una escalera de extensión sobre el punto de aterrizaje?",options:["1 pie","2 pies","Al menos 3 pies","Al ras del aterrizaje"],correct:2,explain:"Las escaleras de extensión deben extenderse al menos 3 pies sobre la superficie de aterrizaje superior para proporcionar un agarre seguro al entrar o salir."},{q:"Encuentras una escalera con un riel agrietado. ¿Qué haces?",options:["Úsala con cuidado solo para tareas ligeras","Etiquétala fuera de servicio y repórtala","Pega la grieta con cinta y continúa","Déjala para alguien más"],correct:1,explain:"Una escalera dañada debe ser retirada del servicio de inmediato y etiquetada. Usar una escalera dañada arriesga falla estructural bajo carga."}]},
+  {week:6,title:"SEGURIDAD EN EXCAVACIONES Y ZANJAS",content:"<p>Una yarda cúbica de tierra pesa entre 2,700 y 3,000 libras. Cuando una zanja colapsa, <strong>escapar es casi imposible</strong>. OSHA requiere que una persona competente inspeccione todas las excavaciones diariamente y sistemas de protección para cualquier excavación de 5 pies o más de profundidad.</p><ul><li>Nunca entres a una zanja sin protección — espera a que tu persona competente la apruebe</li><li>Mantén las pilas de tierra al menos a 2 pies del borde de la zanja</li><li>La acumulación de agua aumenta dramáticamente el riesgo de colapso — contrólala</li><li>El acceso de salida debe estar a 25 pies o menos de cada trabajador en la zanja</li><li>Llama al 811 al menos 3 días antes de cavar</li></ul><p>Si las paredes de la zanja se ven mojadas, agrietadas o escuchas tierra moviéndose — sal de inmediato.</p>",questions:[{q:"¿A qué profundidad requiere OSHA sistemas de protección en excavaciones?",options:["3 pies","5 pies","8 pies","10 pies"],correct:1,explain:"OSHA requiere sistemas de protección para excavaciones de 5 pies o más de profundidad."},{q:"¿Qué tan lejos del borde de una zanja deben mantenerse las pilas de tierra?",options:["Al menos 1 pie","Al menos 2 pies","Al menos 3 pies","Al menos 5 pies"],correct:1,explain:"Las pilas de tierra deben mantenerse al menos a 2 pies del borde de la zanja para evitar que el material caiga dentro y reducir la presión."},{q:"Estás en una zanja y notas que se acumula agua. ¿Qué debes hacer?",options:["Continuar trabajando — un poco de agua es normal","Salir de inmediato y notificar a tu persona competente","Cavar un canal de drenaje y continuar","Esperar a ver si empeora"],correct:1,explain:"El agua en una zanja debilita dramáticamente la tierra y aumenta el riesgo de colapso. Sal de inmediato."}]},
+  {week:7,title:"SEGURIDAD CON ANDAMIOS",content:"<p>Los accidentes de andamios matan a cientos de trabajadores cada año. Solo una persona competente puede supervisar la construcción de andamios y debe inspeccionarla antes de cada turno. Los andamios deben soportar al menos <strong>4 veces la carga máxima prevista</strong>.</p><ul><li>Las plataformas de andamios deben estar completamente entablonadas — sin huecos de más de 1 pulgada entre tablones</li><li>Se requieren barandas en todos los lados abiertos a más de 10 pies del suelo</li><li>Nunca subas por los crucetas para acceder a un andamio</li><li>No excedas la calificación de carga del andamio</li><li>Deben instalarse rodapiés para evitar la caída de objetos</li></ul><p>Si un andamio tiene una etiqueta roja o está marcado fuera de servicio — no lo uses.</p>",questions:[{q:"¿Qué capacidad de carga deben soportar los andamios?",options:["2x la carga prevista","3x la carga prevista","4x la carga prevista","1.5x la carga prevista"],correct:2,explain:"OSHA requiere que los andamios soporten al menos 4 veces la carga máxima prevista sin fallar."},{q:"¿A qué altura se requieren barandas en plataformas de andamios?",options:["6 pies","10 pies","8 pies","4 pies"],correct:1,explain:"Se requieren barandas en todos los lados abiertos de las plataformas de andamios a más de 10 pies del suelo."},{q:"¿Cómo debes acceder a los niveles superiores de un andamio?",options:["Subir por las crucetas","Usar la escalera o escalones de acceso adecuados","Subir por el exterior del marco","Pedirle a un compañero que te impulse"],correct:1,explain:"Siempre usa la escalera o escalones de acceso adecuados. Subir por las crucetas está prohibido."}]},
+  {week:8,title:"SEGURIDAD CON HERRAMIENTAS MANUALES Y ELÉCTRICAS",content:"<p>Las lesiones por herramientas envían a decenas de miles de trabajadores a la sala de emergencias cada año. <strong>Cada protector en una herramienta existe porque alguien se lastimó sin él.</strong> Nunca remuevas, modifiques o anules los protectores de seguridad.</p><ul><li>Inspecciona todas las herramientas antes de usar — mangos agrietados, protectores faltantes, cables dañados son condiciones de fuera de servicio</li><li>Desconecta las herramientas eléctricas antes de cambiar cuchillas, brocas o accesorios</li><li>Mantén las herramientas de corte afiladas — las herramientas sin filo requieren más fuerza y son más propensas a resbalar</li><li>Usa el EPP correcto — lentes de seguridad para corte y esmerilado, protección auditiva para ruido sostenido</li><li>Almacena las herramientas correctamente — las herramientas sueltas en altura se vuelven peligros de objetos que caen</li></ul>",questions:[{q:"Un compañero remueve el protector de una pulidora angular. ¿Qué debes hacer?",options:["No te metas en sus asuntos","Ayúdalo — es su decisión","Dile que pare y reemplace el protector","Dile a tu líder después"],correct:2,explain:"Los protectores nunca deben quitarse de las herramientas. Tienes el derecho y la responsabilidad de detener el trabajo inseguro."},{q:"¿Cuándo debes desconectar una herramienta eléctrica de su fuente de energía?",options:["Solo al guardarla por la noche","Al cambiar cuchillas, brocas o accesorios","Solo cuando falle","Cuando tu líder te diga"],correct:1,explain:"Siempre desconecta las herramientas eléctricas antes de cambiar cualquier cuchilla, broca o accesorio para prevenir un arranque accidental."},{q:"¿Por qué las herramientas de corte sin filo son más peligrosas que las afiladas?",options:["Son más pesadas","Requieren más fuerza y son más propensas a resbalar","Se sobrecalientan más rápido","No son más peligrosas"],correct:1,explain:"Las herramientas sin filo requieren más fuerza para cortar, lo que aumenta la probabilidad de resbalar y perder el control."}]},
+  {week:9,title:"COMUNICACIÓN DE PELIGROS Y ETIQUETAS GHS",content:"<p>El <strong>Sistema Globalmente Armonizado (GHS)</strong> garantiza que cada contenedor te diga exactamente qué hay dentro y cómo protegerte. Las Hojas de Datos de Seguridad (SDS) deben estar disponibles para cada químico peligroso en el sitio.</p><ul><li>Lee todas las etiquetas GHS antes de usar un producto — busca pictogramas de peligro, palabras de advertencia y declaraciones precautorias</li><li>Nunca uses un contenedor sin etiqueta — retíralo del servicio y repórtalo</li><li>Conoce dónde se guardan las hojas SDS en tu obra</li><li>Empareja tu EPP con los requisitos del químico</li><li>Nunca mezcles químicos a menos que sepas que es seguro</li></ul><p>Si te expones a un químico — sal al aire fresco, enjuaga con agua por al menos 15 minutos y consulta el SDS. Avisa a tu líder de inmediato.</p>",questions:[{q:"¿Qué significa SDS y dónde debe guardarse?",options:["Hoja de Datos de Seguridad — solo en la oficina","Resumen de Peligros del Sitio — en la bodega","Hoja de Datos de Seguridad — accesible en el sitio para cada químico peligroso","Hoja de Disposición Estándar — con el contenedor"],correct:2,explain:"SDS significa Hoja de Datos de Seguridad. OSHA requiere que estén disponibles para los trabajadores durante cada turno."},{q:"Encuentras un contenedor sin etiqueta. ¿Qué debes hacer?",options:["Asumir que es agua y usarlo","Olerlo para identificarlo","Retirarlo del servicio y reportarlo a tu líder","Ponerle una nueva etiqueta basada en tu mejor suposición"],correct:2,explain:"Nunca uses un contenedor sin etiqueta. Retíralo del servicio y repórtalo de inmediato."},{q:"Te cae un químico en el ojo. ¿Cuál es la primera acción?",options:["Llama a tu líder primero","Enjuaga con agua por al menos 15 minutos","Revisa el SDS antes de hacer nada","Maneja tú mismo a urgencias"],correct:1,explain:"El enjuague inmediato con agua por al menos 15 minutos es la primera prioridad para exposición química en los ojos."}]},
+  {week:10,title:"PREVENCIÓN DE INCENDIOS Y USO DE EXTINTORES",content:"<p><strong>La mayoría de los incendios en obra empiezan pequeños y se vuelven desastres porque nadie actuó de inmediato.</strong> Se requieren extintores Clase C para incendios eléctricos — usar un extintor de agua en un incendio eléctrico puede ser fatal.</p><ul><li>Conoce dónde está cada extintor en tu obra antes de necesitarlo</li><li>Verifica que el extintor esté cargado — la aguja del medidor debe estar en la zona verde</li><li>Usa la técnica PASS: Pull (tira del pin), Aim (apunta a la base), Squeeze (aprieta el mango), Sweep (barre de lado a lado)</li><li>Solo combate un incendio si es pequeño, contenido y tienes una salida atrás</li><li>Nunca almacenes materiales inflamables cerca de fuentes de ignición — mínimo 10 pies de separación</li></ul>",questions:[{q:"¿Qué tipo de extintor se requiere para incendios eléctricos?",options:["Clase A","Clase B","Clase C","Clase D"],correct:2,explain:"Los extintores Clase C están diseñados para incendios eléctricos. Usar extintores Clase A (agua) en incendios eléctricos puede causar electrocución."},{q:"¿Qué significa la técnica PASS?",options:["Apuntar, Apretar, Rociar, Parar","Pull, Aim, Squeeze, Sweep (Tirar del pin, Apuntar a la base, Apretar el mango, Barrer de lado a lado)","Posición, Activar, Rociar, Retroceder","Preparar, Apuntar, Apretar, Barrer"],correct:1,explain:"PASS: Tira del pin, Apunta a la base del fuego, Aprieta el mango, Barre de lado a lado."},{q:"¿Cuándo es apropiado combatir un incendio con un extintor?",options:["En cualquier momento — siempre intenta combatirlo","Solo cuando los bomberos vienen en camino","Cuando es pequeño, contenido y tienes una salida clara atrás","Nunca — siempre evacúa"],correct:2,explain:"Solo intenta combatir un incendio cuando es pequeño, contenido y tienes una ruta de escape clara. Cuando dudes, evacúa."}]},
+  {week:11,title:"PELIGROS DE SER GOLPEADO POR OBJETOS",content:"<p>Los accidentes de ser golpeado son la segunda causa principal de muertes en construcción. <strong>La mayoría involucra trabajadores que estaban en el lugar equivocado en el momento equivocado — y no lo sabían.</strong></p><ul><li>Nunca te coloques entre un vehículo en movimiento y un objeto fijo</li><li>Usa chalecos de alta visibilidad en todas las áreas con tráfico de vehículos o equipo</li><li>Mantente alejado de las áreas de giro de grúas y elevadores</li><li>Asegura todos los materiales y herramientas en altura — una llave que cae 20 pies golpea con fuerza letal</li><li>Usa casco en todo momento en áreas donde se realiza trabajo en altura</li></ul><p>Haz contacto visual con los operadores de equipo antes de caminar cerca de su equipo. No asumas que pueden verte.</p>",questions:[{q:"¿Qué es lo más importante a hacer antes de caminar cerca de equipo en operación?",options:["Caminar rápido para minimizar la exposición","Hacer contacto visual con el operador","Esperar a que el equipo se detenga","Gritar fuerte"],correct:1,explain:"Siempre haz contacto visual con los operadores antes de entrar a su zona de trabajo. Nunca asumas que pueden verte."},{q:"¿Dónde debes posicionarte respecto a un vehículo en movimiento?",options:["Frente para que el conductor te vea","Al lado, lejos de objetos fijos","Nunca entre un vehículo en movimiento y un objeto fijo","Atrás para seguir su movimiento"],correct:2,explain:"Nunca te coloques entre un vehículo en movimiento y un objeto fijo — puedes ser aplastado sin ruta de escape."},{q:"¿Por qué deben asegurarse las herramientas y materiales al trabajar en altura?",options:["Para prevenir robos","Una herramienta que cae puede golpear con fuerza letal","OSHA lo requiere por papeleo","Para evitar que las herramientas se ensucien"],correct:1,explain:"Una herramienta que cae desde altura gana mucha velocidad. Una llave que cae 20 pies puede golpear con suficiente fuerza para matar."}]},
+  {week:12,title:"PELIGROS DE QUEDAR ATRAPADO ENTRE OBJETOS",content:"<p>Las muertes por quedar atrapado ocurren cuando el cuerpo de un trabajador queda atrapado entre dos objetos. <strong>Estos accidentes ocurren rápido y casi siempre son fatales o permanentemente discapacitantes.</strong> La ropa suelta, cabello largo y joyería colgante aumentan dramáticamente el riesgo cerca de partes giratorias.</p><ul><li>Nunca metas la mano en o alrededor de equipo giratorio — siempre espera a que se detenga completamente</li><li>Mantén los protectores en su lugar en toda la maquinaria — nunca operes equipo con protectores removidos</li><li>Asegura la ropa suelta, recoge el cabello largo y quita la joyería colgante antes de trabajar cerca de equipo giratorio</li><li>Nunca trabajes en una excavación sin protección</li><li>Sé consciente de los puntos de pellizco durante el manejo de materiales y operaciones de aparejo</li></ul>",questions:[{q:"Una máquina se atasca mientras la operas. ¿Cuál es el procedimiento correcto?",options:["Meter la mano rápido y limpiar el atasco","Detener la máquina, bloquearla y luego limpiar el atasco","Usar un palo para limpiar el atasco mientras corre","Llamar a tu líder y esperar"],correct:1,explain:"Siempre detén la máquina y aplica bloqueo/etiquetado antes de limpiar cualquier atasco. Meter la mano en maquinaria en operación causa amputaciones."},{q:"¿Qué artículos personales aumentan el riesgo de quedar atrapado cerca de equipo giratorio?",options:["Lentes de seguridad y cascos","Ropa suelta, cabello largo y joyería colgante","Botas con puntera de acero","Cinturones de herramientas"],correct:1,explain:"La ropa suelta, cabello largo y joyería colgante pueden ser atrapados por equipo giratorio y jalar al trabajador antes de que pueda reaccionar."},{q:"¿Por qué trabajar en una zanja sin protección es un peligro de quedar atrapado?",options:["Las paredes pueden colapsar y atrapar o enterrar a un trabajador","Puede acumularse agua","Viola los procedimientos LOTO","Las utilidades pueden dañarse"],correct:0,explain:"Las paredes de la zanja pueden colapsar sin previo aviso, atrapando o enterrando a los trabajadores bajo miles de libras de tierra."}]},
+  {week:13,title:"CONCIENCIA SOBRE ARCO ELÉCTRICO",content:"<p>Un arco eléctrico es una liberación explosiva de energía. Las temperaturas pueden alcanzar <strong>35,000°F — cuatro veces más caliente que la superficie del sol.</strong> La onda de presión, el calor y el metal fundido producidos pueden matar a distancias de 10 pies o más.</p><ul><li>Siempre revisa las etiquetas de advertencia de arco eléctrico en el equipo antes de abrir paneles</li><li>Usa EPP con calificación de arco al trabajar en o cerca de equipo energizado — la ropa de trabajo estándar se incendiará</li><li>Mantén la mayor distancia de trabajo posible de las partes energizadas</li><li>Usa herramientas correctamente aisladas para el voltaje en el que trabajas</li><li>Nunca asumas que un panel está desenergizado porque el breaker está apagado — verifica con un medidor</li></ul>",questions:[{q:"¿Qué temperatura puede alcanzar un arco eléctrico?",options:["1,000°F","5,000°F","35,000°F","500°F"],correct:2,explain:"Un arco eléctrico puede alcanzar temperaturas de aproximadamente 35,000°F — cuatro veces más caliente que la superficie del sol."},{q:"¿Qué EPP se requiere al trabajar en o cerca de equipo eléctrico energizado?",options:["Guantes de trabajo estándar y lentes de seguridad","Careta con calificación de arco, traje de arco y guantes con calificación de arco","Casco y chaleco de alta visibilidad","Cualquier EPP que tu líder recomiende"],correct:1,explain:"El arco eléctrico requiere EPP con calificación de arco — careta, traje y guantes. La ropa de trabajo estándar se incendiará."},{q:"El breaker está apagado en un panel que necesitas abrir. ¿Es seguro asumir que está desenergizado?",options:["Sí — la posición del breaker es confiable","No — siempre verifica con un medidor calibrado","Solo si una segunda persona confirma la posición del breaker","Sí si es un breaker principal"],correct:1,explain:"Nunca asumas que un panel está desenergizado solo por la posición del breaker. Siempre verifica con un medidor calibrado."}]}
+];
 const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
 function wkLabel(){const d=new Date(),s=new Date(d);s.setDate(d.getDate()-d.getDay());return`Week of ${s.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;}
 function wkId(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return`${d.getFullYear()}-W${Math.ceil(((d-j)/86400000+j.getDay()+1)/7)}`;}
@@ -1418,8 +1462,11 @@ function getLoc(){
 function enterRole(r){S.role=r;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');getLoc();if(!S.topic)loadTopic();if(r==='lead')renderLead();else if(r==='crew')renderCrew();else if(r==='admin')renderAdmin();else if(r==='incident')renderIncident();}
 function loadTopic(cat){
   const idx=currentTopicIndex();
-  const t=TOPIC_BANK[idx];
-  S.topic={title:t.title,oshaRef:t.oshaRef,content:t.content,questions:t.questions};
+  const t_en=TOPIC_BANK[idx];
+  const t_es=(typeof TOPIC_BANK_ES!=='undefined'&&TOPIC_BANK_ES[idx])||null;
+  const isES=window.LANG==='es';
+  const t=(isES&&t_es)?t_es:t_en;
+  S.topic={title:t.title,oshaRef:t_en.oshaRef,content:t.content,questions:t.questions};
   S.quiz={topicTitle:t.title,questions:t.questions};
   save();
   renderTopic();
@@ -2069,6 +2116,33 @@ Workers comp provider notification required within 24 hours for lost-time injuri
   a.download=`HES_${r.id}.txt`;
   a.click();
 }
+
+// ════════ LANGUAGE TOGGLE ════════
+(function(){
+  const root=document.documentElement;
+  const saved=localStorage.getItem('hes_lang')||'en';
+  root.dataset.lang=saved;
+  window.LANG=saved;
+  function setLang(lng){
+    root.dataset.lang=lng;
+    localStorage.setItem('hes_lang',lng);
+    window.LANG=lng;
+    document.querySelectorAll('[data-set-lang]').forEach(b=>{
+      b.classList.toggle('active',b.dataset.setLang===lng);
+    });
+    // Re-load topic so it reflects the new language, and re-render whichever screen is active
+    if(typeof loadTopic==='function')loadTopic();
+    const active=document.querySelector('.screen.active')?.id;
+    if(active==='screen-lead'&&typeof renderLead==='function')renderLead();
+    else if(active==='screen-crew'&&typeof renderCrew==='function')renderCrew();
+    else if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
+    else if(active==='screen-incident'&&typeof renderIncident==='function')renderIncident();
+  }
+  document.querySelectorAll('[data-set-lang]').forEach(btn=>{
+    btn.classList.toggle('active',btn.dataset.setLang===saved);
+    btn.addEventListener('click',()=>setLang(btn.dataset.setLang));
+  });
+})();
 
 // ════════ KICK OFF SUPABASE HYDRATION ════════
 // Async fetch from Supabase + real-time subscriptions. App is already
