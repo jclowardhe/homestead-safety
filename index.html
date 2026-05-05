@@ -74,10 +74,8 @@ body::before{display:none;}
 }
 .wordmark{display:flex;align-items:center;gap:12px;}
 .bolt-wrap{
-  width:28px;height:28px;
-  background:#000000;
-  display:flex;align-items:center;justify-content:center;
-  clip-path:polygon(50% 0%,100% 0%,50% 45%,85% 45%,10% 100%,30% 52%,0% 52%);
+  width:42px;height:42px;
+  background:url('./skull.png') center/contain no-repeat;
   flex-shrink:0;
 }
 .wm-text{
@@ -102,6 +100,26 @@ body::before{display:none;}
 .content{flex:1;padding:28px 20px 40px;max-width:640px;margin:0 auto;width:100%;}
 /* PAGE HERO */
 .hero{margin-bottom:32px;position:relative;}
+/* HOME HERO — full Homestead Electric logo, centered */
+.home-hero{
+  text-align:center;
+  padding:24px 0 32px;
+  margin-bottom:8px;
+}
+.home-logo{
+  display:block;
+  margin:0 auto 14px;
+  max-width:320px;
+  width:80%;
+  height:auto;
+}
+.home-tag{
+  font-family:var(--body);
+  font-size:11px;font-weight:600;
+  color:var(--text2);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
 .hero-eyebrow{
   font-family:var(--body);font-size:11px;font-weight:600;color:var(--text2);
   letter-spacing:.18em;text-transform:uppercase;
@@ -360,9 +378,9 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
   cursor:pointer;transition:all .15s;margin-bottom:8px;
   width:100%;text-align:left;font-family:var(--body);color:var(--text);
 }
-.export-row:hover{border-color:rgba(41,121,255,0.3);}
+.export-row:hover{border-color:rgba(0,0,0,0.3);}
 .export-row:hover .exp-name{color:var(--lime);}
-.exp-icon-wrap{width:38px;height:38px;background:#E4E9F0;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.exp-icon-wrap{width:38px;height:38px;background:#E5E2DC;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .exp-name{font-family:var(--font);font-size:14px;font-weight:700;display:block;text-transform:uppercase;letter-spacing:.02em;transition:color .15s;}
 .exp-desc{font-size:12px;color:var(--text2);display:block;margin-top:1px;font-weight:300;}
 .exp-chev{margin-left:auto;color:var(--text2);font-family:var(--mono);font-size:14px;}
@@ -373,11 +391,11 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
 .hist-week{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:2px;letter-spacing:.04em;}
 .hist-badge{font-size:11px;font-weight:500;padding:4px 10px;font-family:var(--mono);white-space:nowrap;flex-shrink:0;letter-spacing:.04em;border:1px solid;}
 .hist-badge.full{color:var(--green);border-color:var(--green-border);}
-.hist-badge.partial{color:var(--amber);border-color:rgba(255,179,0,.3);}
+.hist-badge.partial{color:var(--amber);border-color:rgba(184,134,11,.3);}
 /* NAV */
 .bottom-nav{
   background:var(--surface);
-  border-top:1px solid rgba(41,121,255,0.3);
+  border-top:1px solid rgba(0,0,0,0.3);
   display:flex;position:sticky;bottom:0;
 }
 .nav-btn{
@@ -395,13 +413,13 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
 .toast{
   position:fixed;bottom:80px;left:50%;
   transform:translateX(-50%) translateY(16px);
-  background:#0F1923;color:#2979FF;
+  background:#000000;color:#000000;
   padding:10px 20px;
   font-size:11px;font-weight:500;z-index:300;
   opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1);
   white-space:nowrap;pointer-events:none;
   font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;
-  border:1px solid rgba(41,121,255,0.3);
+  border:1px solid rgba(0,0,0,0.3);
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 /* SUCCESS */
@@ -422,7 +440,7 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
 .confirm-check{color:var(--green);font-size:20px;}
 .confirm-name{font-family:var(--font);font-size:14px;font-weight:700;color:var(--green);text-transform:uppercase;display:block;letter-spacing:.02em;}
 .confirm-time{font-size:10px;color:var(--text2);font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.04em;}
-.divider{height:1px;background:#E4E9F0;margin:24px 0;}
+.divider{height:1px;background:#E5E2DC;margin:24px 0;}
 .mb16{margin-bottom:16px;}
 .mb24{margin-bottom:24px;}
 .mt8{margin-top:8px;}
@@ -468,29 +486,29 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
 .quiz-loading{padding:32px;text-align:center;color:var(--text2);font-family:var(--body);font-size:13px;font-weight:500;}
 /* ── LEAD SCORECARD ── */
 .scorecard-row{
-  background:#FFFFFF;border:1px solid #E4E9F0;
+  background:#FFFFFF;border:1px solid #E5E2DC;
   padding:14px 16px;margin-bottom:6px;
   display:flex;align-items:center;gap:12px;
 }
-.scorecard-row.perfect{border-left:3px solid #00C853;}
-.scorecard-row.partial{border-left:3px solid #FFB300;}
-.scorecard-row.none{border-left:3px solid #E4E9F0;}
+.scorecard-row.perfect{border-left:3px solid #3F6B3F;}
+.scorecard-row.partial{border-left:3px solid #B8860B;}
+.scorecard-row.none{border-left:3px solid #E5E2DC;}
 .scorecard-avatar{
-  width:36px;height:36px;background:#F4F6F9;
-  border:1px solid #E4E9F0;
+  width:36px;height:36px;background:#FFFFFF;
+  border:1px solid #E5E2DC;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:10px;color:#7A8FA8;
+  font-family:var(--mono);font-size:10px;color:#6B6B6B;
   flex-shrink:0;
 }
-.scorecard-name{font-family:var(--font);font-size:14px;font-weight:600;color:#0F1923;display:block;}
-.scorecard-detail{font-size:11px;color:#7A8FA8;font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.03em;}
+.scorecard-name{font-family:var(--font);font-size:14px;font-weight:600;color:#000000;display:block;}
+.scorecard-detail{font-size:11px;color:#6B6B6B;font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.03em;}
 .scorecard-right{margin-left:auto;text-align:right;flex-shrink:0;}
 .scorecard-pct{font-family:var(--font);font-size:20px;font-weight:700;display:block;line-height:1;}
-.scorecard-pct.green{color:#00C853;}
-.scorecard-pct.amber{color:#FFB300;}
-.scorecard-pct.red{color:#FF4444;}
-.scorecard-sublabel{font-size:10px;color:#7A8FA8;font-family:var(--mono);letter-spacing:.04em;}
-.scorecard-bar{height:3px;background:#E4E9F0;margin-top:8px;width:100%;}
+.scorecard-pct.green{color:#3F6B3F;}
+.scorecard-pct.amber{color:#B8860B;}
+.scorecard-pct.red{color:#7F2222;}
+.scorecard-sublabel{font-size:10px;color:#6B6B6B;font-family:var(--mono);letter-spacing:.04em;}
+.scorecard-bar{height:3px;background:#E5E2DC;margin-top:8px;width:100%;}
 .scorecard-bar-fill{height:100%;transition:width .4s ease;}
 /* ── ROLE STATUS COLUMNS ── */
 .role-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;}
@@ -505,18 +523,18 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
 @media (max-width:500px){.role-columns{grid-template-columns:1fr;gap:18px;}}
 /* ── REPEAT OFFENDERS ── */
 .offender-row{
-  background:#FFFFFF;border:1px solid #E4E9F0;
+  background:#FFFFFF;border:1px solid #E5E2DC;
   padding:14px 16px;margin-bottom:6px;
   display:flex;align-items:center;gap:12px;
-  border-left:3px solid #FF4444;
+  border-left:3px solid #7F2222;
 }
-.offender-name{font-family:var(--font);font-size:14px;font-weight:600;color:#0F1923;display:block;}
-.offender-detail{font-size:11px;color:#FF4444;font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.03em;}
+.offender-name{font-family:var(--font);font-size:14px;font-weight:600;color:#000000;display:block;}
+.offender-detail{font-size:11px;color:#7F2222;font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.03em;}
 .offender-badge{
   margin-left:auto;flex-shrink:0;
-  background:rgba(255,68,68,0.08);
-  border:1px solid rgba(255,68,68,0.2);
-  color:#FF4444;
+  background:rgba(127,34,34,0.08);
+  border:1px solid rgba(127,34,34,0.2);
+  color:#7F2222;
   font-family:var(--mono);font-size:10px;font-weight:500;
   padding:4px 10px;letter-spacing:.06em;white-space:nowrap;
 }
@@ -565,56 +583,56 @@ canvas#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair;touch-ac
 .ir-section{margin-bottom:24px;}
 .ir-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .ir-type-btn{
-  background:#FFFFFF;border:1.5px solid #E4E9F0;
+  background:#FFFFFF;border:1.5px solid #E5E2DC;
   padding:16px 8px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:6px;
   font-family:var(--font);font-size:12px;font-weight:600;
-  color:#7A8FA8;text-transform:uppercase;letter-spacing:.04em;
+  color:#6B6B6B;text-transform:uppercase;letter-spacing:.04em;
   transition:all .15s;
 }
-.ir-type-btn:hover{border-color:#FF4444;color:#FF4444;}
-.ir-type-btn.active{border-color:#FF4444;background:rgba(255,68,68,0.06);color:#FF4444;}
+.ir-type-btn:hover{border-color:#7F2222;color:#7F2222;}
+.ir-type-btn.active{border-color:#7F2222;background:rgba(127,34,34,0.06);color:#7F2222;}
 .ir-type-icon{font-size:24px;}
 textarea.field-select{font-family:var(--body);}
 input.field-select{font-family:var(--body);}
 input.field-select::placeholder{color:#B8B6B0;}
-.lead-quiz-q-text{font-family:var(--font);font-size:18px;font-weight:700;color:#0F1923;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;}
-.lead-quiz-q-num{font-family:var(--mono);font-size:10px;color:#2979FF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.lead-quiz-q-text{font-family:var(--font);font-size:18px;font-weight:700;color:#000000;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;}
+.lead-quiz-q-num{font-family:var(--mono);font-size:10px;color:#000000;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
 .lead-quiz-opts{display:flex;flex-direction:column;gap:6px;}
 .lead-quiz-opt{
-  background:#0F1923;color:#F0F4F0;
+  background:#000000;color:#F7F5F2;
   border:none;padding:16px 20px;
   cursor:pointer;display:flex;align-items:center;gap:14px;
   text-align:left;width:100%;font-family:var(--body);
   transition:all .15s;position:relative;overflow:hidden;
 }
-.lead-quiz-opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:#2979FF;transition:width .15s;}
+.lead-quiz-opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:#000000;transition:width .15s;}
 .lead-quiz-opt:hover:not(.answered)::before{width:3px;}
-.lead-quiz-opt:hover:not(.answered){background:#1C2530;}
-.lead-quiz-opt.correct{background:#003820;pointer-events:none;}
-.lead-quiz-opt.correct::before{width:3px;background:#00C853;}
-.lead-quiz-opt.wrong{background:#2D0A0A;pointer-events:none;}
-.lead-quiz-opt.wrong::before{width:3px;background:#FF4444;}
+.lead-quiz-opt:hover:not(.answered){background:#1F1F1F;}
+.lead-quiz-opt.correct{background:#1F2F1F;pointer-events:none;}
+.lead-quiz-opt.correct::before{width:3px;background:#3F6B3F;}
+.lead-quiz-opt.wrong{background:#1F0F0F;pointer-events:none;}
+.lead-quiz-opt.wrong::before{width:3px;background:#7F2222;}
 .lead-quiz-opt.dimmed{opacity:.3;pointer-events:none;}
-.lead-quiz-letter{font-family:var(--mono);font-size:12px;font-weight:500;color:#7A8FA8;flex-shrink:0;width:20px;transition:color .15s;}
-.lead-quiz-opt.correct .lead-quiz-letter{color:#00C853;}
-.lead-quiz-opt.wrong .lead-quiz-letter{color:#FF4444;}
-.lead-quiz-text{font-size:15px;color:#F0F4F0;line-height:1.4;}
-.lead-quiz-opt.correct .lead-quiz-text{color:#00C853;}
-.lead-quiz-opt.wrong .lead-quiz-text{color:#FF4444;}
-.lead-quiz-fb{font-size:13px;margin-top:12px;padding:12px 16px;color:#C8D8C8;background:#0F1923;border-left:3px solid transparent;font-weight:300;line-height:1.5;}
-.lead-quiz-fb.correct{border-color:#00C853;color:#7DFFC0;}
-.lead-quiz-fb.wrong{border-color:#FF4444;color:#FFB3B3;}
-.lead-quiz-loading{padding:40px;text-align:center;color:#7A8FA8;font-family:var(--mono);font-size:12px;letter-spacing:.06em;}
+.lead-quiz-letter{font-family:var(--mono);font-size:12px;font-weight:500;color:#6B6B6B;flex-shrink:0;width:20px;transition:color .15s;}
+.lead-quiz-opt.correct .lead-quiz-letter{color:#3F6B3F;}
+.lead-quiz-opt.wrong .lead-quiz-letter{color:#7F2222;}
+.lead-quiz-text{font-size:15px;color:#F7F5F2;line-height:1.4;}
+.lead-quiz-opt.correct .lead-quiz-text{color:#3F6B3F;}
+.lead-quiz-opt.wrong .lead-quiz-text{color:#7F2222;}
+.lead-quiz-fb{font-size:13px;margin-top:12px;padding:12px 16px;color:#A3A3A3;background:#000000;border-left:3px solid transparent;font-weight:300;line-height:1.5;}
+.lead-quiz-fb.correct{border-color:#3F6B3F;color:#3F6B3F;}
+.lead-quiz-fb.wrong{border-color:#7F2222;color:#E5C5C5;}
+.lead-quiz-loading{padding:40px;text-align:center;color:#6B6B6B;font-family:var(--mono);font-size:12px;letter-spacing:.06em;}
 .quiz-pass-banner{
-  background:#0F1923;
+  background:#000000;
   padding:20px;
   display:flex;align-items:center;gap:16px;
-  border-top:2px solid #2979FF;
+  border-top:2px solid #000000;
 }
 .quiz-pass-icon{font-size:36px;animation:popIn .4s cubic-bezier(.4,0,.2,1);}
 .quiz-pass-title{font-family:var(--font);font-size:22px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.02em;}
-.quiz-pass-sub{font-size:12px;color:#7A8FA8;font-family:var(--mono);letter-spacing:.04em;margin-top:2px;}
+.quiz-pass-sub{font-size:12px;color:#6B6B6B;font-family:var(--mono);letter-spacing:.04em;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -631,9 +649,9 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="header-tag">OSHA 1926</div>
   </header>
   <div class="content">
-    <div class="hero">
-      <div class="hero-eyebrow">Toolbox Talk System</div>
-      <div class="hero-title">Select<br>your role.</div>
+    <div class="home-hero">
+      <img src="./logo.png" alt="Homestead Electric" class="home-logo">
+      <div class="home-tag">Toolbox Talk · OSHA 1926</div>
     </div>
     <div class="role-grid">
       <button class="role-card" data-color="yellow" onclick="enterRole('lead')">
@@ -692,7 +710,7 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div class="hero-title" style="font-size:26px;">Knowledge<br>Check.</div>
     </div>
     <div class="sec-label">Wednesday Lead Meeting</div>
-    <div style="font-size:13px;color:#7A8FA8;font-weight:300;margin-bottom:20px;">Answer the questions below to unlock your sign-off.</div>
+    <div style="font-size:13px;color:#6B6B6B;font-weight:300;margin-bottom:20px;">Answer the questions below to unlock your sign-off.</div>
     <!-- LEAD QUIZ -->
     <div id="leadQuizSection" style="margin-bottom:20px;">
       <div id="leadQuizInner"></div>
@@ -924,14 +942,14 @@ input.field-select::placeholder{color:#B8B6B0;}
 <div class="screen" id="screen-incident">
   <header class="header">
     <div class="wordmark" onclick="goHome()" style="cursor:pointer;">
-      <div class="bolt-wrap" style="background:#FF4444;"></div>
+      <div class="bolt-wrap"></div>
       <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
     </div>
-    <div class="header-tag" style="color:#FF4444;border-color:rgba(255,68,68,0.4);">Incident</div>
+    <div class="header-tag" style="color:#7F2222;border-color:rgba(127,34,34,0.4);">Incident</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
-      <div class="hero-eyebrow" style="color:#FF4444;">Incident Report</div>
+      <div class="hero-eyebrow" style="color:#7F2222;">Incident Report</div>
       <div class="hero-title" style="font-size:26px;">File a<br>Report.</div>
     </div>
     <!-- Submitted state -->
@@ -1062,7 +1080,7 @@ input.field-select::placeholder{color:#B8B6B0;}
       </div>
       <!-- Witnesses -->
       <div class="ir-section">
-        <div class="sec-label">Witnesses <span style="color:#7A8FA8;font-weight:400;">(optional)</span></div>
+        <div class="sec-label">Witnesses <span style="color:#6B6B6B;font-weight:400;">(optional)</span></div>
         <div class="mb16">
           <input type="text" class="field-select" id="ir-witnesses" placeholder="Names of anyone who saw what happened">
         </div>
@@ -1076,10 +1094,10 @@ input.field-select::placeholder{color:#B8B6B0;}
           </select>
         </div>
       </div>
-      <div style="background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-left:3px solid #FF4444;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#CC3333;font-weight:300;line-height:1.6;">
+      <div style="background:rgba(127,34,34,0.06);border:1px solid rgba(127,34,34,0.2);border-left:3px solid #7F2222;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#7F2222;font-weight:300;line-height:1.6;">
         This report is submitted immediately to the Safety Lead and retained in OSHA records. Workers comp provider notification is handled separately by the Safety Lead.
       </div>
-      <button class="btn-primary" style="background:#FF4444;" onclick="submitIncident()">Submit report →</button>
+      <button class="btn-primary" style="background:#7F2222;" onclick="submitIncident()">Submit report →</button>
       <button class="btn-outline" style="margin-top:10px;width:100%;" onclick="goHome()">Cancel</button>
     </div>
   </div>
@@ -1431,7 +1449,7 @@ function renderLead(){
 let leadQuiz={questions:[],current:0,correct:0,answered:[]};
 function loadLeadQuiz(){
   if(!S.topic)return;
-  document.getElementById('leadQuizInner').innerHTML='<div class="lead-quiz-loading"><div class="spinner" style="border-top-color:#2979FF;margin:0 auto 10px;"></div>Loading questions…</div>';
+  document.getElementById('leadQuizInner').innerHTML='<div class="lead-quiz-loading"><div class="spinner" style="border-top-color:#000000;margin:0 auto 10px;"></div>Loading questions…</div>';
   if(S.quiz&&S.quiz.topicTitle===S.topic.title){
     leadQuiz.questions=S.quiz.questions;
     leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
@@ -1451,8 +1469,8 @@ function renderLeadQuiz(){
   const q=qs[leadQuiz.current];
   const letters=['A','B','C','D'];
   document.getElementById('leadQuizInner').innerHTML=`
-    <div style="font-family:var(--mono);font-size:10px;color:#2979FF;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">${leadQuiz.current+1} / ${qs.length}</div>
-    <div style="font-family:var(--font);font-size:18px;font-weight:700;color:#0F1923;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;">${q.q}</div>
+    <div style="font-family:var(--mono);font-size:10px;color:#000000;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">${leadQuiz.current+1} / ${qs.length}</div>
+    <div style="font-family:var(--font);font-size:18px;font-weight:700;color:#000000;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;">${q.q}</div>
     <div class="lead-quiz-opts" id="leadQuizOpts">
       ${q.options.map((opt,i)=>`
         <button class="lead-quiz-opt" onclick="answerLeadQuiz(${i})">
@@ -1488,10 +1506,10 @@ function nextLeadQuiz(){
     } else {
       document.getElementById('leadQuizSection').style.display='block';
       document.getElementById('leadQuizInner').innerHTML=`
-        <div class="quiz-pass-banner" style="background:#1a0a0a;border-top-color:#FF4444;">
+        <div class="quiz-pass-banner" style="background:#1F0F0F;border-top-color:#7F2222;">
           <div style="font-size:36px;">✗</div>
           <div>
-            <div class="quiz-pass-title" style="color:#FF4444;">Try again</div>
+            <div class="quiz-pass-title" style="color:#7F2222;">Try again</div>
             <div class="quiz-pass-sub">${leadQuiz.correct}/${leadQuiz.questions.length} correct · Need 2/3 to pass</div>
           </div>
         </div>
@@ -1588,10 +1606,10 @@ function nextQuiz(){
       document.getElementById('crewSignSection').style.display='block';
     } else {
       document.getElementById('quizInner').innerHTML=`
-        <div class="quiz-pass-banner" style="background:#1a0a0a;border-top-color:#FF4444;">
+        <div class="quiz-pass-banner" style="background:#1F0F0F;border-top-color:#7F2222;">
           <div style="font-size:36px;">✗</div>
           <div>
-            <div class="quiz-pass-title" style="color:#FF4444;">Try again</div>
+            <div class="quiz-pass-title" style="color:#7F2222;">Try again</div>
             <div class="quiz-pass-sub">${quiz.correct}/${quiz.questions.length} correct · Need 2/3 to pass</div>
           </div>
         </div>
@@ -1681,7 +1699,7 @@ function renderAdmin(){
       ];
       offendersEl.innerHTML=items.map(i=>`
         <div class="offender-row">
-          <div class="scorecard-avatar" style="border-color:rgba(255,68,68,0.3);color:#FF4444;">${ini(i.name)}</div>
+          <div class="scorecard-avatar" style="border-color:rgba(127,34,34,0.3);color:#7F2222;">${ini(i.name)}</div>
           <div style="flex:1;min-width:0;">
             <span class="offender-name">${i.name}</span>
             <span class="offender-detail">${i.issue}</span>
@@ -1880,10 +1898,10 @@ let drawing=false,hasMark=false;
 const cv=document.getElementById('sigCanvas'),cx=cv.getContext('2d');
 function gp(e,c){const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height,src=e.touches?e.touches[0]:e;return{x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};}
 cv.addEventListener('mousedown',e=>{drawing=true;cx.beginPath();const p=gp(e,cv);cx.moveTo(p.x,p.y);});
-cv.addEventListener('mousemove',e=>{if(!drawing)return;hasMark=true;document.getElementById('sigHint').style.opacity='0';const p=gp(e,cv);cx.lineTo(p.x,p.y);cx.strokeStyle='#0F1923';cx.lineWidth=2;cx.lineCap='round';cx.stroke();});
+cv.addEventListener('mousemove',e=>{if(!drawing)return;hasMark=true;document.getElementById('sigHint').style.opacity='0';const p=gp(e,cv);cx.lineTo(p.x,p.y);cx.strokeStyle='#000000';cx.lineWidth=2;cx.lineCap='round';cx.stroke();});
 cv.addEventListener('mouseup',()=>drawing=false);cv.addEventListener('mouseleave',()=>drawing=false);
 cv.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;cx.beginPath();const p=gp(e,cv);cx.moveTo(p.x,p.y);},{passive:false});
-cv.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;hasMark=true;document.getElementById('sigHint').style.opacity='0';const p=gp(e,cv);cx.lineTo(p.x,p.y);cx.strokeStyle='#0F1923';cx.lineWidth=2;cx.lineCap='round';cx.stroke();},{passive:false});
+cv.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;hasMark=true;document.getElementById('sigHint').style.opacity='0';const p=gp(e,cv);cx.lineTo(p.x,p.y);cx.strokeStyle='#000000';cx.lineWidth=2;cx.lineCap='round';cx.stroke();},{passive:false});
 cv.addEventListener('touchend',()=>drawing=false);
 function openSigModal(name,roleLabel){document.getElementById('sigModalName').textContent=`${name} · ${roleLabel}`;document.getElementById('sigModal').classList.add('open');clearSig();}
 function closeSigModal(){document.getElementById('sigModal').classList.remove('open');S.signing=null;S.signingType=null;}
