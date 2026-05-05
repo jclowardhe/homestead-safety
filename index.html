@@ -34,7 +34,7 @@
   --green-border:#000000;
   --red:#7F2222;                /* deep barn red */
 
-  /* Type — Alfa Slab One for headlines (matches HOMESTEAD wordmark), Inter for body */
+  /* Type — Alfa Slab One for headlines, Inter for body */
   --font:'Alfa Slab One','Inter',serif;
   --mono:'Inter',sans-serif;
   --body:'Inter',sans-serif;
@@ -59,8 +59,16 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
-/* (grid background removed) */
-body::before{display:none;}
+/* Skull watermark — fixed, faint, behind everything */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:url('./skull.png') center 55% / min(85vw,560px) auto no-repeat;
+  opacity:0.05;
+  pointer-events:none;
+  z-index:0;
+}
 .screen{display:none;min-height:100vh;flex-direction:column;position:relative;z-index:1;}
 .screen.active{display:flex;}
 /* ── HEADER ── */
@@ -74,10 +82,27 @@ body::before{display:none;}
 }
 .wordmark{display:flex;align-items:center;gap:12px;}
 .bolt-wrap{
-  width:42px;height:42px;
+  width:72px;height:48px;
   background:url('./skull.png') center/contain no-repeat;
   flex-shrink:0;
 }
+/* Back button used in inner page headers */
+.back-btn{
+  background:#FFFFFF;
+  border:1.5px solid #000000;
+  color:#000000;
+  padding:7px 12px 7px 10px;
+  font-size:12px;font-weight:600;
+  font-family:var(--body);
+  letter-spacing:.04em;
+  cursor:pointer;
+  border-radius:4px;
+  display:inline-flex;align-items:center;gap:8px;
+  text-transform:uppercase;
+  transition:background .15s ease;
+}
+.back-btn:hover{background:#F7F5F2;}
+.back-btn-arrow{font-size:16px;font-weight:700;line-height:1;}
 .wm-text{
   font-family:var(--font);
   font-size:15px;font-weight:400;
@@ -698,10 +723,7 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ JOB LEAD ══ -->
 <div class="screen" id="screen-lead">
   <header class="header">
-    <div class="wordmark" onclick="goHome()" style="cursor:pointer;">
-      <div class="bolt-wrap"></div>
-      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
-    </div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
     <div class="header-tag">Job Lead</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
@@ -777,11 +799,8 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ CREW ══ -->
 <div class="screen" id="screen-crew">
   <header class="header">
-    <div class="wordmark" onclick="goHome()" style="cursor:pointer;">
-      <div class="bolt-wrap"></div>
-      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub" id="crewWeekLabel">—</span></div>
-    </div>
-    <div class="header-tag">Crew</div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
+    <div class="header-tag" id="crewWeekLabelTag">Crew</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
@@ -836,10 +855,7 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ ADMIN ══ -->
 <div class="screen" id="screen-admin">
   <header class="header">
-    <div class="wordmark" onclick="goHome()" style="cursor:pointer;">
-      <div class="bolt-wrap"></div>
-      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
-    </div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
     <div class="header-tag">Admin</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
@@ -941,10 +957,7 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ INCIDENT REPORT ══ -->
 <div class="screen" id="screen-incident">
   <header class="header">
-    <div class="wordmark" onclick="goHome()" style="cursor:pointer;">
-      <div class="bolt-wrap"></div>
-      <div><span class="wm-text">Homestead Electric</span><span class="wm-sub">Safety Program</span></div>
-    </div>
+    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span>Back</button>
     <div class="header-tag" style="color:#7F2222;border-color:rgba(127,34,34,0.4);">Incident</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
