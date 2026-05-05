@@ -219,19 +219,13 @@ body::before{
   background:url('./skull.png') center/contain no-repeat;
   flex-shrink:0;
 }
-/* Home page: black header band with the white longhorn logo */
+/* Home page: taller header so the longhorn logo can breathe */
 #screen-role .header{
-  background:#000000;
-  height:130px;
-  border-bottom:none;
+  height:120px;
   padding:0 18px;
 }
-#screen-role .lang-toggle{
-  background:#000000;color:#FFFFFF;border-color:#FFFFFF;
-}
-#screen-role .lang-toggle:hover{background:#1F1F1F;}
 .brand-logo{
-  height:96px;
+  height:90px;
   width:auto;
   max-width:none;
   display:block;
@@ -820,7 +814,7 @@ input.field-select::placeholder{color:#B8B6B0;}
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screen-role">
   <header class="header">
-    <img src="./logo-white.png" alt="Homestead Electric" class="brand-logo">
+    <img src="./logo-tight.png" alt="Homestead Electric" class="brand-logo">
     <button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
       <span class="lang-en">Español</span><span class="lang-es">English</span>
     </button>
