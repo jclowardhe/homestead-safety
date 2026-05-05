@@ -223,8 +223,7 @@ body::before{
 #screen-role .header{
   height:120px;
   padding:0 18px;
-  align-items:center;
-  position:relative;
+  justify-content:center;
 }
 .brand-logo{
   height:90px;
@@ -233,16 +232,16 @@ body::before{
   display:block;
   flex-shrink:0;
 }
-/* Compact language toggle, pinned to the top-right so it doesn't fight with the logo */
-#screen-role .lang-toggle{
-  position:absolute;
-  top:10px;
-  right:14px;
-  font-size:10px;
-  letter-spacing:.06em;
-  padding:4px 10px;
-  text-transform:uppercase;
+/* Subtle footer language switcher */
+.footer-lang{
+  background:none;border:none;padding:8px 0;margin:0 auto;
+  display:block;width:auto;
+  font-family:var(--body);font-size:11px;font-weight:500;
+  color:var(--text2);letter-spacing:.04em;
+  cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;
 }
+.footer-lang:hover{color:#000000;}
 /* Back button used in inner page headers */
 .back-btn{
   background:#FFFFFF;
@@ -827,9 +826,6 @@ input.field-select::placeholder{color:#B8B6B0;}
 <div class="screen active" id="screen-role">
   <header class="header">
     <img src="./logo-tight.png" alt="Homestead Electric" class="brand-logo">
-    <button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
-      <span class="lang-en">Español</span><span class="lang-es">English</span>
-    </button>
   </header>
   <div class="content">
     <div class="hero">
@@ -871,6 +867,9 @@ input.field-select::placeholder{color:#B8B6B0;}
       <button class="suggestion-link" onclick="openSuggestionModal()">
         <span class="lang-en">Anonymous safety concern? →</span>
         <span class="lang-es">¿Preocupación de seguridad anónima? →</span>
+      </button>
+      <button class="footer-lang" onclick="toggleLang()" aria-label="Switch language">
+        <span class="lang-en">Cambiar a Español</span><span class="lang-es">Switch to English</span>
       </button>
     </div>
   </div>
