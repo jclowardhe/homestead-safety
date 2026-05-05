@@ -8,6 +8,7 @@
 <link rel="apple-touch-icon" href="./skull.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -61,6 +62,37 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
+/* Anonymous suggestion link + admin list */
+.suggestion-link{
+  display:block;width:100%;
+  background:none;border:none;
+  font-family:var(--body);font-size:12px;font-weight:500;
+  color:var(--text2);letter-spacing:.04em;
+  padding:14px 0;cursor:pointer;text-align:center;
+  margin-top:6px;
+  text-decoration:underline;text-underline-offset:3px;
+  text-decoration-color:rgba(0,0,0,0.2);
+}
+.suggestion-link:hover{color:#000000;text-decoration-color:#000000;}
+.suggestion-row{
+  background:var(--surface);border:1.5px solid #000000;
+  border-radius:6px;padding:14px 16px;margin-bottom:6px;
+}
+.suggestion-row.reviewed{opacity:.55;border-color:#A8A29E;background:#F7F5F2;}
+.suggestion-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.suggestion-cat{
+  font-family:var(--body);font-size:10px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  background:#B8860B;color:#FFFFFF;padding:3px 8px;border-radius:3px;
+}
+.suggestion-cat.hazard{background:#7F2222;}
+.suggestion-cat.process{background:#000000;}
+.suggestion-cat.equipment{background:#3F5773;}
+.suggestion-cat.other{background:#6B6B6B;}
+.suggestion-date{font-size:11px;color:var(--text2);font-family:var(--body);}
+.suggestion-badge{font-size:10px;font-weight:700;color:#3F6B3F;letter-spacing:.04em;text-transform:uppercase;}
+.suggestion-body{font-size:14px;color:#000000;line-height:1.5;white-space:pre-wrap;margin-bottom:10px;}
+
 /* Incident photo uploader */
 .photo-upload-btn{
   background:#FFFFFF;border:1.5px dashed #000000;border-radius:6px;
@@ -814,6 +846,10 @@ input.field-select::placeholder{color:#B8B6B0;}
         <span class="lang-en">System active · OSHA 29 CFR 1926 compliant</span>
         <span class="lang-es">Sistema activo · cumple con OSHA 29 CFR 1926</span>
       </div>
+      <button class="suggestion-link" onclick="openSuggestionModal()">
+        <span class="lang-en">Anonymous safety concern? →</span>
+        <span class="lang-es">¿Preocupación de seguridad anónima? →</span>
+      </button>
     </div>
   </div>
 </div>
@@ -915,11 +951,20 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="divider"></div>
     <div class="sec-label">Incident log</div>
     <div id="incidentLog"></div>
+    <!-- ANONYMOUS SUGGESTIONS -->
+    <div class="divider"></div>
+    <div class="sec-label">Anonymous suggestions</div>
+    <div id="suggestionsList"></div>
     <div class="divider"></div>
     <div class="sec-label">Export</div>
-    <button class="export-row" onclick="exportReport()">
+    <button class="export-row" onclick="exportWeekPDF()">
       <div class="exp-icon-wrap">📄</div>
-      <div><span class="exp-name">This week's report</span><span class="exp-desc">All signatures · timestamps · GPS coordinates</span></div>
+      <div><span class="exp-name">This week's PDF</span><span class="exp-desc">Printable record · signatures · timestamps · GPS</span></div>
+      <span class="exp-chev">→</span>
+    </button>
+    <button class="export-row" onclick="exportReport()">
+      <div class="exp-icon-wrap">📝</div>
+      <div><span class="exp-name">This week's report (TXT)</span><span class="exp-desc">Plain text summary · no signatures</span></div>
       <span class="exp-chev">→</span>
     </button>
     <button class="export-row" onclick="exportCSV()">
@@ -1165,6 +1210,41 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
   </nav>
 </div>
+<!-- ANONYMOUS SUGGESTION MODAL -->
+<div class="modal-overlay" id="suggestionModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">
+      <span class="lang-en">Anonymous Safety Suggestion</span>
+      <span class="lang-es">Sugerencia Anónima de Seguridad</span>
+    </h2>
+    <p class="modal-sub">
+      <span class="lang-en">No name required. We use this to surface concerns the safety lead should know about.</span>
+      <span class="lang-es">No se necesita nombre. Esto ayuda a comunicar preocupaciones al encargado de seguridad.</span>
+    </p>
+    <div class="mb16">
+      <label class="field-lbl"><span class="lang-en">Category</span><span class="lang-es">Categoría</span></label>
+      <select class="field-select" id="sg-category">
+        <option value="hazard">Hazard / Peligro</option>
+        <option value="process">Process · Procedure / Proceso · Procedimiento</option>
+        <option value="equipment">Equipment / Equipo</option>
+        <option value="other">Other / Otro</option>
+      </select>
+    </div>
+    <div class="mb16">
+      <label class="field-lbl"><span class="lang-en">Tell us what you saw</span><span class="lang-es">Cuéntanos qué viste</span></label>
+      <textarea class="field-select" id="sg-body" rows="5" style="resize:vertical;font-family:var(--body);" placeholder="Describe the concern…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeSuggestionModal()">
+        <span class="lang-en">Cancel</span><span class="lang-es">Cancelar</span>
+      </button>
+      <button class="btn-primary" onclick="submitSuggestion()">
+        <span class="lang-en">Submit anonymously →</span><span class="lang-es">Enviar anónimamente →</span>
+      </button>
+    </div>
+  </div>
+</div>
 <!-- INCIDENT DETAIL MODAL -->
 <div class="modal-overlay" id="incidentDetailModal">
   <div class="modal" style="max-width:560px;max-height:85vh;overflow-y:auto;">
@@ -1382,6 +1462,10 @@ const db={
       .on('postgres_changes',{event:'*',schema:'public',table:'incidents'},()=>{
         const active=document.querySelector('.screen.active')?.id;
         if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
+      })
+      .on('postgres_changes',{event:'*',schema:'public',table:'safety_suggestions'},()=>{
+        const active=document.querySelector('.screen.active')?.id;
+        if(active==='screen-admin'&&typeof renderSuggestions==='function')renderSuggestions();
       })
       .subscribe();
   },
@@ -2028,6 +2112,87 @@ function renderAdmin(){
   renderEmployeeLists();
   // ── INCIDENT LOG ──
   renderIncidentLog();
+  // ── ANONYMOUS SUGGESTIONS ──
+  renderSuggestions();
+}
+
+// ════════ ANONYMOUS SAFETY SUGGESTIONS ════════
+function openSuggestionModal(){
+  const modal=document.getElementById('suggestionModal');
+  document.getElementById('sg-body').value='';
+  document.getElementById('sg-category').value='hazard';
+  modal.classList.add('open');
+  setTimeout(()=>document.getElementById('sg-body').focus(),50);
+}
+function closeSuggestionModal(){
+  document.getElementById('suggestionModal').classList.remove('open');
+}
+async function submitSuggestion(){
+  const category=document.getElementById('sg-category').value;
+  const body=document.getElementById('sg-body').value.trim();
+  if(body.length<5){
+    showToast(window.LANG==='es'?'Por favor describe tu preocupación':'Please describe your concern');
+    return;
+  }
+  if(sb){
+    const {error}=await sb.from('safety_suggestions').insert({category,body});
+    if(error){console.error('submitSuggestion',error);showToast('Submission failed — see console');return;}
+  }else{
+    // No backend — stash locally
+    try{
+      const list=JSON.parse(localStorage.getItem('hes_suggestions_local')||'[]');
+      list.unshift({id:'local-'+Date.now(),category,body,submitted_at:new Date().toISOString()});
+      localStorage.setItem('hes_suggestions_local',JSON.stringify(list));
+    }catch(e){}
+  }
+  closeSuggestionModal();
+  showToast(window.LANG==='es'?'Enviado anónimamente. Gracias.':'Submitted anonymously. Thanks.');
+}
+
+let _suggestionsCache=[];
+async function renderSuggestions(){
+  const el=document.getElementById('suggestionsList');
+  if(!el)return;
+  if(sb){
+    try{
+      const {data,error}=await sb.from('safety_suggestions').select('*').order('submitted_at',{ascending:false}).limit(100);
+      if(error)console.error('fetch suggestions',error);
+      if(data)_suggestionsCache=data;
+    }catch(e){console.error('fetch suggestions',e);}
+  }
+  if(!_suggestionsCache||!_suggestionsCache.length){
+    el.innerHTML='<div class="empty-state">No suggestions submitted yet.</div>';
+    return;
+  }
+  el.innerHTML=_suggestionsCache.map(s=>{
+    const submitted=new Date(s.submitted_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const isReviewed=!!s.reviewed_at;
+    const cat=(s.category||'other').toLowerCase();
+    const catLabel={hazard:'Hazard',process:'Process',equipment:'Equipment',other:'Other'}[cat]||s.category||'—';
+    const safeBody=(s.body||'').replace(/</g,'&lt;');
+    return`<div class="suggestion-row ${isReviewed?'reviewed':''}">
+      <div class="suggestion-meta">
+        <span class="suggestion-cat ${cat}">${catLabel}</span>
+        <span class="suggestion-date">${submitted}</span>
+        ${isReviewed?'<span class="suggestion-badge">✓ Reviewed</span>':''}
+      </div>
+      <div class="suggestion-body">${safeBody}</div>
+      ${!isReviewed?`<button class="btn-edit" onclick="markSuggestionReviewed('${s.id}')">Mark reviewed</button>`:''}
+    </div>`;
+  }).join('');
+}
+async function markSuggestionReviewed(id){
+  if(!sb){showToast('No backend connected');return;}
+  const {error}=await sb.from('safety_suggestions').update({
+    reviewed_at:new Date().toISOString(),
+    reviewed_by:'Administration'
+  }).eq('id',id);
+  if(error){console.error('mark reviewed',error);showToast('Failed');return;}
+  // Update cache locally
+  const item=_suggestionsCache.find(s=>s.id===id);
+  if(item){item.reviewed_at=new Date().toISOString();item.reviewed_by='Administration';}
+  await renderSuggestions();
+  showToast('Marked reviewed');
 }
 
 // ════════ INCIDENT LOG ════════
@@ -2459,6 +2624,118 @@ function submitSignature(){
   document.getElementById('crewSigned').style.display='block';
   document.getElementById('crewSignedDetails').textContent=`${signingName} · ${ds} ${ts}`;
 }
+async function exportWeekPDF(){
+  // Use jsPDF (loaded via CDN) to generate a printable record with embedded signature images
+  if(typeof window.jspdf==='undefined'){
+    showToast('PDF library still loading — try again in a sec');
+    return;
+  }
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'letter'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const pageH=doc.internal.pageSize.getHeight();
+  const margin=40;
+  let y=50;
+
+  // Title block
+  doc.setFontSize(18);doc.setFont(undefined,'bold');
+  doc.text('Homestead Electric — Toolbox Talk Record',margin,y);
+  y+=8;
+  doc.setLineWidth(1.2);
+  doc.line(margin,y,pageW-margin,y);
+  y+=22;
+
+  // Meta block
+  doc.setFontSize(10);doc.setFont(undefined,'normal');
+  const meta=[
+    ['Week:',S.weekLabel||'—'],
+    ['Topic:',S.topic?.title||'—'],
+    ['OSHA Reference:',S.topic?.oshaRef||'—'],
+    ['Generated:',new Date().toLocaleString()],
+  ];
+  meta.forEach(([k,v])=>{
+    doc.setFont(undefined,'bold');doc.text(k,margin,y);
+    doc.setFont(undefined,'normal');doc.text(v,margin+90,y);
+    y+=14;
+  });
+  y+=10;
+
+  // Table header
+  const colX={name:margin,role:margin+130,time:margin+220,quiz:margin+320,sig:margin+380};
+  doc.setFontSize(9);doc.setFont(undefined,'bold');
+  doc.text('NAME',colX.name,y);
+  doc.text('ROLE',colX.role,y);
+  doc.text('TIME',colX.time,y);
+  doc.text('QUIZ',colX.quiz,y);
+  doc.text('SIGNATURE',colX.sig,y);
+  y+=4;
+  doc.setLineWidth(0.6);doc.line(margin,y,pageW-margin,y);
+  y+=14;
+
+  // Resolve role label from current employee record
+  const roleLabelFor=(name)=>{
+    if(LEADS.some(p=>p.name===name))return'Job Lead';
+    if(FOREMEN.some(p=>p.name===name))return'Foreman';
+    if(ADMINS.some(p=>p.name===name))return'Admin';
+    if(CREW.some(p=>p.name===name))return'Apprentice';
+    return'';
+  };
+  // Gather all sign-offs (lead-tier + crew bucket), de-dup by name
+  const recs=[];
+  Object.entries(S.leadSignoffs||{}).forEach(([name,rec])=>recs.push({name,rec}));
+  Object.entries(S.signoffs||{}).forEach(([name,rec])=>{if(!recs.some(r=>r.name===name))recs.push({name,rec});});
+  // Sort by time signed
+  recs.sort((a,b)=>(a.rec?.time||'').localeCompare(b.rec?.time||''));
+
+  if(recs.length===0){
+    doc.setFontSize(10);doc.setFont(undefined,'italic');doc.setTextColor(120);
+    doc.text('No sign-offs recorded yet for this week.',margin,y);
+    doc.setTextColor(0);
+    y+=20;
+  }else{
+    doc.setFont(undefined,'normal');
+    for(const {name,rec} of recs){
+      const rowH=42;
+      if(y+rowH>pageH-60){doc.addPage();y=50;}
+      doc.setFontSize(10);
+      doc.text(name||'—',colX.name,y+18,{maxWidth:120});
+      doc.text(roleLabelFor(name),colX.role,y+18);
+      doc.text(rec?.time||'—',colX.time,y+18,{maxWidth:90});
+      doc.text(rec?.quizScore||'—',colX.quiz,y+18);
+      // Embed signature image
+      if(rec?.sigData&&typeof rec.sigData==='string'&&rec.sigData.startsWith('data:image')){
+        try{doc.addImage(rec.sigData,'PNG',colX.sig,y+2,140,rowH-6);}
+        catch(e){doc.setFontSize(9);doc.setTextColor(150);doc.text('(signature image error)',colX.sig,y+18);doc.setTextColor(0);doc.setFontSize(10);}
+      }else{
+        doc.setFontSize(9);doc.setTextColor(150);doc.text('(no signature)',colX.sig,y+18);doc.setTextColor(0);doc.setFontSize(10);
+      }
+      // Location below name (small grey)
+      if(rec?.location&&rec.location!=='Location N/A'){
+        doc.setFontSize(8);doc.setTextColor(120);
+        doc.text(rec.location,colX.name,y+30,{maxWidth:170});
+        doc.setTextColor(0);doc.setFontSize(10);
+      }
+      y+=rowH+6;
+      doc.setLineWidth(0.3);doc.setDrawColor(220);
+      doc.line(margin,y-3,pageW-margin,y-3);
+      doc.setDrawColor(0);
+    }
+  }
+
+  // Footer (every page)
+  const totalPages=doc.internal.getNumberOfPages();
+  for(let p=1;p<=totalPages;p++){
+    doc.setPage(p);
+    doc.setFontSize(8);doc.setTextColor(120);
+    doc.text('Maintained per OSHA 29 CFR 1926. Retain minimum 3 years.',margin,pageH-30);
+    doc.text(`Page ${p} of ${totalPages}`,pageW-margin,pageH-30,{align:'right'});
+    doc.setTextColor(0);
+  }
+
+  doc.save(`HES_Safety_${S.weekId}.pdf`);
+  showToast('PDF downloaded');
+}
+
 function exportReport(){
   const t=S.topic;
   const lr=LEADS.map(l=>{const s=S.leadSignoffs[l.name];return`${l.name.padEnd(22)} Job Lead      ${s?s.time:'NOT SIGNED'.padEnd(12)} ${s?s.quizScore:'—/3  '} ${s?s.location:'—'}`;}).join('\n');
