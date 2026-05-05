@@ -817,88 +817,7 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
   </div>
 </div>
-<!-- ══ JOB LEAD ══ -->
-<div class="screen" id="screen-lead">
-  <header class="header">
-    <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
-    <div class="header-tag"><span class="lang-en">Job Lead</span><span class="lang-es">Líder</span></div>
-  </header>
-  <div class="content" style="padding-bottom:100px;">
-    <div class="hero" style="margin-bottom:24px;">
-      <div class="hero-eyebrow">Wednesday Lead Meeting</div>
-      <div class="hero-title" style="font-size:26px;">Knowledge<br>Check.</div>
-    </div>
-    <div class="sec-label">Wednesday Lead Meeting</div>
-    <div style="font-size:13px;color:#6B6B6B;font-weight:300;margin-bottom:20px;">Answer the questions below to unlock your sign-off.</div>
-    <!-- LEAD QUIZ -->
-    <div id="leadQuizSection" style="margin-bottom:20px;">
-      <div id="leadQuizInner"></div>
-    </div>
-    <!-- LEAD QUIZ PASS -->
-    <div id="leadQuizPass" style="display:none; margin-bottom:20px;">
-      <div class="quiz-pass-banner">
-        <div class="quiz-pass-icon">⚡</div>
-        <div>
-          <div class="quiz-pass-title">Passed</div>
-          <div class="quiz-pass-sub" id="leadQuizScoreLabel">—</div>
-        </div>
-      </div>
-    </div>
-    <div class="sec-label">Your sign-off</div>
-    <div id="leadSignSection" class="mb24" style="display:none;">
-      <div class="mb16">
-        <label class="field-lbl"><span class="lang-en">Your name</span><span class="lang-es">Tu nombre</span></label>
-        <select class="field-select" id="leadNameSelect" onchange="onNameChange('lead')"><option value="">Select your name…</option></select>
-      </div>
-      <div class="pin-row" id="leadPinRow">
-        <label class="field-lbl"><span class="lang-en">PIN (4 digits)</span><span class="lang-es">PIN (4 dígitos)</span></label>
-        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" class="pin-input" id="leadPinInput" placeholder="••••">
-        <div class="pin-mode-msg" id="leadPinMsg"></div>
-      </div>
-      <div class="mb16">
-        <label class="check-row">
-          <input type="checkbox" id="leadConfirm">
-          <span class="check-text"><span class="lang-en">I confirm I attended this week's lead safety meeting and understand the topic presented.</span><span class="lang-es">Confirmo que asistí a la reunión de seguridad de líderes de esta semana y entiendo el tema presentado.</span></span>
-        </label>
-      </div>
-      <button class="btn-primary" onclick="openLeadSignModal()"><span class="lang-en">Sign off as lead →</span><span class="lang-es">Firmar como líder →</span></button>
-    </div>
-    <div id="leadSigned" style="display:none;" class="mb24">
-      <div class="confirm-banner">
-        <span class="confirm-check">✓</span>
-        <div>
-          <span class="confirm-name" id="leadSignedName">—</span>
-          <span class="confirm-time" id="leadSignedDetails">—</span>
-        </div>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="stats-row">
-      <div class="stat-card"><span class="stat-num" id="lead-stat-total">12</span><span class="stat-lbl">Crew</span></div>
-      <div class="stat-card"><span class="stat-num green" id="lead-stat-signed">0</span><span class="stat-lbl">Signed</span></div>
-      <div class="stat-card"><span class="stat-num amber" id="lead-stat-pending">12</span><span class="stat-lbl">Pending</span></div>
-    </div>
-    <div class="prog-block">
-      <div class="prog-meta">
-        <span class="prog-lbl">Crew progress</span>
-        <span class="prog-pct" id="lead-progress-pct">0%</span>
-      </div>
-      <div class="prog-track">
-        <div class="prog-fill" id="leadProgressBar" style="width:0%">
-          <div class="prog-glow"></div>
-        </div>
-      </div>
-    </div>
-    <div class="sec-label">Crew sign-offs</div>
-    <div class="crew-list" id="crewSignoffList"></div>
-    <button class="btn-outline" onclick="shareLink()">Share sign-off link with crew</button>
-  </div>
-  <nav class="bottom-nav">
-    <button class="nav-btn active"><span class="ni">📋</span>Meeting</button>
-    <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
-  </nav>
-</div>
-<!-- ══ CREW ══ -->
+<!-- ══ CREW (unified Sign Off screen) ══ -->
 <div class="screen" id="screen-crew">
   <header class="header">
     <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
@@ -1011,6 +930,11 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="export-row" onclick="exportOSHA300()">
       <div class="exp-icon-wrap">🏛️</div>
       <div><span class="exp-name">OSHA 300 log</span><span class="exp-desc">Recordable injuries · year-to-date · CSV</span></div>
+      <span class="exp-chev">→</span>
+    </button>
+    <button class="export-row" onclick="shareLink()">
+      <div class="exp-icon-wrap">🔗</div>
+      <div><span class="exp-name">Share app link</span><span class="exp-desc">Copy URL · text or email it to crew</span></div>
       <span class="exp-chev">→</span>
     </button>
     <div class="divider"></div>
@@ -1444,8 +1368,7 @@ const db={
       db.ready=true;
       // Re-render whichever screen is active
       const active=document.querySelector('.screen.active')?.id;
-      if(active==='screen-lead'&&typeof renderLead==='function')renderLead();
-      else if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
+      if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
       else if(active==='screen-crew'&&typeof renderCrew==='function')renderCrew();
       else if(active==='screen-incident'&&typeof renderIncident==='function')renderIncident();
     }catch(err){console.error('hydrate',err);}
@@ -1630,11 +1553,11 @@ async function enterRole(r){
   }
   S.role=r;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById({lead:'screen-lead',crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r]).classList.add('active');
+  const targetId={crew:'screen-crew',admin:'screen-admin',incident:'screen-incident'}[r];
+  if(targetId)document.getElementById(targetId).classList.add('active');
   getLoc();
   if(!S.topic)loadTopic();
-  if(r==='lead')renderLead();
-  else if(r==='crew')renderCrew();
+  if(r==='crew')renderCrew();
   else if(r==='admin')renderAdmin();
   else if(r==='incident')renderIncident();
 }
@@ -1780,12 +1703,10 @@ function skipTopic(){
   loadTopic();
   // Reset quiz state
   if(typeof quiz!=='undefined'){quiz.questions=S.quiz?.questions||[];quiz.current=0;quiz.correct=0;quiz.answered=[];}
-  if(typeof leadQuiz!=='undefined'){leadQuiz.questions=S.quiz?.questions||[];leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];}
   showToast('Topic skipped');
   // Re-render whichever screen is visible
   if(document.getElementById('screen-admin')?.classList.contains('active'))renderAdmin();
   if(document.getElementById('screen-crew')?.classList.contains('active'))renderCrew();
-  if(document.getElementById('screen-lead')?.classList.contains('active'))renderLead();
 }
 function resetTopicOrder(){
   if(!confirm('Reset the topic rotation to its original order? Any skips will be undone.'))return;
@@ -1799,115 +1720,7 @@ function resetTopicOrder(){
 function renderTopic(){
   const t=S.topic;if(!t)return;
   const html=`<div class="topic-top"><span class="topic-wk">${S.weekLabel}</span><span class="osha-chip">${t.oshaRef}</span></div><div class="topic-body"><div class="topic-title">${t.title}</div><div class="topic-content">${t.content}</div></div>`;
-  ['leadTopicCard','crewTopicCard'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
-}
-function renderLead(){
-  renderTopic();
-  const sel=document.getElementById('leadNameSelect');
-  if(sel){sel.innerHTML='<option value="">Select your name…</option>';LEADS.forEach(l=>{const o=document.createElement('option');o.value=l.name;o.textContent=l.name;sel.appendChild(o);});}
-  renderCrewSignoffList();updateLeadStats();
-  loadLeadQuiz();
-}
-// ── LEAD QUIZ ──
-let leadQuiz={questions:[],current:0,correct:0,answered:[]};
-function loadLeadQuiz(){
-  if(!S.topic)return;
-  document.getElementById('leadQuizInner').innerHTML='<div class="lead-quiz-loading"><div class="spinner" style="border-top-color:#000000;margin:0 auto 10px;"></div>Loading questions…</div>';
-  if(S.quiz&&S.quiz.topicTitle===S.topic.title){
-    leadQuiz.questions=S.quiz.questions;
-    leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
-    renderLeadQuiz();return;
-  }
-  const idx=currentTopicIndex();
-  const t=TOPIC_BANK[idx];
-  leadQuiz.questions=t.questions;
-  S.quiz={topicTitle:S.topic.title,questions:t.questions};
-  save();
-  leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
-  renderLeadQuiz();
-}
-function renderLeadQuiz(){
-  const qs=leadQuiz.questions;
-  if(!qs||!qs.length)return;
-  const q=qs[leadQuiz.current];
-  const letters=['A','B','C','D'];
-  document.getElementById('leadQuizInner').innerHTML=`
-    <div style="font-family:var(--mono);font-size:10px;color:#000000;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">${leadQuiz.current+1} / ${qs.length}</div>
-    <div style="font-family:var(--font);font-size:18px;font-weight:700;color:#000000;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em;">${q.q}</div>
-    <div class="lead-quiz-opts" id="leadQuizOpts">
-      ${q.options.map((opt,i)=>`
-        <button class="lead-quiz-opt" onclick="answerLeadQuiz(${i})">
-          <span class="lead-quiz-letter">${letters[i]}</span>
-          <span class="lead-quiz-text">${opt.replace(/^[A-D]\)\s*/,'')}</span>
-        </button>`).join('')}
-    </div>
-    <div id="leadQuizFeedback"></div>`;
-}
-function answerLeadQuiz(chosen){
-  const q=leadQuiz.questions[leadQuiz.current];
-  const opts=document.querySelectorAll('#leadQuizOpts .lead-quiz-opt');
-  const isCorrect=chosen===q.correct;
-  if(isCorrect)leadQuiz.correct++;
-  opts.forEach((opt,i)=>{
-    if(i===q.correct)opt.classList.add('correct');
-    else if(i===chosen&&!isCorrect)opt.classList.add('wrong');
-    else opt.classList.add('dimmed');
-    opt.classList.add('answered');
-  });
-  const fb=document.getElementById('leadQuizFeedback');
-  fb.innerHTML=`<div class="lead-quiz-fb ${isCorrect?'correct':'wrong'}">${isCorrect?'✓ ':'✗ '}${q.explain}</div>
-    <button class="btn-primary quiz-next" onclick="nextLeadQuiz()">${leadQuiz.current+1<leadQuiz.questions.length?'Next →':'Results →'}</button>`;
-}
-function nextLeadQuiz(){
-  leadQuiz.current++;
-  if(leadQuiz.current>=leadQuiz.questions.length){
-    document.getElementById('leadQuizSection').style.display='none';
-    if(leadQuiz.correct>=2){
-      document.getElementById('leadQuizPass').style.display='block';
-      document.getElementById('leadQuizScoreLabel').textContent=`${leadQuiz.correct}/3 correct · Sign-off unlocked`;
-      document.getElementById('leadSignSection').style.display='block';
-    } else {
-      document.getElementById('leadQuizSection').style.display='block';
-      document.getElementById('leadQuizInner').innerHTML=`
-        <div class="quiz-pass-banner" style="background:#1F0F0F;border-top-color:#7F2222;">
-          <div style="font-size:36px;">✗</div>
-          <div>
-            <div class="quiz-pass-title" style="color:#7F2222;">Try again</div>
-            <div class="quiz-pass-sub">${leadQuiz.correct}/${leadQuiz.questions.length} correct · Need 2/3 to pass</div>
-          </div>
-        </div>
-        <button class="btn-primary" style="margin-top:14px;" onclick="retryLeadQuiz()">Retry quiz →</button>`;
-    }
-  } else {
-    renderLeadQuiz();
-  }
-}
-function retryLeadQuiz(){
-  leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
-  renderLeadQuiz();
-}
-function renderCrewSignoffList(){
-  const list=document.getElementById('crewSignoffList');if(!list)return;
-  if(!CREW.length){list.innerHTML='<div class="empty-state">No crew members yet. Add some from the Safety Lead screen.</div>';return;}
-  list.innerHTML=CREW.map(c=>{const s=S.signoffs[c.name];return`<div class="crew-row ${s?'is-signed':''}"><div class="crew-left"><div class="avatar">${ini(c.name)}</div><div><span class="crew-name">${c.name}</span>${s?`<span class="crew-time">✓ ${s.time}</span>`:`<span class="crew-role-lbl">Crew</span>`}</div></div>${s?`<div class="signed-check">✓ Signed</div>`:`<button class="btn-sign" onclick="openSigFor('${c.name.replace(/'/g,"\\'")}','crew')">Sign</button>`}</div>`;}).join('');
-}
-function updateLeadStats(){
-  const total=CREW.length,signed=Object.keys(S.signoffs).filter(n=>CREW.some(c=>c.name===n)).length,pending=total-signed,pct=total?Math.round((signed/total)*100):0;
-  const $=id=>document.getElementById(id);
-  if($('lead-stat-total'))$('lead-stat-total').textContent=total;
-  if($('lead-stat-signed'))$('lead-stat-signed').textContent=signed;
-  if($('lead-stat-pending'))$('lead-stat-pending').textContent=pending;
-  if($('leadProgressBar')){$('leadProgressBar').style.width=pct+'%';if(pct===100)$('leadProgressBar').classList.add('complete');else $('leadProgressBar').classList.remove('complete');}
-  if($('lead-progress-pct'))$('lead-progress-pct').textContent=pct+'%';
-}
-async function openLeadSignModal(){
-  const name=document.getElementById('leadNameSelect')?.value;
-  const ok=document.getElementById('leadConfirm')?.checked;
-  if(!name){showToast(window.LANG==='es'?'Selecciona tu nombre':'Select your name');return;}
-  if(!ok){showToast(window.LANG==='es'?'Confirma que asististe':'Confirm you attended the meeting');return;}
-  const pinOk=await ensurePinValid('lead',name);
-  if(!pinOk)return;
-  S.signing=name;S.signingType='lead';openSigModal(name,'Job Lead');
+  ['crewTopicCard'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
 }
 function renderCrew(){
   const wk=document.getElementById('crewWeekLabel');if(wk)wk.textContent=S.weekLabel;
@@ -2088,7 +1901,27 @@ async function ensurePinValid(role,name){
   }
 }
 function openSigFor(name,type){S.signing=name;S.signingType=type;openSigModal(name,type==='lead'?'Job Lead':'Crew Member');}
-function shareLink(){showToast('Sign-off link copied');}
+async function shareLink(){
+  const url=window.location.href.split('#')[0];
+  // Mobile devices: use the OS share sheet (Messages, WhatsApp, etc.)
+  if(navigator.share){
+    try{await navigator.share({title:'Homestead Electric · Safety',text:'Open the Homestead Electric Safety app',url});return;}
+    catch(e){/* user cancelled or share unsupported — fall through to clipboard */}
+  }
+  // Desktop and fallback: copy to clipboard
+  try{
+    await navigator.clipboard.writeText(url);
+    showToast('Link copied to clipboard');
+  }catch(e){
+    // Last resort — select-and-copy via temporary textarea
+    const ta=document.createElement('textarea');
+    ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');showToast('Link copied');}
+    catch(err){showToast('Could not copy — please copy from the address bar');}
+    document.body.removeChild(ta);
+  }
+}
 
 // ── ADMIN ──
 function renderAdmin(){
@@ -2566,7 +2399,6 @@ function generateNewTopic(){
   S.topic={title:t.title,oshaRef:t.oshaRef,content:t.content,questions:t.questions};
   S.quiz={topicTitle:t.title,questions:t.questions};
   quiz.questions=t.questions;quiz.current=0;quiz.correct=0;quiz.answered=[];
-  leadQuiz.questions=t.questions;leadQuiz.current=0;leadQuiz.correct=0;leadQuiz.answered=[];
   save();
   renderTopic();
   showToast('New topic loaded');
@@ -2596,6 +2428,8 @@ function submitSignature(){
   const empList=signingType==='lead'?LEADS:CREW;
   const employee=empList.find(p=>p.name===signingName);
   // Persist to Supabase (fire-and-forget, but capture the data)
+  // Everyone now takes the same quiz on the unified Sign Off screen
+  const quizScore=`${quiz.correct}/3`;
   if(sb){
     db.insertSignoff({
       employeeId:employee?.id||null,
@@ -2607,18 +2441,23 @@ function submitSignature(){
       lat:S.loc?.lat,
       lng:S.loc?.lng,
       sigData,
-      quizScore:signingType==='lead'?`${leadQuiz.correct}/3`:`${quiz.correct}/3`,
+      quizScore,
       topicTitle:S.topic?.title||'',
       topicOshaRef:S.topic?.oshaRef||'',
     });
   }
+  rec.quizScore=quizScore;
   if(signingType==='lead'){
-    rec.quizScore=`${leadQuiz.correct}/3`;
-    S.leadSignoffs[signingName]=rec;save();closeSigModal();showToast(`${signingName} signed`);document.getElementById('leadSignSection').style.display='none';document.getElementById('leadSigned').style.display='block';document.getElementById('leadSignedName').textContent=signingName;document.getElementById('leadSignedDetails').textContent=`${ds} ${ts} · ${loc}`;
-  } else {
-    rec.quizScore=`${quiz.correct}/3`;
-    S.signoffs[signingName]=rec;save();closeSigModal();showToast(`${signingName} signed`);if(S.role==='lead'){renderCrewSignoffList();updateLeadStats();}else if(S.role==='crew'){document.getElementById('crewSignSection').style.display='none';document.getElementById('crewSigned').style.display='block';document.getElementById('crewSignedDetails').textContent=`${signingName} · ${ds} ${ts}`;}
+    S.leadSignoffs[signingName]=rec;
+  }else{
+    S.signoffs[signingName]=rec;
   }
+  save();
+  closeSigModal();
+  showToast(`${signingName} signed`);
+  document.getElementById('crewSignSection').style.display='none';
+  document.getElementById('crewSigned').style.display='block';
+  document.getElementById('crewSignedDetails').textContent=`${signingName} · ${ds} ${ts}`;
 }
 function exportReport(){
   const t=S.topic;
@@ -2834,8 +2673,7 @@ Workers comp provider notification required within 24 hours for lost-time injuri
     window.LANG=newLang;
     if(typeof loadTopic==='function')loadTopic();
     const active=document.querySelector('.screen.active')?.id;
-    if(active==='screen-lead'&&typeof renderLead==='function')renderLead();
-    else if(active==='screen-crew'&&typeof renderCrew==='function')renderCrew();
+    if(active==='screen-crew'&&typeof renderCrew==='function')renderCrew();
     else if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
     else if(active==='screen-incident'&&typeof renderIncident==='function')renderIncident();
   };
