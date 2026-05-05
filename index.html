@@ -61,19 +61,16 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
-/* Language toggle — pill in top right of every screen */
+/* Language toggle — single button that shows the OTHER language */
 .lang-toggle{
-  position:fixed;top:14px;right:18px;z-index:101;
-  display:flex;background:#FFFFFF;border:1.5px solid #000000;border-radius:999px;overflow:hidden;
-  font-family:var(--body);font-size:11px;font-weight:600;letter-spacing:.05em;
+  background:#FFFFFF;border:1.5px solid #000000;border-radius:999px;
+  color:#000000;cursor:pointer;
+  font-family:var(--body);font-size:11px;font-weight:600;
+  letter-spacing:.04em;
+  padding:5px 12px;
+  flex-shrink:0;
 }
-.lang-toggle button{
-  background:none;border:none;color:#000000;cursor:pointer;
-  padding:5px 12px;font-family:inherit;font-size:inherit;font-weight:inherit;
-  letter-spacing:inherit;text-transform:uppercase;
-}
-.lang-toggle button.active{background:#000000;color:#FFFFFF;}
-.lang-toggle button:hover:not(.active){background:#F7F5F2;}
+.lang-toggle:hover{background:#F7F5F2;}
 
 /* Show/hide content based on document language */
 :root[data-lang="en"] .lang-es,
@@ -690,16 +687,16 @@ input.field-select::placeholder{color:#B8B6B0;}
 </style>
 </head>
 <body>
-<!-- LANGUAGE TOGGLE (fixed, on every screen) -->
-<div class="lang-toggle">
-  <button data-set-lang="en" class="active">EN</button>
-  <button data-set-lang="es">ES</button>
-</div>
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screen-role">
   <header class="header">
     <img src="./logo.png" alt="Homestead Electric" class="brand-logo">
-    <div class="header-tag">OSHA 1926</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
+        <span class="lang-en">Español</span><span class="lang-es">English</span>
+      </button>
+      <div class="header-tag">OSHA 1926</div>
+    </div>
   </header>
   <div class="content">
     <div class="hero">
@@ -2120,28 +2117,26 @@ Workers comp provider notification required within 24 hours for lost-time injuri
 // ════════ LANGUAGE TOGGLE ════════
 (function(){
   const root=document.documentElement;
-  const saved=localStorage.getItem('hes_lang')||'en';
+  // First visit: detect browser language. Subsequent visits: use saved choice.
+  let saved=localStorage.getItem('hes_lang');
+  if(!saved){
+    const browserLang=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+    saved=browserLang.startsWith('es')?'es':'en';
+  }
   root.dataset.lang=saved;
   window.LANG=saved;
-  function setLang(lng){
-    root.dataset.lang=lng;
-    localStorage.setItem('hes_lang',lng);
-    window.LANG=lng;
-    document.querySelectorAll('[data-set-lang]').forEach(b=>{
-      b.classList.toggle('active',b.dataset.setLang===lng);
-    });
-    // Re-load topic so it reflects the new language, and re-render whichever screen is active
+  window.toggleLang=function(){
+    const newLang=root.dataset.lang==='es'?'en':'es';
+    root.dataset.lang=newLang;
+    localStorage.setItem('hes_lang',newLang);
+    window.LANG=newLang;
     if(typeof loadTopic==='function')loadTopic();
     const active=document.querySelector('.screen.active')?.id;
     if(active==='screen-lead'&&typeof renderLead==='function')renderLead();
     else if(active==='screen-crew'&&typeof renderCrew==='function')renderCrew();
     else if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
     else if(active==='screen-incident'&&typeof renderIncident==='function')renderIncident();
-  }
-  document.querySelectorAll('[data-set-lang]').forEach(btn=>{
-    btn.classList.toggle('active',btn.dataset.setLang===saved);
-    btn.addEventListener('click',()=>setLang(btn.dataset.setLang));
-  });
+  };
 })();
 
 // ════════ KICK OFF SUPABASE HYDRATION ════════
