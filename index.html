@@ -731,7 +731,7 @@ input.field-select::placeholder{color:#B8B6B0;}
       <button class="role-card" data-color="black" onclick="enterRole('admin')">
         <div class="rc-num">02</div>
         <div>
-          <span class="rc-name"><span class="lang-en">Safety Lead</span><span class="lang-es">Encargado de Seguridad</span></span>
+          <span class="rc-name"><span class="lang-en">Administration</span><span class="lang-es">Administración</span></span>
           <span class="rc-desc"><span class="lang-en">Records · exports · topic management</span><span class="lang-es">Registros · exportaciones · gestión de temas</span></span>
         </div>
         <span class="rc-arrow">→</span>
@@ -904,8 +904,8 @@ input.field-select::placeholder{color:#B8B6B0;}
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
-      <div class="hero-eyebrow">Safety Lead</div>
-      <div class="hero-title" style="font-size:26px;">Safety<br>Records.</div>
+      <div class="hero-eyebrow"><span class="lang-en">Administration</span><span class="lang-es">Administración</span></div>
+      <div class="hero-title" style="font-size:26px;"><span class="lang-en">Safety<br>Records.</span><span class="lang-es">Registros<br>de Seguridad.</span></div>
     </div>
     <div class="stats-row">
       <div class="stat-card"><span class="stat-num" id="admin-weeks">1</span><span class="stat-lbl">Weeks</span></div>
@@ -1167,10 +1167,14 @@ input.field-select::placeholder{color:#B8B6B0;}
 <div class="modal-overlay" id="adminAuthModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-handle"></div>
-    <h2 class="modal-title" id="adminAuthTitle">Safety Lead Access</h2>
-    <p class="modal-sub" id="adminAuthSub">Enter the Safety Lead PIN to continue.</p>
+    <h2 class="modal-title" id="adminAuthTitle">Administration</h2>
+    <p class="modal-sub" id="adminAuthSub">Pick your name and enter your PIN.</p>
+    <div class="mb16" id="adminAuthNameRow">
+      <label class="field-lbl"><span class="lang-en">Your name</span><span class="lang-es">Tu nombre</span></label>
+      <select class="field-select" id="adminAuthNameSelect"></select>
+    </div>
     <div class="mb16">
-      <label class="field-lbl"><span class="lang-en">Safety Lead PIN</span><span class="lang-es">PIN del Encargado de Seguridad</span></label>
+      <label class="field-lbl" id="adminAuthPinLabel"><span class="lang-en">PIN</span><span class="lang-es">PIN</span></label>
       <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" class="pin-input" id="adminPinInput" placeholder="••••">
       <div class="pin-mode-msg" id="adminPinMsg"></div>
     </div>
@@ -1307,7 +1311,7 @@ const db={
         if(allEmps.length>0){
           LEADS.length=0;CREW.length=0;
           allEmps.forEach(e=>{
-            (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name,pinHash:e.pin_hash||null});
+            (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name,pinHash:e.pin_hash||null,isAdmin:!!e.is_admin});
           });
           saveEmployeeLists();
         }
@@ -1536,11 +1540,11 @@ async function enterRole(r){
   else if(r==='incident')renderIncident();
 }
 
-// ════════ ADMIN PIN GATE ════════
+// ════════ ADMINISTRATION ACCESS GATE ════════
 let _adminAuthResolver=null;
-function checkAdminAccess(){
+async function checkAdminAccess(){
   // Already authenticated this session
-  if(sessionStorage.getItem('hes_admin_ok')==='1')return Promise.resolve(true);
+  if(sessionStorage.getItem('hes_admin_ok')==='1')return true;
   return new Promise(resolve=>{
     _adminAuthResolver=resolve;
     const modal=document.getElementById('adminAuthModal');
@@ -1548,27 +1552,24 @@ function checkAdminAccess(){
     const sub=document.getElementById('adminAuthSub');
     const input=document.getElementById('adminPinInput');
     const msg=document.getElementById('adminPinMsg');
+    const sel=document.getElementById('adminAuthNameSelect');
     input.value='';msg.textContent='';msg.className='pin-mode-msg';
-    // Determine if admin PIN exists in app_meta
-    (async()=>{
-      let storedHash=null;
-      if(sb){
-        try{
-          const {data}=await sb.from('app_meta').select('value').eq('key','admin_pin_hash').maybeSingle();
-          if(data&&data.value)storedHash=data.value;
-        }catch(e){console.error('admin pin lookup',e);}
-      }
-      if(!storedHash){
-        // First-time setup
-        title.textContent=window.LANG==='es'?'Crear PIN del Encargado':'Create Safety Lead PIN';
-        sub.textContent=window.LANG==='es'?'Crea un PIN para acceder al panel del Encargado de Seguridad. Solo necesitas hacerlo una vez.':'Create a PIN that protects the Safety Lead panel. You only need to do this once.';
-      }else{
-        title.textContent=window.LANG==='es'?'Acceso del Encargado':'Safety Lead Access';
-        sub.textContent=window.LANG==='es'?'Ingresa el PIN del Encargado para continuar.':'Enter the Safety Lead PIN to continue.';
-      }
-      modal.classList.add('open');
-      input.focus();
-    })();
+    // Build dropdown: admins (employees with isAdmin=true) + a "Master Access" option as fallback
+    const admins=[...LEADS,...CREW].filter(p=>p.isAdmin);
+    sel.innerHTML='';
+    admins.forEach(p=>{
+      const o=document.createElement('option');o.value='emp:'+p.id;o.textContent=p.name;
+      sel.appendChild(o);
+    });
+    const masterOpt=document.createElement('option');
+    masterOpt.value='master';
+    masterOpt.textContent=(window.LANG==='es'?'Acceso maestro (PIN único)':'Master access (single PIN)');
+    sel.appendChild(masterOpt);
+    title.textContent=window.LANG==='es'?'Administración':'Administration';
+    sub.textContent=window.LANG==='es'?'Selecciona tu nombre e ingresa tu PIN.':'Pick your name and enter your PIN.';
+    if(admins.length===0){sel.value='master';}
+    modal.classList.add('open');
+    setTimeout(()=>input.focus(),50);
   });
 }
 function closeAdminAuth(){
@@ -1578,6 +1579,8 @@ function closeAdminAuth(){
 async function submitAdminAuth(){
   const input=document.getElementById('adminPinInput');
   const msg=document.getElementById('adminPinMsg');
+  const sel=document.getElementById('adminAuthNameSelect');
+  const choice=sel.value;
   const pin=(input.value||'').trim();
   if(!/^\d{4,6}$/.test(pin)){
     msg.className='pin-mode-msg error';
@@ -1585,26 +1588,52 @@ async function submitAdminAuth(){
     return;
   }
   const hash=await hashPin(pin);
-  let storedHash=null;
-  if(sb){
-    try{
-      const {data}=await sb.from('app_meta').select('value').eq('key','admin_pin_hash').maybeSingle();
-      if(data&&data.value)storedHash=data.value;
-    }catch(e){console.error('admin pin lookup',e);}
-  }
-  if(!storedHash){
-    // First-time creation
+  if(choice==='master'){
+    // Master PIN flow — uses app_meta admin_pin_hash
+    let storedHash=null;
     if(sb){
-      const {error}=await sb.from('app_meta').upsert({key:'admin_pin_hash',value:hash},{onConflict:'key'});
-      if(error){msg.className='pin-mode-msg error';msg.textContent=window.LANG==='es'?'No se pudo guardar el PIN':'Failed to save PIN';return;}
+      try{
+        const {data}=await sb.from('app_meta').select('value').eq('key','admin_pin_hash').maybeSingle();
+        if(data&&data.value)storedHash=data.value;
+      }catch(e){console.error('admin pin lookup',e);}
     }
-    sessionStorage.setItem('hes_admin_ok','1');
-    document.getElementById('adminAuthModal').classList.remove('open');
-    if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
-    showToast(window.LANG==='es'?'PIN del Encargado creado':'Safety Lead PIN created');
+    if(!storedHash){
+      // First-time master setup
+      if(sb){
+        const {error}=await sb.from('app_meta').upsert({key:'admin_pin_hash',value:hash},{onConflict:'key'});
+        if(error){msg.className='pin-mode-msg error';msg.textContent=window.LANG==='es'?'No se pudo guardar el PIN':'Failed to save PIN';return;}
+      }
+      sessionStorage.setItem('hes_admin_ok','1');
+      document.getElementById('adminAuthModal').classList.remove('open');
+      if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
+      showToast(window.LANG==='es'?'PIN maestro creado':'Master PIN created');
+      return;
+    }
+    if(hash===storedHash){
+      sessionStorage.setItem('hes_admin_ok','1');
+      document.getElementById('adminAuthModal').classList.remove('open');
+      if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
+    }else{
+      msg.className='pin-mode-msg error';
+      msg.textContent=window.LANG==='es'?'PIN maestro incorrecto':'Incorrect master PIN';
+      input.value='';input.focus();
+    }
     return;
   }
-  if(hash===storedHash){
+  // Per-employee admin flow
+  const empId=choice.replace(/^emp:/,'');
+  const employee=[...LEADS,...CREW].find(p=>p.id===empId);
+  if(!employee||!employee.isAdmin){
+    msg.className='pin-mode-msg error';
+    msg.textContent=window.LANG==='es'?'No tienes acceso de administración':'You do not have admin access';
+    return;
+  }
+  if(!employee.pinHash){
+    msg.className='pin-mode-msg error';
+    msg.textContent=window.LANG==='es'?'Primero crea tu PIN firmando una vez':'Create your PIN by signing in once first';
+    return;
+  }
+  if(hash===employee.pinHash){
     sessionStorage.setItem('hes_admin_ok','1');
     document.getElementById('adminAuthModal').classList.remove('open');
     if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
@@ -1613,6 +1642,22 @@ async function submitAdminAuth(){
     msg.textContent=window.LANG==='es'?'PIN incorrecto':'Incorrect PIN';
     input.value='';input.focus();
   }
+}
+async function toggleEmployeeAdmin(role,idx){
+  const list=role==='lead'?LEADS:CREW;
+  const person=list[idx];
+  if(!person)return;
+  const newVal=!person.isAdmin;
+  const action=newVal?(window.LANG==='es'?'otorgar acceso de administración a':'grant admin access to'):(window.LANG==='es'?'revocar acceso de administración a':'revoke admin access from');
+  if(!confirm(`${action} ${person.name}?`))return;
+  if(sb&&person.id){
+    const updated=await db.updateEmployee(person.id,{is_admin:newVal});
+    if(!updated){showToast(window.LANG==='es'?'No se pudo actualizar el acceso':'Failed to update admin access');return;}
+  }
+  person.isAdmin=newVal;
+  saveEmployeeLists();
+  showToast(`${person.name} ${newVal?'→ admin':'→ no admin'}`);
+  renderEmployeeLists();
 }
 function loadTopic(cat){
   const idx=currentTopicIndex();
@@ -2077,12 +2122,16 @@ function empRowHTML(person,role,idx){
   }
   const roleLbl=role==='lead'?'Job Lead':'Apprentice';
   const pinBadge=person.pinHash?'<span style="font-size:10px;color:var(--text2);font-weight:500;letter-spacing:.04em;text-transform:uppercase;">PIN ✓</span>':'<span style="font-size:10px;color:#A8A29E;font-weight:500;letter-spacing:.04em;text-transform:uppercase;">no PIN</span>';
+  const adminBadge=person.isAdmin?'<span style="font-size:10px;color:#3F6B3F;font-weight:600;letter-spacing:.04em;text-transform:uppercase;"> · Admin</span>':'';
+  const adminBtnLabel=person.isAdmin?'Admin ✓':'+ Admin';
+  const adminBtnStyle=person.isAdmin?'border-color:#3F6B3F;color:#3F6B3F;':'';
   return`<div class="emp-row is-${role}">
     <div class="avatar">${ini(person.name)}</div>
     <div style="flex:1;min-width:0;">
       <span class="emp-name">${person.name}</span>
-      <span class="emp-role">${roleLbl} · ${pinBadge}</span>
+      <span class="emp-role">${roleLbl} · ${pinBadge}${adminBadge}</span>
     </div>
+    <button class="btn-edit" onclick="toggleEmployeeAdmin('${role}',${idx})" title="Toggle admin access" style="${adminBtnStyle}">${adminBtnLabel}</button>
     <button class="btn-edit" onclick="startEditEmployee('${role}',${idx})">Edit</button>
     <button class="btn-edit" onclick="resetEmployeePin('${role}',${idx})" title="Reset PIN">PIN</button>
     <button class="btn-remove" onclick="removeEmployee('${role}',${idx})">Remove</button>
