@@ -6,6 +6,10 @@
 <title>Homestead Electric — Safety</title>
 <link rel="icon" type="image/png" href="./skull.png">
 <link rel="apple-touch-icon" href="./skull.png">
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -360,6 +364,7 @@ body::before{
 }
 .stat-num.green{color:var(--green);}
 .stat-num.amber{color:var(--amber);-webkit-text-stroke:1.5px #000000;}
+.stat-num.red{color:#7F2222;}
 .stat-lbl{font-size:11px;font-weight:600;color:var(--text2);font-family:var(--body);letter-spacing:.05em;text-transform:uppercase;}
 /* PROGRESS */
 .prog-block{margin-bottom:28px;}
@@ -926,9 +931,9 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div class="hero-title" style="font-size:26px;">Safety<br>Records.</div>
     </div>
     <div class="stats-row">
+      <div class="stat-card"><span class="stat-num green" id="admin-signed-total">0/0</span><span class="stat-lbl">Signed</span></div>
+      <div class="stat-card"><span class="stat-num red" id="admin-missing-total">0</span><span class="stat-lbl">Missing</span></div>
       <div class="stat-card"><span class="stat-num" id="admin-weeks">1</span><span class="stat-lbl">Weeks</span></div>
-      <div class="stat-card"><span class="stat-num green" id="admin-leads-signed">0/0</span><span class="stat-lbl">Leads</span></div>
-      <div class="stat-card"><span class="stat-num amber" id="admin-crew-signed">0/0</span><span class="stat-lbl">Crew</span></div>
     </div>
     <!-- ROLE STATUS COLUMNS -->
     <div class="divider"></div>
@@ -959,7 +964,7 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="sec-label">Export</div>
     <button class="export-row" onclick="exportWeekPDF()">
       <div class="exp-icon-wrap">📄</div>
-      <div><span class="exp-name">This week's PDF</span><span class="exp-desc">Printable record · signatures · timestamps · GPS</span></div>
+      <div><span class="exp-name">This week's PDF</span><span class="exp-desc">Printable record · signatures · timestamps</span></div>
       <span class="exp-chev">→</span>
     </button>
     <button class="export-row" onclick="exportReport()">
@@ -975,6 +980,11 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="export-row" onclick="exportOSHA300()">
       <div class="exp-icon-wrap">🏛️</div>
       <div><span class="exp-name">OSHA 300 log</span><span class="exp-desc">Recordable injuries · year-to-date · CSV</span></div>
+      <span class="exp-chev">→</span>
+    </button>
+    <button class="export-row" onclick="exportOSHA300A()">
+      <div class="exp-icon-wrap">📌</div>
+      <div><span class="exp-name">OSHA 300A annual summary</span><span class="exp-desc">Printable PDF · post Feb 1 – Apr 30</span></div>
       <span class="exp-chev">→</span>
     </button>
     <button class="export-row" onclick="shareLink()">
@@ -1031,6 +1041,56 @@ input.field-select::placeholder{color:#B8B6B0;}
         <option value="lifting">Rigging &amp; Lifting</option>
       </select>
       <button class="btn-primary" style="width:auto;white-space:nowrap;padding:12px 18px;" onclick="generateNewTopic()">Generate</button>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">Settings</div>
+    <div style="font-size:13px;color:var(--text2);font-weight:300;margin-bottom:14px;">Company info appears on PDF exports and the OSHA 300/300A. Changes sync to all devices.</div>
+    <div class="mb16">
+      <label class="field-lbl">Company name</label>
+      <input type="text" class="field-select" id="set-company-name" placeholder="Homestead Electric">
+    </div>
+    <div class="mb16">
+      <label class="field-lbl">Establishment address</label>
+      <input type="text" class="field-select" id="set-company-address" placeholder="Street, City, State">
+    </div>
+    <div class="mb16">
+      <label class="field-lbl">Default language for new visitors</label>
+      <select class="field-select" id="set-default-lang">
+        <option value="auto">Auto-detect from browser</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="saveSettings()" style="margin-bottom:14px;">Save settings</button>
+    <div class="mb16">
+      <label class="field-lbl">Master administration PIN</label>
+      <div style="font-size:12px;color:var(--text2);font-weight:300;margin-bottom:8px;">The master PIN is the fallback for admin access when no employee admins are set up. Anyone with it can log in as Master.</div>
+      <button class="btn-outline" onclick="openMasterPinChange()">Change master PIN…</button>
+    </div>
+  </div>
+</div>
+<!-- MASTER PIN CHANGE MODAL -->
+<div class="modal-overlay" id="masterPinModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">Change master PIN</h2>
+    <p class="modal-sub">Enter the current master PIN, then choose a new one (4–6 digits).</p>
+    <div class="mb16">
+      <label class="field-lbl">Current master PIN</label>
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" class="pin-input" id="mp-current" placeholder="••••">
+    </div>
+    <div class="mb16">
+      <label class="field-lbl">New master PIN</label>
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" class="pin-input" id="mp-new" placeholder="••••">
+    </div>
+    <div class="mb16">
+      <label class="field-lbl">Confirm new master PIN</label>
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" class="pin-input" id="mp-confirm" placeholder="••••">
+      <div class="pin-mode-msg" id="mp-msg"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeMasterPinChange()">Cancel</button>
+      <button class="btn-primary" onclick="submitMasterPinChange()">Update PIN →</button>
     </div>
   </div>
 </div>
@@ -1237,6 +1297,16 @@ input.field-select::placeholder{color:#B8B6B0;}
     </div>
   </div>
 </div>
+<!-- WEEK DETAIL MODAL -->
+<div class="modal-overlay" id="weekDetailModal">
+  <div class="modal" style="max-width:600px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div id="weekDetailContent"><div class="empty-state">Loading…</div></div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <button class="btn-outline" onclick="closeWeekDetail()">Close</button>
+    </div>
+  </div>
+</div>
 <!-- INCIDENT DETAIL MODAL -->
 <div class="modal-overlay" id="incidentDetailModal">
   <div class="modal" style="max-width:560px;max-height:85vh;overflow-y:auto;">
@@ -1287,12 +1357,23 @@ input.field-select::placeholder{color:#B8B6B0;}
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<div id="offline-badge" style="display:none;position:fixed;top:12px;right:12px;z-index:300;background:#7F2222;color:#FFFFFF;padding:6px 12px;border-radius:4px;font-family:Inter,sans-serif;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,0.2);align-items:center;gap:6px;">
+  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFFFFF;"></span>
+  Offline
+</div>
 <script>
 // ════════ SUPABASE CONFIG ════════
 const SUPABASE_URL='https://ogjkpywuqhvsalwrbwxv.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_SJzz2Ab6hmArCRNlJtteyg_zAmWpacn';
 const HAS_SUPABASE=!!(SUPABASE_URL&&SUPABASE_ANON_KEY&&typeof window.supabase!=='undefined');
 const sb=HAS_SUPABASE?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+
+// Cached settings — populated from localStorage on boot, overwritten by Supabase hydrate
+try{
+  const cn=localStorage.getItem('hes_company_name');if(cn)window.COMPANY_NAME=cn;
+  const ca=localStorage.getItem('hes_company_address');if(ca)window.COMPANY_ADDRESS=ca;
+  const dl=localStorage.getItem('hes_default_lang');if(dl)window.DEFAULT_LANG=dl;
+}catch(e){}
 
 // ════════ DB MODULE ════════
 // Backend strategy: localStorage is the local cache (instant), Supabase is the
@@ -1323,8 +1404,11 @@ const db={
     if(error)console.error('deactivateEmployee',error);
   },
   async insertSignoff(rec){
-    if(!sb)return;
-    // Coerce lat/lng to real numbers (or null) — Postgres numeric columns reject "N/A" or other strings.
+    // If we're offline (or sb hasn't initialized), queue locally.
+    if(!sb||!navigator.onLine){
+      queueSignoff(rec);
+      return;
+    }
     const {error}=await sb.from('weekly_signoffs').upsert({
       employee_id:rec.employeeId||null,
       employee_name:rec.name,
@@ -1339,8 +1423,16 @@ const db={
     },{onConflict:'employee_name,week_id,role_at_sign'});
     if(error){
       console.error('insertSignoff',error);
-      showToast('Sync error — sign-off saved locally only');
+      // Network/server error — queue for retry
+      queueSignoff(rec);
+      showToast('Sync error — will retry when connection improves');
     }
+  },
+  async fetchSignoffsForWeek(weekId){
+    if(!sb)return [];
+    const {data,error}=await sb.from('weekly_signoffs').select('*').eq('week_id',weekId).order('signed_at',{ascending:true});
+    if(error){console.error('fetchSignoffsForWeek',error);return [];}
+    return data||[];
   },
   async insertIncident(report){
     if(!sb)return;
@@ -1429,6 +1521,9 @@ const db={
           if(m.key==='topic_order'&&Array.isArray(m.value))S.topicOrder=m.value;
           if(m.key==='current_topic'&&m.value&&m.value.title)S.topic=m.value;
           if(m.key==='current_quiz'&&m.value)S.quiz=m.value;
+          if(m.key==='company_name'&&typeof m.value==='string')window.COMPANY_NAME=m.value;
+          if(m.key==='company_address'&&typeof m.value==='string')window.COMPANY_ADDRESS=m.value;
+          if(m.key==='default_lang'&&typeof m.value==='string')window.DEFAULT_LANG=m.value;
         });
       }
       if(!Array.isArray(S.topicOrder)||S.topicOrder.length!==TOPIC_BANK.length){
@@ -2023,10 +2118,26 @@ async function shareLink(){
 // ── ADMIN ──
 function renderAdmin(){
   const $=id=>document.getElementById(id);
-  // Stats (real data)
+  // ── EVERYONE WHO SHOULD SIGN OFF (all 4 roles) ──
+  const everyone=[
+    ...LEADS.map(p=>({...p,role:'Job Lead',group:'lead'})),
+    ...FOREMEN.map(p=>({...p,role:'Foreman',group:'foreman'})),
+    ...CREW.map(p=>({...p,role:'Apprentice',group:'crew'})),
+    ...ADMINS.map(p=>({...p,role:'Admin',group:'admin'})),
+  ];
+  const isSigned=p=>!!(S.leadSignoffs[p.name]||S.signoffs[p.name]);
+  const signedCount=everyone.filter(isSigned).length;
+  const missingPeople=everyone.filter(p=>!isSigned(p));
+  // Top stats
   if($('admin-weeks'))$('admin-weeks').textContent=(S.history?.length||0)+1;
-  if($('admin-leads-signed'))$('admin-leads-signed').textContent=Object.keys(S.leadSignoffs).filter(n=>LEADS.some(l=>l.name===n)).length+'/'+LEADS.length;
-  if($('admin-crew-signed'))$('admin-crew-signed').textContent=Object.keys(S.signoffs).filter(n=>CREW.some(c=>c.name===n)).length+'/'+CREW.length;
+  if($('admin-signed-total')){
+    $('admin-signed-total').textContent=signedCount+'/'+everyone.length;
+    $('admin-signed-total').className='stat-num '+(signedCount===everyone.length&&everyone.length>0?'green':'');
+  }
+  if($('admin-missing-total')){
+    $('admin-missing-total').textContent=missingPeople.length;
+    $('admin-missing-total').className='stat-num '+(missingPeople.length>0?'red':'green');
+  }
   // ── LEAD STATUS THIS WEEK (real data only) ──
   const scorecardEl=$('leadScorecard');
   if(scorecardEl){
@@ -2077,26 +2188,27 @@ function renderAdmin(){
       }).join('');
     }
   }
-  // ── PENDING THIS WEEK (real data only) ──
+  // ── PENDING THIS WEEK (all 4 roles, alphabetized within role) ──
   const offendersEl=$('repeatOffenders');
   if(offendersEl){
-    const pendingLeads=LEADS.filter(l=>!S.leadSignoffs[l.name]);
-    const pendingCrew=CREW.filter(c=>!S.signoffs[c.name]);
-    if(pendingLeads.length===0&&pendingCrew.length===0){
+    if(missingPeople.length===0){
       offendersEl.innerHTML='<div class="no-issues"><span>✓</span>Everyone has signed off this week.</div>';
     } else {
-      const items=[
-        ...pendingLeads.map(l=>({name:l.name,role:'Job Lead',issue:'No sign-off this week'})),
-        ...pendingCrew.map(c=>({name:c.name,role:'Crew',issue:'No sign-off this week'})),
-      ];
-      offendersEl.innerHTML=items.map(i=>`
+      // Sort: leads first, then foremen, apprentices, admins; alphabetize within each
+      const order={lead:0,foreman:1,crew:2,admin:3};
+      const sorted=[...missingPeople].sort((a,b)=>{
+        const og=(order[a.group]??99)-(order[b.group]??99);
+        return og!==0?og:a.name.localeCompare(b.name);
+      });
+      const header=`<div style="font-size:13px;color:var(--text2);font-weight:500;margin-bottom:10px;">${missingPeople.length} of ${everyone.length} still need to sign this week.</div>`;
+      offendersEl.innerHTML=header+sorted.map(p=>`
         <div class="offender-row">
-          <div class="scorecard-avatar" style="border-color:rgba(127,34,34,0.3);color:#7F2222;">${ini(i.name)}</div>
+          <div class="scorecard-avatar" style="border-color:rgba(127,34,34,0.3);color:#7F2222;">${ini(p.name)}</div>
           <div style="flex:1;min-width:0;">
-            <span class="offender-name">${i.name}</span>
-            <span class="offender-detail">${i.issue}</span>
+            <span class="offender-name">${p.name}</span>
+            <span class="offender-detail">No sign-off this week</span>
           </div>
-          <span class="offender-badge">${i.role}</span>
+          <span class="offender-badge">${p.role}</span>
         </div>`).join('');
     }
   }
@@ -2109,9 +2221,15 @@ function renderAdmin(){
       histEl.innerHTML=S.history.map(w=>{
         const total=(LEADS.length+CREW.length);
         const signed=Object.keys(w.signoffs||{}).length+Object.keys(w.leadSignoffs||{}).length;
-        return`<div class="hist-row">
+        const wid=String(w.weekId||'').replace(/'/g,"\\'");
+        const wlbl=String(w.weekLabel||w.weekId||'').replace(/'/g,"\\'");
+        const wtopic=String(w.topic||'').replace(/'/g,"\\'");
+        return`<div class="hist-row" style="cursor:pointer;" onclick="openWeekDetail('${wid}','${wlbl}','${wtopic}')">
           <div><div class="hist-topic">${w.topic||'—'}</div><div class="hist-week">${w.weekLabel||w.weekId}</div></div>
-          <span class="hist-badge ${signed>=total?'full':'partial'}">${signed}/${total}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="hist-badge ${signed>=total?'full':'partial'}">${signed}/${total}</span>
+            <span style="color:var(--text2);font-size:18px;">›</span>
+          </div>
         </div>`;
       }).join('');
     }
@@ -2127,6 +2245,156 @@ function renderAdmin(){
   renderIncidentLog();
   // ── ANONYMOUS SUGGESTIONS ──
   renderSuggestions();
+  // ── SETTINGS FORM ──
+  if(typeof loadSettingsForm==='function')loadSettingsForm();
+}
+
+// ════════ WEEK DETAIL DRILL-IN ════════
+async function openWeekDetail(weekId,weekLabel,topic){
+  const modal=document.getElementById('weekDetailModal');
+  const content=document.getElementById('weekDetailContent');
+  content.innerHTML=`
+    <h2 class="modal-title" style="margin-bottom:4px;">${escHTML(weekLabel||weekId)}</h2>
+    <p class="modal-sub" style="margin-bottom:8px;">${escHTML(topic||'—')}</p>
+    <div class="empty-state" style="margin-top:18px;">Loading sign-offs…</div>`;
+  modal.classList.add('open');
+  let rows=[];
+  if(sb){rows=await db.fetchSignoffsForWeek(weekId);}
+  // Build a map of name→signoff for quick lookup
+  const signedByName={};
+  rows.forEach(r=>{
+    // If the same person has both lead+crew, prefer the most recent
+    if(!signedByName[r.employee_name]||(r.signed_at>signedByName[r.employee_name].signed_at)){
+      signedByName[r.employee_name]=r;
+    }
+  });
+  // Build a roster: everyone who is currently active, plus anyone in rows who's no longer in roster (renamed/deactivated)
+  const roster=[
+    ...LEADS.map(p=>({name:p.name,role:'Job Lead',group:'lead'})),
+    ...FOREMEN.map(p=>({name:p.name,role:'Foreman',group:'foreman'})),
+    ...CREW.map(p=>({name:p.name,role:'Apprentice',group:'crew'})),
+    ...ADMINS.map(p=>({name:p.name,role:'Admin',group:'admin'})),
+  ];
+  const rosterNames=new Set(roster.map(p=>p.name));
+  rows.forEach(r=>{
+    if(!rosterNames.has(r.employee_name)){
+      const roleMap={lead:'Job Lead',foreman:'Foreman',crew:'Apprentice',admin:'Admin'};
+      roster.push({name:r.employee_name,role:roleMap[r.role_at_sign]||'—',group:r.role_at_sign||'crew',former:true});
+      rosterNames.add(r.employee_name);
+    }
+  });
+  const order={lead:0,foreman:1,crew:2,admin:3};
+  roster.sort((a,b)=>{
+    const og=(order[a.group]??99)-(order[b.group]??99);
+    return og!==0?og:a.name.localeCompare(b.name);
+  });
+  const signedCount=roster.filter(p=>signedByName[p.name]).length;
+  const totalCount=roster.length;
+  const fmtTime=ts=>{try{const d=new Date(ts);return d.toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return ts||'—';}};
+  const list=roster.map(p=>{
+    const s=signedByName[p.name];
+    if(s){
+      const sigImg=s.signature_data?`<img src="${s.signature_data}" alt="signature" style="height:32px;width:auto;max-width:120px;background:#fff;border:1px solid #000;border-radius:3px;padding:2px;">`:'<span style="font-size:11px;color:var(--text2);">no signature on file</span>';
+      return`<div class="offender-row" style="background:#FFFFFF;border-color:#000000;">
+        <div class="scorecard-avatar" style="border-color:#3F6B3F;color:#3F6B3F;">${ini(p.name)}</div>
+        <div style="flex:1;min-width:0;">
+          <span class="offender-name">${escHTML(p.name)}${p.former?' <span style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;">· former</span>':''}</span>
+          <span class="offender-detail">${escHTML(p.role)} · Quiz ${escHTML(s.quiz_score||'—')} · ${escHTML(fmtTime(s.signed_at))}</span>
+        </div>
+        ${sigImg}
+      </div>`;
+    } else {
+      return`<div class="offender-row">
+        <div class="scorecard-avatar" style="border-color:rgba(127,34,34,0.3);color:#7F2222;">${ini(p.name)}</div>
+        <div style="flex:1;min-width:0;">
+          <span class="offender-name">${escHTML(p.name)}</span>
+          <span class="offender-detail">No sign-off this week</span>
+        </div>
+        <span class="offender-badge">${escHTML(p.role)}</span>
+      </div>`;
+    }
+  }).join('');
+  content.innerHTML=`
+    <h2 class="modal-title" style="margin-bottom:4px;">${escHTML(weekLabel||weekId)}</h2>
+    <p class="modal-sub" style="margin-bottom:14px;">${escHTML(topic||'—')}</p>
+    <div style="display:flex;gap:10px;margin-bottom:14px;font-family:var(--body);font-size:12px;font-weight:600;color:var(--text);">
+      <span style="background:#F7F5F2;border:1px solid #000;padding:6px 10px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase;">Signed: ${signedCount}/${totalCount}</span>
+      <span style="background:${totalCount-signedCount>0?'#FBE9E9':'#EAF3EA'};border:1px solid #000;padding:6px 10px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase;">Missing: ${totalCount-signedCount}</span>
+    </div>
+    ${list||'<div class="empty-state">No employees on the roster.</div>'}`;
+}
+function closeWeekDetail(){document.getElementById('weekDetailModal').classList.remove('open');}
+function escHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// ════════ SETTINGS ════════
+function getCompanyName(){return window.COMPANY_NAME||'Homestead Electric';}
+function getCompanyAddress(){return window.COMPANY_ADDRESS||'';}
+function loadSettingsForm(){
+  const cn=document.getElementById('set-company-name');
+  const ca=document.getElementById('set-company-address');
+  const dl=document.getElementById('set-default-lang');
+  if(cn)cn.value=window.COMPANY_NAME||'Homestead Electric';
+  if(ca)ca.value=window.COMPANY_ADDRESS||'';
+  if(dl)dl.value=window.DEFAULT_LANG||'auto';
+}
+async function saveSettings(){
+  const cn=(document.getElementById('set-company-name').value||'').trim();
+  const ca=(document.getElementById('set-company-address').value||'').trim();
+  const dl=(document.getElementById('set-default-lang').value||'auto').trim();
+  window.COMPANY_NAME=cn||'Homestead Electric';
+  window.COMPANY_ADDRESS=ca;
+  window.DEFAULT_LANG=dl;
+  if(sb){
+    await db.setMeta('company_name',cn||'Homestead Electric');
+    await db.setMeta('company_address',ca);
+    await db.setMeta('default_lang',dl);
+  }
+  // Local cache so first-paint of new visits picks it up before Supabase hydrates
+  try{localStorage.setItem('hes_company_name',cn);localStorage.setItem('hes_company_address',ca);localStorage.setItem('hes_default_lang',dl);}catch(e){}
+  showToast('Settings saved');
+}
+
+// Master PIN change
+function openMasterPinChange(){
+  document.getElementById('mp-current').value='';
+  document.getElementById('mp-new').value='';
+  document.getElementById('mp-confirm').value='';
+  document.getElementById('mp-msg').textContent='';
+  document.getElementById('mp-msg').className='pin-mode-msg';
+  document.getElementById('masterPinModal').classList.add('open');
+  setTimeout(()=>document.getElementById('mp-current').focus(),50);
+}
+function closeMasterPinChange(){document.getElementById('masterPinModal').classList.remove('open');}
+async function submitMasterPinChange(){
+  const cur=(document.getElementById('mp-current').value||'').trim();
+  const nw=(document.getElementById('mp-new').value||'').trim();
+  const cf=(document.getElementById('mp-confirm').value||'').trim();
+  const msg=document.getElementById('mp-msg');
+  msg.className='pin-mode-msg';
+  if(!/^\d{4,6}$/.test(cur)||!/^\d{4,6}$/.test(nw)){
+    msg.className='pin-mode-msg error';msg.textContent='PINs must be 4–6 digits';return;
+  }
+  if(nw!==cf){
+    msg.className='pin-mode-msg error';msg.textContent='New PIN and confirmation do not match';return;
+  }
+  if(!sb){
+    msg.className='pin-mode-msg error';msg.textContent='Database unavailable — try again when online';return;
+  }
+  // Verify current
+  const curHash=await hashPin(cur);
+  let storedHash=null;
+  try{
+    const {data}=await sb.from('app_meta').select('value').eq('key','admin_pin_hash').maybeSingle();
+    if(data&&data.value)storedHash=data.value;
+  }catch(e){console.error('mp lookup',e);}
+  if(storedHash&&curHash!==storedHash){
+    msg.className='pin-mode-msg error';msg.textContent='Current master PIN is incorrect';return;
+  }
+  const newHash=await hashPin(nw);
+  const {error}=await sb.from('app_meta').upsert({key:'admin_pin_hash',value:newHash},{onConflict:'key'});
+  if(error){msg.className='pin-mode-msg error';msg.textContent='Failed to save — try again';return;}
+  closeMasterPinChange();
+  showToast('Master PIN updated');
 }
 
 // ════════ ANONYMOUS SAFETY SUGGESTIONS ════════
@@ -2317,7 +2585,8 @@ async function exportOSHA300(){
   const csvEsc=(v)=>`"${String(v==null?'':v).replace(/"/g,'""').replace(/\r?\n/g,' ')}"`;
   let csv='';
   csv+='OSHA Form 300 — Log of Work-Related Injuries and Illnesses\n';
-  csv+=`Establishment: Homestead Electric,Year: ${year}\n`;
+  csv+=`Establishment: ${getCompanyName()},Year: ${year}\n`;
+  if(getCompanyAddress())csv+=`Address: ${getCompanyAddress()}\n`;
   csv+=`Generated: ${new Date().toLocaleString()}\n\n`;
   csv+='Case No.,Employee Name,Job Title,Date of Injury,Where Event Occurred,Description,Classification,Days Away,Days Restricted,Type\n';
   recordable.forEach((r,i)=>{
@@ -2341,7 +2610,8 @@ async function exportOSHA300(){
   const daysAwayCases=recordable.filter(r=>(r.medical_attention||'').toLowerCase().includes('hospital')).length;
   csv+='\n';
   csv+='OSHA Form 300A — Annual Summary\n';
-  csv+=`Establishment: Homestead Electric,Year: ${year}\n`;
+  csv+=`Establishment: ${getCompanyName()},Year: ${year}\n`;
+  if(getCompanyAddress())csv+=`Address: ${getCompanyAddress()}\n`;
   csv+=`Total deaths,0\n`;
   csv+=`Total cases with days away from work,${daysAwayCases}\n`;
   csv+=`Total cases with job transfer or restriction,0\n`;
@@ -2360,6 +2630,92 @@ async function exportOSHA300(){
   a.download=`HES_OSHA_300_${year}.csv`;
   a.click();
   showToast(`OSHA 300 log downloaded · ${recordable.length} recordable case${recordable.length===1?'':'s'}`);
+}
+
+async function exportOSHA300A(){
+  // OSHA 300A — printable annual summary (the form posted Feb 1 – Apr 30)
+  if(typeof window.jspdf==='undefined'){showToast('PDF library still loading — try again');return;}
+  const year=new Date().getFullYear()-1; // 300A summarizes the previous calendar year
+  const yearStart=new Date(year,0,1).toISOString();
+  const yearEnd=new Date(year+1,0,1).toISOString();
+  let incidents=[];
+  if(sb){
+    const {data,error}=await sb.from('incidents').select('*').eq('type','injury').gte('filed_at',yearStart).lt('filed_at',yearEnd);
+    if(error){console.error('300A fetch',error);showToast('Failed to fetch incidents');return;}
+    incidents=data||[];
+  }else{
+    incidents=(_incidentsCache||[]).filter(r=>r.type==='injury'&&new Date(r.filed_at).getFullYear()===year);
+  }
+  const isRecordable=(r)=>{
+    const med=(r.medical_attention||'').toLowerCase();
+    if(med.includes('urgent')||med.includes('emergency')||med.includes('hospital'))return true;
+    if(['Fracture / break','Electric shock','Eye injury','Head injury'].includes(r.injury_type))return true;
+    return false;
+  };
+  const recordable=incidents.filter(isRecordable);
+  const daysAway=recordable.filter(r=>(r.medical_attention||'').toLowerCase().includes('hospital')).length;
+  const otherRecordable=recordable.length-daysAway;
+  const totalEmployees=LEADS.length+FOREMEN.length+CREW.length+ADMINS.length;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'letter'});
+  const W=doc.internal.pageSize.getWidth();
+  const M=40;
+  let y=M;
+  // Header
+  doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text('OSHA Form 300A',M,y);y+=18;
+  doc.setFontSize(11);doc.text('Summary of Work-Related Injuries and Illnesses',M,y);y+=14;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  const estLine=`Year ${year}    ·    Establishment: ${getCompanyName()}    ·    Generated ${new Date().toLocaleDateString()}`;
+  doc.text(estLine,M,y);y+=12;
+  if(getCompanyAddress()){doc.text(`Address: ${getCompanyAddress()}`,M,y);y+=8;}else{y-=4;}
+  doc.setLineWidth(1);doc.line(M,y,W-M,y);y+=14;
+  // Posting note
+  doc.setFontSize(9);doc.setFont('helvetica','italic');
+  const posting='Post this Summary in a visible location from February 1 through April 30 of the year following the year covered. Even if no recordable cases occurred, this summary must still be posted.';
+  doc.text(doc.splitTextToSize(posting,W-M*2),M,y);y+=28;
+  doc.setFont('helvetica','normal');
+  // Number of cases
+  const sectionHeader=(label)=>{doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(label,M,y);y+=14;doc.setFont('helvetica','normal');doc.setFontSize(10);};
+  const row=(label,value)=>{
+    doc.text(label,M+12,y);
+    doc.setFont('helvetica','bold');doc.text(String(value),W-M-30,y,{align:'right'});doc.setFont('helvetica','normal');
+    y+=14;
+  };
+  sectionHeader('Number of cases');
+  row('Total number of deaths',0);
+  row('Total number of cases with days away from work',daysAway);
+  row('Total number of cases with job transfer or restriction',0);
+  row('Total number of other recordable cases',otherRecordable);
+  y+=8;
+  sectionHeader('Number of days');
+  row('Total number of days away from work','(track manually)');
+  row('Total number of days of job transfer or restriction','(track manually)');
+  y+=8;
+  sectionHeader('Injury and illness types');
+  row('(M) Injuries',recordable.length);
+  row('(1) Skin disorders',0);
+  row('(2) Respiratory conditions',0);
+  row('(3) Poisonings',0);
+  row('(4) Hearing loss',0);
+  row('(5) All other illnesses',0);
+  y+=8;
+  sectionHeader('Establishment information');
+  row('Average number of employees',totalEmployees);
+  row('Total hours worked by all employees last year','(fill in manually)');
+  y+=18;
+  doc.setFontSize(9);doc.setFont('helvetica','italic');
+  const certify='I certify that I have examined this document and that, to the best of my knowledge, the entries are true, accurate, and complete.';
+  doc.text(doc.splitTextToSize(certify,W-M*2),M,y);y+=24;
+  doc.setFont('helvetica','normal');
+  doc.text('Signature of company executive: ____________________________________',M,y);y+=18;
+  doc.text('Title: ____________________________________   Date: __________________',M,y);y+=18;
+  doc.text('Phone: ____________________________________',M,y);y+=22;
+  doc.setFontSize(8);doc.setFont('helvetica','italic');
+  const footer='Recordable counts pulled automatically from incident reports flagged as injuries requiring medical treatment beyond first aid (per 29 CFR 1904). Days-away counts and hours-worked are not tracked by this app — fill in manually before posting.';
+  doc.text(doc.splitTextToSize(footer,W-M*2),M,y);
+  doc.save(`HES_OSHA_300A_${year}.pdf`);
+  showToast(`OSHA 300A summary downloaded for ${year}`);
 }
 
 function downloadIncident(id){
@@ -2670,7 +3026,7 @@ async function exportWeekPDF(){
 
   // Title block
   doc.setFontSize(18);doc.setFont(undefined,'bold');
-  doc.text('Homestead Electric — Toolbox Talk Record',margin,y);
+  doc.text(`${getCompanyName()} — Toolbox Talk Record`,margin,y);
   y+=8;
   doc.setLineWidth(1.2);
   doc.line(margin,y,pageW-margin,y);
@@ -2958,11 +3314,16 @@ Workers comp provider notification required within 24 hours for lost-time injuri
 // ════════ LANGUAGE TOGGLE ════════
 (function(){
   const root=document.documentElement;
-  // First visit: detect browser language. Subsequent visits: use saved choice.
+  // First visit: use admin-configured default if set, otherwise detect from browser. Subsequent visits: use saved choice.
   let saved=localStorage.getItem('hes_lang');
   if(!saved){
-    const browserLang=(navigator.language||navigator.userLanguage||'en').toLowerCase();
-    saved=browserLang.startsWith('es')?'es':'en';
+    const adminDefault=window.DEFAULT_LANG||localStorage.getItem('hes_default_lang')||'auto';
+    if(adminDefault==='en'||adminDefault==='es'){
+      saved=adminDefault;
+    } else {
+      const browserLang=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+      saved=browserLang.startsWith('es')?'es':'en';
+    }
   }
   root.dataset.lang=saved;
   window.LANG=saved;
@@ -2983,7 +3344,61 @@ Workers comp provider notification required within 24 hours for lost-time injuri
 // Async fetch from Supabase + real-time subscriptions. App is already
 // usable from localStorage cache before this completes.
 if(HAS_SUPABASE){
-  db.hydrate().then(()=>db.subscribe());
+  db.hydrate().then(()=>db.subscribe()).then(()=>flushSignoffQueue());
+}
+
+// ════════ PWA — SERVICE WORKER + OFFLINE QUEUE ════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('SW register failed',err));
+  });
+}
+// Offline indicator
+function updateOnlineBadge(){
+  const badge=document.getElementById('offline-badge');
+  if(!badge)return;
+  badge.style.display=navigator.onLine?'none':'flex';
+}
+window.addEventListener('online',()=>{updateOnlineBadge();flushSignoffQueue();showToast('Back online — syncing…');});
+window.addEventListener('offline',()=>{updateOnlineBadge();showToast('Offline — sign-offs will sync when reconnected');});
+document.addEventListener('DOMContentLoaded',updateOnlineBadge);
+
+// Offline sign-off queue: any sign-off that fails to insert is held in localStorage and replayed on reconnect.
+function _signoffQueue(){try{return JSON.parse(localStorage.getItem('hes_signoff_queue')||'[]');}catch(e){return[];}}
+function _setSignoffQueue(q){try{localStorage.setItem('hes_signoff_queue',JSON.stringify(q));}catch(e){}}
+function queueSignoff(rec){
+  const q=_signoffQueue();
+  // Dedup by name+weekId+role
+  const existsAt=q.findIndex(r=>r.name===rec.name&&r.weekId===rec.weekId&&r.role===rec.role);
+  if(existsAt>=0)q[existsAt]=rec;else q.push(rec);
+  _setSignoffQueue(q);
+}
+async function flushSignoffQueue(){
+  if(!sb||!navigator.onLine)return;
+  const q=_signoffQueue();
+  if(!q.length)return;
+  const remaining=[];
+  for(const rec of q){
+    try{
+      const {error}=await sb.from('weekly_signoffs').upsert({
+        employee_id:rec.employeeId||null,
+        employee_name:rec.name,
+        week_id:rec.weekId,
+        week_label:rec.weekLabel,
+        role_at_sign:rec.role,
+        signed_at:rec.signedAt,
+        signature_data:rec.sigData,
+        quiz_score:rec.quizScore,
+        topic_title:rec.topicTitle,
+        topic_osha_ref:rec.topicOshaRef,
+      },{onConflict:'employee_name,week_id,role_at_sign'});
+      if(error){remaining.push(rec);console.warn('flush failed',error);}
+    }catch(e){remaining.push(rec);}
+  }
+  _setSignoffQueue(remaining);
+  if(q.length>remaining.length){
+    showToast(`Synced ${q.length-remaining.length} queued sign-off${q.length-remaining.length===1?'':'s'}`);
+  }
 }
 </script>
 </body>
