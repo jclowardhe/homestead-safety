@@ -1,12 +1,15 @@
 // Homestead Electric Safety — Service Worker
 // Bump CACHE_VERSION when you ship a new index.html so users get the update.
-const CACHE_VERSION = 'hes-safety-v1';
+const CACHE_VERSION = 'hes-safety-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './skull.png',
   './logo.png',
+  './app-icon-192.png',
+  './app-icon-512.png',
+  './app-icon-512-maskable.png',
   // CDN dependencies — cached on first successful fetch
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
