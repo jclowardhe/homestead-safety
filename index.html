@@ -61,6 +61,69 @@ body{
   background-image:repeating-linear-gradient(45deg,#000000 0,#000000 14px,#B8860B 14px,#B8860B 28px);
   border-bottom:1.5px solid #000000;
 }
+/* Incident photo uploader */
+.photo-upload-btn{
+  background:#FFFFFF;border:1.5px dashed #000000;border-radius:6px;
+  padding:14px 16px;cursor:pointer;font-family:var(--body);font-size:13px;font-weight:600;
+  color:#000000;letter-spacing:.04em;text-transform:uppercase;
+  width:100%;text-align:center;transition:background .15s;
+}
+.photo-upload-btn:hover{background:#F7F5F2;}
+.photo-previews{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.photo-preview{
+  position:relative;width:84px;height:84px;
+  border:1.5px solid #000000;border-radius:4px;overflow:hidden;
+  background:#F7F5F2;
+}
+.photo-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-preview-remove{
+  position:absolute;top:2px;right:2px;
+  width:22px;height:22px;border-radius:50%;
+  background:#000000;color:#FFFFFF;border:none;
+  font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;line-height:1;
+}
+.photo-preview-progress{
+  position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.1);
+}
+.photo-preview-progress-fill{height:100%;background:#000000;transition:width .2s;}
+.incident-photos-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.incident-photos-grid a{
+  display:block;width:84px;height:84px;
+  border:1.5px solid #000000;border-radius:4px;overflow:hidden;
+}
+.incident-photos-grid img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* Incident log */
+.incident-row{
+  background:var(--surface);border:1.5px solid #000000;border-radius:6px;
+  padding:12px 14px;margin-bottom:6px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:background .15s;
+  width:100%;text-align:left;font-family:var(--body);
+  border-left-width:5px;
+}
+.incident-row:hover{background:#F7F5F2;}
+.incident-row.injury{border-left-color:#7F2222;}
+.incident-row.nearmiss{border-left-color:#B8860B;}
+.incident-row.hazard{border-left-color:#3F6B3F;}
+.incident-type-tag{
+  font-family:var(--body);font-size:10px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  flex-shrink:0;width:78px;
+}
+.incident-type-tag.injury{color:#7F2222;}
+.incident-type-tag.nearmiss{color:#B8860B;}
+.incident-type-tag.hazard{color:#3F6B3F;}
+.incident-summary{flex:1;min-width:0;}
+.incident-person{font-family:var(--body);font-size:14px;font-weight:600;color:#000000;}
+.incident-meta{font-size:12px;color:var(--text2);margin-top:2px;}
+.incident-arrow{color:var(--text2);font-size:18px;flex-shrink:0;}
+.incident-detail-grid{display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--text);line-height:1.6;}
+.incident-detail-grid > div{padding:8px 0;border-bottom:1px solid var(--line-soft);}
+.incident-detail-grid > div:last-of-type{border-bottom:none;}
+.incident-detail-grid strong{font-weight:600;color:#000000;display:inline-block;min-width:140px;}
+
 /* PIN input — used during sign-off */
 .pin-row{margin-bottom:16px;display:none;}
 .pin-row.visible{display:block;}
@@ -900,12 +963,12 @@ input.field-select::placeholder{color:#B8B6B0;}
 <div class="screen" id="screen-admin">
   <header class="header">
     <button class="back-btn" onclick="goHome()"><span class="back-btn-arrow">←</span><span class="lang-en">Back</span><span class="lang-es">Atrás</span></button>
-    <div class="header-tag"><span class="lang-en">Admin</span><span class="lang-es">Admin</span></div>
+    <div class="header-tag">Admin</div>
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
-      <div class="hero-eyebrow"><span class="lang-en">Administration</span><span class="lang-es">Administración</span></div>
-      <div class="hero-title" style="font-size:26px;"><span class="lang-en">Safety<br>Records.</span><span class="lang-es">Registros<br>de Seguridad.</span></div>
+      <div class="hero-eyebrow">Administration</div>
+      <div class="hero-title" style="font-size:26px;">Safety<br>Records.</div>
     </div>
     <div class="stats-row">
       <div class="stat-card"><span class="stat-num" id="admin-weeks">1</span><span class="stat-lbl">Weeks</span></div>
@@ -929,6 +992,10 @@ input.field-select::placeholder{color:#B8B6B0;}
     <div class="divider"></div>
     <div class="sec-label">Pending this week</div>
     <div id="repeatOffenders"></div>
+    <!-- INCIDENT LOG -->
+    <div class="divider"></div>
+    <div class="sec-label">Incident log</div>
+    <div id="incidentLog"></div>
     <div class="divider"></div>
     <div class="sec-label">Export</div>
     <button class="export-row" onclick="exportReport()">
@@ -941,9 +1008,9 @@ input.field-select::placeholder{color:#B8B6B0;}
       <div><span class="exp-name">Full year CSV</span><span class="exp-desc">All records · audit-ready format</span></div>
       <span class="exp-chev">→</span>
     </button>
-    <button class="export-row" onclick="showToast('OSHA 300 log coming soon')">
+    <button class="export-row" onclick="exportOSHA300()">
       <div class="exp-icon-wrap">🏛️</div>
-      <div><span class="exp-name">OSHA 300 log</span><span class="exp-desc">Pre-formatted for OSHA recordkeeping</span></div>
+      <div><span class="exp-name">OSHA 300 log</span><span class="exp-desc">Recordable injuries · year-to-date · CSV</span></div>
       <span class="exp-chev">→</span>
     </button>
     <div class="divider"></div>
@@ -1146,6 +1213,13 @@ input.field-select::placeholder{color:#B8B6B0;}
           <input type="text" class="field-select" id="ir-witnesses" placeholder="Names of anyone who saw what happened">
         </div>
       </div>
+      <!-- Photos -->
+      <div class="ir-section">
+        <div class="sec-label">Photos <span style="color:#6B6B6B;font-weight:400;">(optional)</span></div>
+        <input type="file" id="ir-photos-input" accept="image/*" capture="environment" multiple style="display:none" onchange="onPhotosSelected(event)">
+        <button type="button" class="photo-upload-btn" onclick="document.getElementById('ir-photos-input').click()">📷 Add photos / take a picture</button>
+        <div class="photo-previews" id="ir-photo-previews"></div>
+      </div>
       <!-- Reporter -->
       <div class="ir-section">
         <div class="sec-label">Filed by</div>
@@ -1166,6 +1240,17 @@ input.field-select::placeholder{color:#B8B6B0;}
     <button class="nav-btn active"><span class="ni">⚠️</span>Report</button>
     <button class="nav-btn" onclick="goHome()"><span class="ni">⌂</span>Home</button>
   </nav>
+</div>
+<!-- INCIDENT DETAIL MODAL -->
+<div class="modal-overlay" id="incidentDetailModal">
+  <div class="modal" style="max-width:560px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div id="incidentDetailContent"></div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <button class="btn-outline" onclick="closeIncidentDetail()">Close</button>
+      <button class="btn-primary" id="incidentDownloadBtn" onclick="">Download as TXT</button>
+    </div>
+  </div>
 </div>
 <!-- ADMIN AUTH MODAL -->
 <div class="modal-overlay" id="adminAuthModal">
@@ -1281,6 +1366,7 @@ const db={
       witnesses:report.witnesses,
       filed_by:report.filedby,
       gps_at_filing:report.gps,
+      photo_urls:report.photoUrls||[],
     });
     if(error)console.error('insertIncident',error);
   },
@@ -2107,6 +2193,178 @@ function renderAdmin(){
   if(refEl)refEl.textContent=t?.oshaRef||'—';
   // ── EMPLOYEE LISTS ──
   renderEmployeeLists();
+  // ── INCIDENT LOG ──
+  renderIncidentLog();
+}
+
+// ════════ INCIDENT LOG ════════
+let _incidentsCache=[];
+async function renderIncidentLog(){
+  const el=document.getElementById('incidentLog');
+  if(!el)return;
+  if(sb){
+    try{
+      const {data,error}=await sb.from('incidents').select('*').order('filed_at',{ascending:false}).limit(100);
+      if(error)console.error('fetch incidents',error);
+      if(data)_incidentsCache=data;
+    }catch(e){console.error('fetch incidents',e);}
+  }
+  if(!_incidentsCache||!_incidentsCache.length){
+    el.innerHTML='<div class="empty-state">No incidents reported yet.</div>';
+    return;
+  }
+  el.innerHTML=_incidentsCache.map(r=>{
+    const filed=new Date(r.filed_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const typeLabel={injury:'Injury',nearmiss:'Near-miss',hazard:'Hazard'}[r.type]||r.type;
+    const loc=r.location||'no location';
+    return`<button class="incident-row ${r.type}" onclick="openIncidentDetail('${r.id}')">
+      <span class="incident-type-tag ${r.type}">${typeLabel}</span>
+      <div class="incident-summary">
+        <div class="incident-person">${(r.person_involved||'').replace(/</g,'&lt;')}</div>
+        <div class="incident-meta">${filed} · ${(loc).replace(/</g,'&lt;')}</div>
+      </div>
+      <span class="incident-arrow">→</span>
+    </button>`;
+  }).join('');
+}
+function openIncidentDetail(id){
+  const r=_incidentsCache.find(x=>x.id===id);
+  if(!r)return;
+  const filed=new Date(r.filed_at).toLocaleString('en-US');
+  const typeLabel={injury:'Injury',nearmiss:'Near-miss',hazard:'Hazard'}[r.type]||r.type;
+  const html=`
+    <h2 class="modal-title">${typeLabel} · ${r.report_id}</h2>
+    <p class="modal-sub">Filed by: ${(r.filed_by||'').replace(/</g,'&lt;')} · Filed at ${filed}</p>
+    <div class="incident-detail-grid">
+      <div><strong>Person involved:</strong> ${(r.person_involved||'').replace(/</g,'&lt;')}</div>
+      <div><strong>Job lead on site:</strong> ${(r.job_lead||'—').replace(/</g,'&lt;')}</div>
+      <div><strong>When:</strong> ${r.incident_at?new Date(r.incident_at).toLocaleString('en-US'):'—'}</div>
+      <div><strong>Location:</strong> ${(r.location||'—').replace(/</g,'&lt;')}</div>
+      ${r.type==='injury'?`
+      <div><strong>Body part:</strong> ${(r.body_part||'—').replace(/</g,'&lt;')}</div>
+      <div><strong>Injury type:</strong> ${(r.injury_type||'—').replace(/</g,'&lt;')}</div>
+      <div><strong>Medical attention:</strong> ${(r.medical_attention||'—').replace(/</g,'&lt;')}</div>
+      `:''}
+      <div><strong>Description:</strong><br>${(r.description||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
+      <div><strong>Root cause:</strong> ${(r.root_cause||'—').replace(/</g,'&lt;')}</div>
+      <div><strong>Witnesses:</strong> ${(r.witnesses||'—').replace(/</g,'&lt;')}</div>
+      <div><strong>GPS at filing:</strong> ${(r.gps_at_filing||'—')}</div>
+      ${Array.isArray(r.photo_urls)&&r.photo_urls.length?`
+      <div><strong>Photos (${r.photo_urls.length}):</strong>
+        <div class="incident-photos-grid">
+          ${r.photo_urls.map(url=>`<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="incident photo" loading="lazy"></a>`).join('')}
+        </div>
+      </div>
+      `:''}
+    </div>
+  `;
+  document.getElementById('incidentDetailContent').innerHTML=html;
+  document.getElementById('incidentDownloadBtn').onclick=()=>downloadIncident(id);
+  document.getElementById('incidentDetailModal').classList.add('open');
+}
+function closeIncidentDetail(){
+  document.getElementById('incidentDetailModal').classList.remove('open');
+}
+async function exportOSHA300(){
+  // OSHA 300 Log — current calendar year, recordable injuries only
+  const year=new Date().getFullYear();
+  const yearStart=new Date(year,0,1).toISOString();
+  const yearEnd=new Date(year+1,0,1).toISOString();
+  let incidents=[];
+  if(sb){
+    const {data,error}=await sb.from('incidents').select('*').eq('type','injury').gte('filed_at',yearStart).lt('filed_at',yearEnd).order('filed_at',{ascending:true});
+    if(error){console.error('OSHA 300 fetch',error);showToast('Failed to fetch incidents');return;}
+    incidents=data||[];
+  }else{
+    incidents=(_incidentsCache||[]).filter(r=>r.type==='injury'&&new Date(r.filed_at).getFullYear()===year);
+  }
+  // Determine recordable per OSHA 29 CFR 1904
+  const isRecordable=(r)=>{
+    const med=(r.medical_attention||'').toLowerCase();
+    if(med.includes('urgent')||med.includes('emergency')||med.includes('hospital'))return true;
+    // Significant injuries that require recording even with first aid only
+    if(['Fracture / break','Electric shock','Eye injury','Head injury'].includes(r.injury_type))return true;
+    return false;
+  };
+  const recordable=incidents.filter(isRecordable);
+  if(recordable.length===0){
+    showToast(`No recordable injuries for ${year}`);
+    return;
+  }
+  // Job title from current employee record (best effort)
+  const jobTitleFor=(name)=>{
+    if(LEADS.some(p=>p.name===name))return'Job Lead';
+    if(FOREMEN.some(p=>p.name===name))return'Foreman';
+    if(CREW.some(p=>p.name===name))return'Apprentice';
+    if(ADMINS.some(p=>p.name===name))return'Admin';
+    return'';
+  };
+  const classify=(r)=>{
+    const med=(r.medical_attention||'').toLowerCase();
+    if(med.includes('hospital'))return'Days away from work';
+    return'Medical treatment beyond first aid';
+  };
+  const csvEsc=(v)=>`"${String(v==null?'':v).replace(/"/g,'""').replace(/\r?\n/g,' ')}"`;
+  let csv='';
+  csv+='OSHA Form 300 — Log of Work-Related Injuries and Illnesses\n';
+  csv+=`Establishment: Homestead Electric,Year: ${year}\n`;
+  csv+=`Generated: ${new Date().toLocaleString()}\n\n`;
+  csv+='Case No.,Employee Name,Job Title,Date of Injury,Where Event Occurred,Description,Classification,Days Away,Days Restricted,Type\n';
+  recordable.forEach((r,i)=>{
+    const dateStr=r.incident_at?new Date(r.incident_at).toLocaleDateString('en-US'):new Date(r.filed_at).toLocaleDateString('en-US');
+    const desc=`${r.body_part||''} — ${r.injury_type||''}: ${(r.description||'').slice(0,200)}`;
+    csv+=[
+      i+1,
+      csvEsc(r.person_involved),
+      csvEsc(jobTitleFor(r.person_involved)),
+      dateStr,
+      csvEsc(r.location),
+      csvEsc(desc),
+      csvEsc(classify(r)),
+      '', // days away — not tracked yet
+      '', // days restricted — not tracked yet
+      'Injury'
+    ].join(',')+'\n';
+  });
+  // OSHA 300A — Annual Summary
+  const totalEmployees=LEADS.length+FOREMEN.length+CREW.length+ADMINS.length;
+  const daysAwayCases=recordable.filter(r=>(r.medical_attention||'').toLowerCase().includes('hospital')).length;
+  csv+='\n';
+  csv+='OSHA Form 300A — Annual Summary\n';
+  csv+=`Establishment: Homestead Electric,Year: ${year}\n`;
+  csv+=`Total deaths,0\n`;
+  csv+=`Total cases with days away from work,${daysAwayCases}\n`;
+  csv+=`Total cases with job transfer or restriction,0\n`;
+  csv+=`Total other recordable cases,${recordable.length-daysAwayCases}\n`;
+  csv+=`Total injury cases,${recordable.length}\n`;
+  csv+=`Total skin disorder cases,0\n`;
+  csv+=`Total respiratory condition cases,0\n`;
+  csv+=`Total poisoning cases,0\n`;
+  csv+=`Total hearing loss cases,0\n`;
+  csv+=`Total all other illness cases,0\n`;
+  csv+=`Average number of employees,${totalEmployees}\n`;
+  csv+=`Total hours worked by all employees last year,(fill in manually)\n`;
+  csv+=`\nNote: This export pulls only injuries flagged as recordable per 29 CFR 1904 (medical treatment beyond first aid; or any fracture, electric shock, eye injury, head injury).\nReview each entry against current OSHA recordkeeping criteria before posting Form 300A (Feb 1 - Apr 30).\n`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`HES_OSHA_300_${year}.csv`;
+  a.click();
+  showToast(`OSHA 300 log downloaded · ${recordable.length} recordable case${recordable.length===1?'':'s'}`);
+}
+
+function downloadIncident(id){
+  const r=_incidentsCache.find(x=>x.id===id);
+  if(!r)return;
+  // Adapt Supabase row to the shape exportIncidentReport expects
+  const adapted={
+    id:r.report_id,type:r.type,person:r.person_involved,lead:r.job_lead,
+    datetime:r.incident_at,location:r.location,
+    bodypart:r.body_part,injurytype:r.injury_type,medical:r.medical_attention,
+    description:r.description,rootcause:r.root_cause,witnesses:r.witnesses,
+    filedby:r.filed_by,filedAt:new Date(r.filed_at).toLocaleString(),
+    gps:r.gps_at_filing
+  };
+  exportIncidentReport(adapted);
 }
 let editingEmployee=null; // {role, idx}
 function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
@@ -2400,16 +2658,100 @@ function selectType(btn,type){
   const injuryFields=document.getElementById('ir-injury-fields');
   if(injuryFields)injuryFields.style.display=type==='injury'?'block':'none';
 }
-function submitIncident(){
+
+// ════════ INCIDENT PHOTO UPLOAD ════════
+let _incidentPhotos=[]; // [{ blob, previewUrl }]
+async function compressImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      const img=new Image();
+      img.onload=()=>{
+        // Resize to max 1920px on the longest edge, JPEG quality 0.8
+        const maxEdge=1920;
+        const ratio=Math.min(1,maxEdge/Math.max(img.width,img.height));
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.round(img.width*ratio);
+        canvas.height=Math.round(img.height*ratio);
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        canvas.toBlob(b=>b?resolve(b):reject(new Error('canvas.toBlob failed')),'image/jpeg',0.8);
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function onPhotosSelected(ev){
+  const files=Array.from(ev.target.files||[]);
+  for(const file of files){
+    if(!file.type.startsWith('image/'))continue;
+    try{
+      const compressed=await compressImage(file);
+      _incidentPhotos.push({blob:compressed,previewUrl:URL.createObjectURL(compressed)});
+    }catch(err){
+      console.error('compress',err);
+      showToast('Failed to process one photo');
+    }
+  }
+  ev.target.value='';// reset so the same file can be picked again later
+  renderPhotoPreviews();
+}
+function renderPhotoPreviews(){
+  const el=document.getElementById('ir-photo-previews');
+  if(!el)return;
+  el.innerHTML=_incidentPhotos.map((p,i)=>`
+    <div class="photo-preview">
+      <img src="${p.previewUrl}" alt="">
+      <button type="button" class="photo-preview-remove" onclick="removeIncidentPhoto(${i})" title="Remove">×</button>
+    </div>
+  `).join('');
+}
+function removeIncidentPhoto(idx){
+  const p=_incidentPhotos[idx];
+  if(p&&p.previewUrl)URL.revokeObjectURL(p.previewUrl);
+  _incidentPhotos.splice(idx,1);
+  renderPhotoPreviews();
+}
+function clearIncidentPhotos(){
+  _incidentPhotos.forEach(p=>p.previewUrl&&URL.revokeObjectURL(p.previewUrl));
+  _incidentPhotos=[];
+  renderPhotoPreviews();
+}
+async function uploadIncidentPhotos(reportId){
+  if(!sb||!_incidentPhotos.length)return [];
+  const urls=[];
+  for(let i=0;i<_incidentPhotos.length;i++){
+    const photo=_incidentPhotos[i];
+    const fileName=`${reportId}_${i}_${Date.now()}.jpg`;
+    const {error}=await sb.storage.from('incident-photos').upload(fileName,photo.blob,{contentType:'image/jpeg',upsert:false});
+    if(error){
+      console.error('photo upload',error);
+      showToast('Photo upload failed: '+(error.message||'unknown'));
+      continue;
+    }
+    const {data}=sb.storage.from('incident-photos').getPublicUrl(fileName);
+    if(data&&data.publicUrl)urls.push(data.publicUrl);
+  }
+  return urls;
+}
+async function submitIncident(){
   const person=document.getElementById('ir-person')?.value;
   const description=document.getElementById('ir-description')?.value;
   const filedby=document.getElementById('ir-filedby')?.value;
   if(!person){showToast('Select person involved');return;}
   if(!description||description.trim().length<10){showToast('Please describe what happened');return;}
   if(!filedby){showToast('Select who is filing this report');return;}
+  const submitBtn=event?.target;
+  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent=_incidentPhotos.length?'Uploading photos…':'Submitting…';}
   const now=new Date();
+  const reportId=`IR-${Date.now()}`;
+  // Upload photos first so we have URLs to attach to the record
+  const photoUrls=await uploadIncidentPhotos(reportId);
   const report={
-    id:`IR-${Date.now()}`,
+    id:reportId,
     type:incidentType,
     person,
     lead:document.getElementById('ir-lead')?.value||'—',
@@ -2424,6 +2766,7 @@ function submitIncident(){
     filedby,
     filedAt:now.toLocaleString(),
     gps:S.loc?`${S.loc.lat}, ${S.loc.lng}`:'N/A',
+    photoUrls,
   };
   try{
     const existing=JSON.parse(localStorage.getItem('hes_incidents_v1')||'[]');
@@ -2432,6 +2775,7 @@ function submitIncident(){
   }catch(e){}
   // Persist to Supabase (fire-and-forget)
   if(sb)db.insertIncident(report);
+  clearIncidentPhotos();
   document.getElementById('incidentForm').style.display='none';
   document.getElementById('incidentSubmitted').style.display='block';
   document.getElementById('incidentSubmittedDetails').textContent=
