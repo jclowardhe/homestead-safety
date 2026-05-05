@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Homestead Electric — Safety</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -497,7 +498,7 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
 .emp-row.is-crew{border-left:2px solid var(--text2);}
 .emp-name{font-family:var(--font);font-size:14px;font-weight:600;color:var(--white);display:block;}
 .emp-role{font-size:10px;color:var(--text2);font-family:var(--mono);display:block;margin-top:2px;letter-spacing:.06em;text-transform:uppercase;}
-.btn-remove{
+.btn-remove,.btn-edit{
   background:transparent;border:1px solid var(--surface3);
   color:var(--text2);
   padding:6px 10px;font-size:10px;font-weight:500;
@@ -506,6 +507,10 @@ canvas#sigCanvas{display:block;width:100%;height:150px;cursor:crosshair;touch-ac
   transition:all .15s;flex-shrink:0;
 }
 .btn-remove:hover{border-color:var(--red);color:var(--red);}
+.btn-edit:hover{border-color:var(--lime);color:var(--lime);}
+.emp-row.editing{flex-direction:column;align-items:stretch;gap:8px;background:var(--surface2);}
+.emp-edit-actions{display:flex;gap:8px;}
+.emp-edit-actions button{flex:1;width:auto;}
 .emp-add-form{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
 .emp-add-form .inline-row{gap:8px;}
 .emp-add-form input.field-select{flex:2;}
@@ -1049,6 +1054,157 @@ input.field-select::placeholder{color:#B8B6B0;}
 </div>
 <div class="toast" id="toast"></div>
 <script>
+// ════════ SUPABASE CONFIG ════════
+const SUPABASE_URL='https://ogjkpywuqhvsalwrbwxv.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_SJzz2Ab6hmArCRNlJtteyg_zAmWpacn';
+const HAS_SUPABASE=!!(SUPABASE_URL&&SUPABASE_ANON_KEY&&typeof window.supabase!=='undefined');
+const sb=HAS_SUPABASE?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+
+// ════════ DB MODULE ════════
+// Backend strategy: localStorage is the local cache (instant), Supabase is the
+// shared source of truth. Reads hydrate from Supabase async, writes go to
+// both localStorage (sync) and Supabase (fire-and-forget).
+const db={
+  ready:false,
+  async insertEmployee(person){
+    if(!sb)return null;
+    const {data,error}=await sb.from('employees').insert({name:person.name,role:person.role}).select().single();
+    if(error){console.error('insertEmployee',error);return null;}
+    return data;
+  },
+  async updateEmployee(id,fields){
+    if(!sb||!id)return null;
+    const {data,error}=await sb.from('employees').update(fields).eq('id',id).select().single();
+    if(error){console.error('updateEmployee',error);return null;}
+    return data;
+  },
+  async deactivateEmployee(id){
+    if(!sb||!id)return;
+    const {error}=await sb.from('employees').update({active:false}).eq('id',id);
+    if(error)console.error('deactivateEmployee',error);
+  },
+  async insertSignoff(rec){
+    if(!sb)return;
+    const {error}=await sb.from('weekly_signoffs').upsert({
+      employee_id:rec.employeeId||null,
+      employee_name:rec.name,
+      week_id:rec.weekId,
+      week_label:rec.weekLabel,
+      role_at_sign:rec.role,
+      signed_at:rec.signedAt,
+      location_lat:rec.lat||null,
+      location_lng:rec.lng||null,
+      signature_data:rec.sigData,
+      quiz_score:rec.quizScore,
+      topic_title:rec.topicTitle,
+      topic_osha_ref:rec.topicOshaRef,
+    },{onConflict:'employee_name,week_id,role_at_sign'});
+    if(error)console.error('insertSignoff',error);
+  },
+  async insertIncident(report){
+    if(!sb)return;
+    const {error}=await sb.from('incidents').insert({
+      report_id:report.id,
+      type:report.type,
+      person_involved:report.person,
+      job_lead:report.lead,
+      incident_at:report.datetime||null,
+      location:report.location,
+      body_part:report.bodypart,
+      injury_type:report.injurytype,
+      medical_attention:report.medical,
+      description:report.description,
+      root_cause:report.rootcause,
+      witnesses:report.witnesses,
+      filed_by:report.filedby,
+      gps_at_filing:report.gps,
+    });
+    if(error)console.error('insertIncident',error);
+  },
+  async setMeta(key,value){
+    if(!sb)return;
+    const {error}=await sb.from('app_meta').upsert({key,value},{onConflict:'key'});
+    if(error)console.error('setMeta',error);
+  },
+  async hydrate(){
+    if(!sb)return;
+    try{
+      // Employees
+      const {data:emps}=await sb.from('employees').select('*').eq('active',true).order('created_at');
+      if(emps&&emps.length>0){
+        LEADS.length=0;CREW.length=0;
+        emps.forEach(e=>{
+          (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name});
+        });
+      } else if(emps&&emps.length===0&&(LEADS.length>0||CREW.length>0)){
+        // First-time setup: Supabase is empty but the local cache has the
+        // defaults. Seed Supabase from local so we don't wipe everyone out.
+        const seed=[
+          ...LEADS.map(p=>({name:p.name,role:'lead'})),
+          ...CREW.map(p=>({name:p.name,role:'crew'})),
+        ];
+        const {data:seeded,error:seedErr}=await sb.from('employees').insert(seed).select();
+        if(seedErr){console.error('seed employees',seedErr);}
+        else if(seeded){
+          LEADS.length=0;CREW.length=0;
+          seeded.forEach(e=>{(e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name});});
+          saveEmployeeLists();
+          console.log('Seeded',seeded.length,'employees from local cache');
+        }
+      }
+      // This week's sign-offs
+      const {data:sigs}=await sb.from('weekly_signoffs').select('*').eq('week_id',S.weekId);
+      if(sigs){
+        S.signoffs={};S.leadSignoffs={};
+        sigs.forEach(s=>{
+          const t=new Date(s.signed_at);
+          const rec={
+            time:`${t.toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${t.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}`,
+            location:(s.location_lat!=null&&s.location_lng!=null)?`${s.location_lat}, ${s.location_lng}`:'N/A',
+            sigData:s.signature_data,
+            weekId:s.week_id,
+            topic:s.topic_title||'',
+            quizScore:s.quiz_score||'',
+          };
+          if(s.role_at_sign==='lead')S.leadSignoffs[s.employee_name]=rec;
+          else S.signoffs[s.employee_name]=rec;
+        });
+      }
+      // App meta
+      const {data:meta}=await sb.from('app_meta').select('*');
+      if(meta){
+        meta.forEach(m=>{
+          if(m.key==='topic_order'&&Array.isArray(m.value))S.topicOrder=m.value;
+          if(m.key==='current_topic'&&m.value&&m.value.title)S.topic=m.value;
+          if(m.key==='current_quiz'&&m.value)S.quiz=m.value;
+        });
+      }
+      if(!Array.isArray(S.topicOrder)||S.topicOrder.length!==TOPIC_BANK.length){
+        S.topicOrder=TOPIC_BANK.map((_,i)=>i);
+      }
+      db.ready=true;
+      // Re-render whichever screen is active
+      const active=document.querySelector('.screen.active')?.id;
+      if(active==='screen-lead'&&typeof renderLead==='function')renderLead();
+      else if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
+      else if(active==='screen-crew'&&typeof renderCrew==='function')renderCrew();
+      else if(active==='screen-incident'&&typeof renderIncident==='function')renderIncident();
+    }catch(err){console.error('hydrate',err);}
+  },
+  subscribe(){
+    if(!sb)return;
+    sb.channel('safety-realtime')
+      .on('postgres_changes',{event:'*',schema:'public',table:'weekly_signoffs'},()=>db.hydrate())
+      .on('postgres_changes',{event:'*',schema:'public',table:'employees'},()=>db.hydrate())
+      .on('postgres_changes',{event:'*',schema:'public',table:'app_meta'},()=>db.hydrate())
+      .on('postgres_changes',{event:'*',schema:'public',table:'incidents'},()=>{
+        const active=document.querySelector('.screen.active')?.id;
+        if(active==='screen-admin'&&typeof renderAdmin==='function')renderAdmin();
+      })
+      .subscribe();
+  },
+};
+
 // ── EMPLOYEES (mutable, localStorage-backed) ──
 const DEFAULT_LEADS=[
   {name:"Daegan Smith"},{name:"Keegan Wilkinson"},{name:"Braden Davis"},
@@ -1136,7 +1292,15 @@ function wkId(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return`${d.ge
 const S={signoffs:{},leadSignoffs:{},topic:null,quiz:null,role:null,signing:null,signingType:null,loc:null,weekLabel:wkLabel(),weekId:wkId(),history:[],topicOrder:null};
 try{const sv=localStorage.getItem('hes_safety_v3');if(sv){const p=JSON.parse(sv);if(Array.isArray(p.topicOrder))S.topicOrder=p.topicOrder;if(p.weekId===S.weekId){S.signoffs=p.signoffs||{};S.leadSignoffs=p.leadSignoffs||{};S.topic=p.topic||null;S.quiz=p.quiz||null;S.history=p.history||[];}else if(p.weekId&&p.weekId!==S.weekId){/* archive previous week */S.history=p.history||[];S.history.unshift({weekId:p.weekId,weekLabel:p.weekLabel||p.weekId,topic:p.topic?.title||'—',signoffs:p.signoffs||{},leadSignoffs:p.leadSignoffs||{}});if(S.history.length>52)S.history=S.history.slice(0,52);}else if(p.history){S.history=p.history;}}}catch(e){}
 if(!Array.isArray(S.topicOrder)||S.topicOrder.length!==TOPIC_BANK.length){S.topicOrder=TOPIC_BANK.map((_,i)=>i);}
-function save(){try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,weekLabel:S.weekLabel,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz,history:S.history,topicOrder:S.topicOrder}));}catch(e){}}
+function save(){
+  try{localStorage.setItem('hes_safety_v3',JSON.stringify({weekId:S.weekId,weekLabel:S.weekLabel,signoffs:S.signoffs,leadSignoffs:S.leadSignoffs,topic:S.topic,quiz:S.quiz,history:S.history,topicOrder:S.topicOrder}));}catch(e){}
+  // Persist app-meta to Supabase (fire-and-forget)
+  if(sb){
+    db.setMeta('topic_order',S.topicOrder);
+    if(S.topic)db.setMeta('current_topic',S.topic);
+    if(S.quiz)db.setMeta('current_quiz',S.quiz);
+  }
+}
 function currentTopicSlot(){const d=new Date(),j=new Date(d.getFullYear(),0,1);const weekNum=Math.ceil(((d-j)/86400000+j.getDay()+1)/7);return (weekNum-1)%S.topicOrder.length;}
 function currentTopicIndex(){return S.topicOrder[currentTopicSlot()] ?? 0;}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
@@ -1476,19 +1640,104 @@ function renderAdmin(){
   // ── EMPLOYEE LISTS ──
   renderEmployeeLists();
 }
+let editingEmployee=null; // {role, idx}
+function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function empRowHTML(person,role,idx){
+  const isEditing=editingEmployee&&editingEmployee.role===role&&editingEmployee.idx===idx;
+  if(isEditing){
+    return`<div class="emp-row is-${role} editing">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="avatar">${ini(person.name)}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;">Editing</div>
+      </div>
+      <div>
+        <label class="field-lbl">Name</label>
+        <input type="text" class="field-select" id="edit-name" value="${escAttr(person.name)}">
+      </div>
+      <div>
+        <label class="field-lbl">Role</label>
+        <select class="field-select" id="edit-role">
+          <option value="lead" ${role==='lead'?'selected':''}>Job Lead</option>
+          <option value="crew" ${role==='crew'?'selected':''}>Apprentice</option>
+        </select>
+      </div>
+      <div class="emp-edit-actions">
+        <button class="btn-outline" onclick="cancelEditEmployee()">Cancel</button>
+        <button class="btn-primary" onclick="saveEditEmployee('${role}',${idx})">Save changes</button>
+      </div>
+    </div>`;
+  }
+  const roleLbl=role==='lead'?'Job Lead':'Apprentice';
+  return`<div class="emp-row is-${role}">
+    <div class="avatar">${ini(person.name)}</div>
+    <div style="flex:1;min-width:0;">
+      <span class="emp-name">${person.name}</span>
+      <span class="emp-role">${roleLbl}</span>
+    </div>
+    <button class="btn-edit" onclick="startEditEmployee('${role}',${idx})">Edit</button>
+    <button class="btn-remove" onclick="removeEmployee('${role}',${idx})">Remove</button>
+  </div>`;
+}
 function renderEmployeeLists(){
   const leadsEl=document.getElementById('empListLeads');
   const crewEl=document.getElementById('empListCrew');
   if(leadsEl){
     leadsEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Job Leads (${LEADS.length})</div>`+
-      (LEADS.length?LEADS.map((l,i)=>`<div class="emp-row is-lead"><div class="avatar">${ini(l.name)}</div><div style="flex:1;min-width:0;"><span class="emp-name">${l.name}</span><span class="emp-role">Job Lead</span></div><button class="btn-remove" onclick="removeEmployee('lead',${i})">Remove</button></div>`).join(''):'<div class="empty-state">No leads yet.</div>');
+      (LEADS.length?LEADS.map((l,i)=>empRowHTML(l,'lead',i)).join(''):'<div class="empty-state">No leads yet.</div>');
   }
   if(crewEl){
-    crewEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Crew (${CREW.length})</div>`+
-      (CREW.length?CREW.map((c,i)=>`<div class="emp-row is-crew"><div class="avatar">${ini(c.name)}</div><div style="flex:1;min-width:0;"><span class="emp-name">${c.name}</span><span class="emp-role">Crew</span></div><button class="btn-remove" onclick="removeEmployee('crew',${i})">Remove</button></div>`).join(''):'<div class="empty-state">No crew yet.</div>');
+    crewEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Apprentices (${CREW.length})</div>`+
+      (CREW.length?CREW.map((c,i)=>empRowHTML(c,'crew',i)).join(''):'<div class="empty-state">No apprentices yet.</div>');
   }
 }
-function addEmployee(){
+function startEditEmployee(role,idx){
+  editingEmployee={role,idx};
+  renderEmployeeLists();
+}
+function cancelEditEmployee(){
+  editingEmployee=null;
+  renderEmployeeLists();
+}
+async function saveEditEmployee(originalRole,originalIdx){
+  const newName=(document.getElementById('edit-name')?.value||'').trim();
+  const newRole=document.getElementById('edit-role')?.value||originalRole;
+  if(!newName){showToast('Enter a name');return;}
+  if(newName.length<2){showToast('Name is too short');return;}
+  const originalList=originalRole==='lead'?LEADS:CREW;
+  const person=originalList[originalIdx];
+  if(!person)return;
+  const oldName=person.name;
+  // Duplicate check (excluding the person being edited)
+  const allNames=[...LEADS,...CREW].filter(p=>p!==person).map(p=>p.name.toLowerCase());
+  if(allNames.includes(newName.toLowerCase())){showToast('That name already exists');return;}
+  // Persist to Supabase first
+  if(sb&&person.id){
+    await db.updateEmployee(person.id,{name:newName,role:newRole});
+  }
+  // Migrate sign-offs if name changed
+  if(oldName!==newName){
+    if(S.signoffs[oldName]){S.signoffs[newName]=S.signoffs[oldName];delete S.signoffs[oldName];}
+    if(S.leadSignoffs[oldName]){S.leadSignoffs[newName]=S.leadSignoffs[oldName];delete S.leadSignoffs[oldName];}
+  }
+  // Move sign-off between buckets if role changed
+  if(originalRole!==newRole){
+    if(originalRole==='lead'&&S.leadSignoffs[newName]){S.signoffs[newName]=S.leadSignoffs[newName];delete S.leadSignoffs[newName];}
+    else if(originalRole==='crew'&&S.signoffs[newName]){S.leadSignoffs[newName]=S.signoffs[newName];delete S.signoffs[newName];}
+    // Move person to other list
+    originalList.splice(originalIdx,1);
+    const updated={...person,name:newName};
+    if(newRole==='lead')LEADS.push(updated);else CREW.push(updated);
+  } else {
+    person.name=newName;
+  }
+  saveEmployeeLists();
+  save();
+  editingEmployee=null;
+  showToast(`${newName} updated`);
+  renderAdmin();
+  refreshAllNamePickers();
+}
+async function addEmployee(){
   const nameEl=document.getElementById('emp-new-name');
   const roleEl=document.getElementById('emp-new-role');
   const name=(nameEl?.value||'').trim();
@@ -1497,19 +1746,22 @@ function addEmployee(){
   if(name.length<2){showToast('Name is too short');return;}
   const exists=[...LEADS,...CREW].some(p=>p.name.toLowerCase()===name.toLowerCase());
   if(exists){showToast('That name already exists');return;}
-  if(role==='lead')LEADS.push({name});else CREW.push({name});
+  // Insert into Supabase first so we capture the row id
+  const inserted=sb?await db.insertEmployee({name,role}):null;
+  const newPerson=inserted?{id:inserted.id,name:inserted.name}:{name};
+  if(role==='lead')LEADS.push(newPerson);else CREW.push(newPerson);
   saveEmployeeLists();
   nameEl.value='';
   showToast(`${name} added as ${role==='lead'?'lead':'crew'}`);
   renderAdmin();
-  // Refresh dropdowns on other screens
   refreshAllNamePickers();
 }
-function removeEmployee(role,idx){
+async function removeEmployee(role,idx){
   const list=role==='lead'?LEADS:CREW;
   const person=list[idx];
   if(!person)return;
   if(!confirm(`Remove ${person.name}? Their existing sign-offs will be kept in the records but they won't appear in lists going forward.`))return;
+  if(sb&&person.id)await db.deactivateEmployee(person.id);
   list.splice(idx,1);
   saveEmployeeLists();
   showToast(`${person.name} removed`);
@@ -1566,7 +1818,28 @@ function submitSignature(){
   if(!hasMark){showToast('Please sign before submitting');return;}
   if(!S.signing)return;
   const now=new Date(),ts=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),ds=now.toLocaleDateString('en-US',{month:'short',day:'numeric'}),loc=S.loc?`${S.loc.lat}, ${S.loc.lng}`:'Location N/A';
-  const rec={time:`${ds} ${ts}`,location:loc,sigData:cv.toDataURL(),weekId:S.weekId,topic:S.topic?.title||''};
+  const sigData=cv.toDataURL();
+  const rec={time:`${ds} ${ts}`,location:loc,sigData,weekId:S.weekId,topic:S.topic?.title||''};
+  // Find employee row to get the id (for Supabase FK)
+  const empList=S.signingType==='lead'?LEADS:CREW;
+  const employee=empList.find(p=>p.name===S.signing);
+  // Persist to Supabase (fire-and-forget, but capture the data)
+  if(sb){
+    db.insertSignoff({
+      employeeId:employee?.id||null,
+      name:S.signing,
+      weekId:S.weekId,
+      weekLabel:S.weekLabel,
+      role:S.signingType,
+      signedAt:now.toISOString(),
+      lat:S.loc?.lat,
+      lng:S.loc?.lng,
+      sigData,
+      quizScore:S.signingType==='lead'?`${leadQuiz.correct}/3`:`${quiz.correct}/3`,
+      topicTitle:S.topic?.title||'',
+      topicOshaRef:S.topic?.oshaRef||'',
+    });
+  }
   if(S.signingType==='lead'){
     rec.quizScore=`${leadQuiz.correct}/3`;
     S.leadSignoffs[S.signing]=rec;save();closeSigModal();showToast(`${S.signing} signed`);document.getElementById('leadSignSection').style.display='none';document.getElementById('leadSigned').style.display='block';document.getElementById('leadSignedName').textContent=S.signing;document.getElementById('leadSignedDetails').textContent=`${ds} ${ts} · ${loc}`;
@@ -1643,6 +1916,8 @@ function submitIncident(){
     existing.unshift(report);
     localStorage.setItem('hes_incidents_v1',JSON.stringify(existing));
   }catch(e){}
+  // Persist to Supabase (fire-and-forget)
+  if(sb)db.insertIncident(report);
   document.getElementById('incidentForm').style.display='none';
   document.getElementById('incidentSubmitted').style.display='block';
   document.getElementById('incidentSubmittedDetails').textContent=
@@ -1681,6 +1956,13 @@ Workers comp provider notification required within 24 hours for lost-time injuri
   a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
   a.download=`HES_${r.id}.txt`;
   a.click();
+}
+
+// ════════ KICK OFF SUPABASE HYDRATION ════════
+// Async fetch from Supabase + real-time subscriptions. App is already
+// usable from localStorage cache before this completes.
+if(HAS_SUPABASE){
+  db.hydrate().then(()=>db.subscribe());
 }
 </script>
 </body>
