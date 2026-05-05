@@ -959,13 +959,15 @@ input.field-select::placeholder{color:#B8B6B0;}
         <input type="text" class="field-select" id="emp-new-name" placeholder="Full name (e.g. Jane Doe)">
         <select class="field-select" id="emp-new-role">
           <option value="lead">Job Lead</option>
-          <option value="crew" selected>Crew</option>
+          <option value="crew" selected>Apprentice</option>
+          <option value="admin">Admin (office staff)</option>
         </select>
         <button class="btn-primary" onclick="addEmployee()">Add</button>
       </div>
     </div>
     <div id="empListLeads"></div>
     <div id="empListCrew"></div>
+    <div id="empListAdmins"></div>
     <div class="divider"></div>
     <div class="sec-label">This week's topic</div>
     <div id="adminCurrentTopic" style="background:var(--surface);border:1px solid var(--surface3);padding:14px 16px;margin-bottom:10px;">
@@ -1296,6 +1298,7 @@ const db={
         const orphans=[
           ...LEADS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'lead'})),
           ...CREW.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'crew'})),
+          ...ADMINS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'admin',is_admin:true})),
         ];
         let allEmps=emps;
         if(orphans.length>0){
@@ -1309,9 +1312,12 @@ const db={
           }
         }
         if(allEmps.length>0){
-          LEADS.length=0;CREW.length=0;
+          LEADS.length=0;CREW.length=0;ADMINS.length=0;
           allEmps.forEach(e=>{
-            (e.role==='lead'?LEADS:CREW).push({id:e.id,name:e.name,pinHash:e.pin_hash||null,isAdmin:!!e.is_admin});
+            const bucket=e.role==='admin'?ADMINS:(e.role==='lead'?LEADS:CREW);
+            // Admin role implies admin permission
+            const isAdmin=e.role==='admin'?true:!!e.is_admin;
+            bucket.push({id:e.id,name:e.name,pinHash:e.pin_hash||null,isAdmin});
           });
           saveEmployeeLists();
         }
@@ -1418,10 +1424,12 @@ function saveEmployeeLists(){
   try{
     localStorage.setItem('hes_leads_v1',JSON.stringify(LEADS));
     localStorage.setItem('hes_crew_v1',JSON.stringify(CREW));
+    localStorage.setItem('hes_admins_v1',JSON.stringify(ADMINS));
   }catch(e){}
 }
 let LEADS=loadEmployeeList('hes_leads_v1',DEFAULT_LEADS);
 let CREW=loadEmployeeList('hes_crew_v1',DEFAULT_CREW);
+let ADMINS=loadEmployeeList('hes_admins_v1',[]);
 
 // ── TOPIC BANK ──
 const TOPIC_BANK = [
@@ -1554,8 +1562,8 @@ async function checkAdminAccess(){
     const msg=document.getElementById('adminPinMsg');
     const sel=document.getElementById('adminAuthNameSelect');
     input.value='';msg.textContent='';msg.className='pin-mode-msg';
-    // Build dropdown: admins (employees with isAdmin=true) + a "Master Access" option as fallback
-    const admins=[...LEADS,...CREW].filter(p=>p.isAdmin);
+    // Build dropdown: anyone who can admin (admin role + lead/crew with isAdmin flag) + Master Access fallback
+    const admins=[...LEADS,...CREW,...ADMINS].filter(p=>p.isAdmin);
     sel.innerHTML='';
     admins.forEach(p=>{
       const o=document.createElement('option');o.value='emp:'+p.id;o.textContent=p.name;
@@ -1622,7 +1630,7 @@ async function submitAdminAuth(){
   }
   // Per-employee admin flow
   const empId=choice.replace(/^emp:/,'');
-  const employee=[...LEADS,...CREW].find(p=>p.id===empId);
+  const employee=[...LEADS,...CREW,...ADMINS].find(p=>p.id===empId);
   if(!employee||!employee.isAdmin){
     msg.className='pin-mode-msg error';
     msg.textContent=window.LANG==='es'?'No tienes acceso de administración':'You do not have admin access';
@@ -1644,8 +1652,9 @@ async function submitAdminAuth(){
   }
 }
 async function toggleEmployeeAdmin(role,idx){
-  const list=role==='lead'?LEADS:CREW;
+  const list=role==='lead'?LEADS:(role==='admin'?ADMINS:CREW);
   const person=list[idx];
+  if(role==='admin'){showToast('Admin role already has admin access');return;}
   if(!person)return;
   const newVal=!person.isAdmin;
   const action=newVal?(window.LANG==='es'?'otorgar acceso de administración a':'grant admin access to'):(window.LANG==='es'?'revocar acceso de administración a':'revoke admin access from');
@@ -2112,6 +2121,7 @@ function empRowHTML(person,role,idx){
         <select class="field-select" id="edit-role">
           <option value="lead" ${role==='lead'?'selected':''}>Job Lead</option>
           <option value="crew" ${role==='crew'?'selected':''}>Apprentice</option>
+          <option value="admin" ${role==='admin'?'selected':''}>Admin (office staff)</option>
         </select>
       </div>
       <div class="emp-edit-actions">
@@ -2138,7 +2148,7 @@ function empRowHTML(person,role,idx){
   </div>`;
 }
 async function resetEmployeePin(role,idx){
-  const list=role==='lead'?LEADS:CREW;
+  const list=role==='lead'?LEADS:(role==='admin'?ADMINS:CREW);
   const person=list[idx];
   if(!person)return;
   if(!confirm(`Reset PIN for ${person.name}? They'll be asked to create a new one the next time they sign on a new device.`))return;
@@ -2155,13 +2165,19 @@ async function resetEmployeePin(role,idx){
 function renderEmployeeLists(){
   const leadsEl=document.getElementById('empListLeads');
   const crewEl=document.getElementById('empListCrew');
+  const adminsEl=document.getElementById('empListAdmins');
+  const sectionHeader=lbl=>`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">${lbl}</div>`;
   if(leadsEl){
-    leadsEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Job Leads (${LEADS.length})</div>`+
+    leadsEl.innerHTML=sectionHeader(`Job Leads (${LEADS.length})`)+
       (LEADS.length?LEADS.map((l,i)=>empRowHTML(l,'lead',i)).join(''):'<div class="empty-state">No leads yet.</div>');
   }
   if(crewEl){
-    crewEl.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;">Apprentices (${CREW.length})</div>`+
+    crewEl.innerHTML=sectionHeader(`Apprentices (${CREW.length})`)+
       (CREW.length?CREW.map((c,i)=>empRowHTML(c,'crew',i)).join(''):'<div class="empty-state">No apprentices yet.</div>');
+  }
+  if(adminsEl){
+    adminsEl.innerHTML=sectionHeader(`Admin (${ADMINS.length})`)+
+      (ADMINS.length?ADMINS.map((a,i)=>empRowHTML(a,'admin',i)).join(''):'<div class="empty-state">No admins yet.</div>');
   }
 }
 function startEditEmployee(role,idx){
@@ -2177,16 +2193,19 @@ async function saveEditEmployee(originalRole,originalIdx){
   const newRole=document.getElementById('edit-role')?.value||originalRole;
   if(!newName){showToast('Enter a name');return;}
   if(newName.length<2){showToast('Name is too short');return;}
-  const originalList=originalRole==='lead'?LEADS:CREW;
+  const bucketFor=(r)=>r==='lead'?LEADS:(r==='admin'?ADMINS:CREW);
+  const originalList=bucketFor(originalRole);
   const person=originalList[originalIdx];
   if(!person)return;
   const oldName=person.name;
   // Duplicate check (excluding the person being edited)
-  const allNames=[...LEADS,...CREW].filter(p=>p!==person).map(p=>p.name.toLowerCase());
+  const allNames=[...LEADS,...CREW,...ADMINS].filter(p=>p!==person).map(p=>p.name.toLowerCase());
   if(allNames.includes(newName.toLowerCase())){showToast('That name already exists');return;}
+  // Admin role implies admin permission
+  const newIsAdmin=newRole==='admin'?true:!!person.isAdmin;
   // Persist to Supabase first
   if(sb&&person.id){
-    await db.updateEmployee(person.id,{name:newName,role:newRole});
+    await db.updateEmployee(person.id,{name:newName,role:newRole,is_admin:newIsAdmin});
   }
   // Migrate sign-offs if name changed
   if(oldName!==newName){
@@ -2197,12 +2216,13 @@ async function saveEditEmployee(originalRole,originalIdx){
   if(originalRole!==newRole){
     if(originalRole==='lead'&&S.leadSignoffs[newName]){S.signoffs[newName]=S.leadSignoffs[newName];delete S.leadSignoffs[newName];}
     else if(originalRole==='crew'&&S.signoffs[newName]){S.leadSignoffs[newName]=S.signoffs[newName];delete S.signoffs[newName];}
-    // Move person to other list
+    // Move person to the right list
     originalList.splice(originalIdx,1);
-    const updated={...person,name:newName};
-    if(newRole==='lead')LEADS.push(updated);else CREW.push(updated);
+    const updated={...person,name:newName,isAdmin:newIsAdmin};
+    bucketFor(newRole).push(updated);
   } else {
     person.name=newName;
+    person.isAdmin=newIsAdmin;
   }
   saveEmployeeLists();
   save();
@@ -2218,20 +2238,23 @@ async function addEmployee(){
   const role=roleEl?.value||'crew';
   if(!name){showToast('Enter a name');return;}
   if(name.length<2){showToast('Name is too short');return;}
-  const exists=[...LEADS,...CREW].some(p=>p.name.toLowerCase()===name.toLowerCase());
+  const exists=[...LEADS,...CREW,...ADMINS].some(p=>p.name.toLowerCase()===name.toLowerCase());
   if(exists){showToast('That name already exists');return;}
-  // Insert into Supabase first so we capture the row id
-  const inserted=sb?await db.insertEmployee({name,role}):null;
-  const newPerson=inserted?{id:inserted.id,name:inserted.name}:{name};
-  if(role==='lead')LEADS.push(newPerson);else CREW.push(newPerson);
+  // Admin role implies admin permission
+  const insertFields=role==='admin'?{name,role,is_admin:true}:{name,role};
+  const inserted=sb?await db.insertEmployee(insertFields):null;
+  const newPerson=inserted?{id:inserted.id,name:inserted.name,isAdmin:role==='admin'}:{name,isAdmin:role==='admin'};
+  const bucket=role==='admin'?ADMINS:(role==='lead'?LEADS:CREW);
+  bucket.push(newPerson);
   saveEmployeeLists();
   nameEl.value='';
-  showToast(`${name} added as ${role==='lead'?'lead':'crew'}`);
+  const label=role==='admin'?'admin':(role==='lead'?'lead':'crew');
+  showToast(`${name} added as ${label}`);
   renderAdmin();
   refreshAllNamePickers();
 }
 async function removeEmployee(role,idx){
-  const list=role==='lead'?LEADS:CREW;
+  const list=role==='lead'?LEADS:(role==='admin'?ADMINS:CREW);
   const person=list[idx];
   if(!person)return;
   if(!confirm(`Remove ${person.name}? Their existing sign-offs will be kept in the records but they won't appear in lists going forward.`))return;
