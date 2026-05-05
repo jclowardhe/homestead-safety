@@ -1,6 +1,6 @@
 // Homestead Electric Safety — Service Worker
 // Bump CACHE_VERSION when you ship a new index.html so users get the update.
-const CACHE_VERSION = 'hes-safety-v2';
+const CACHE_VERSION = 'hes-safety-v3';
 const APP_SHELL = [
   './',
   './index.html',
