@@ -808,7 +808,7 @@ input.field-select::placeholder{color:#B8B6B0;}
   </header>
   <div class="content" style="padding-bottom:100px;">
     <div class="hero" style="margin-bottom:24px;">
-      <div class="hero-eyebrow">Safety Topic</div>
+      <div class="hero-eyebrow"><span id="crewWeekLabel">Safety Topic</span></div>
       <div class="hero-title" style="font-size:26px;">This<br>Week's<br>Talk.</div>
     </div>
     <div class="topic-card" id="crewTopicCard">
@@ -1556,7 +1556,7 @@ function updateLeadStats(){
 }
 function openLeadSignModal(){const name=document.getElementById('leadNameSelect')?.value;const ok=document.getElementById('leadConfirm')?.checked;if(!name){showToast('Select your name');return;}if(!ok){showToast('Confirm you attended the meeting');return;}S.signing=name;S.signingType='lead';openSigModal(name,'Job Lead');}
 function renderCrew(){
-  document.getElementById('crewWeekLabel').textContent=S.weekLabel;
+  const wk=document.getElementById('crewWeekLabel');if(wk)wk.textContent=S.weekLabel;
   const sel=document.getElementById('crewNameSelect');
   if(sel){sel.innerHTML='<option value="">Select your name…</option>';CREW.forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;sel.appendChild(o);});}
   renderTopic();
