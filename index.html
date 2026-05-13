@@ -1475,38 +1475,44 @@ const db={
   async hydrate(){
     if(!sb)return;
     try{
-      // Employees — fetch from Supabase, then upload any local-only people
-      // (so additions made before Supabase wiring, or while offline, sync up).
-      const {data:emps}=await sb.from('employees').select('*').eq('active',true).order('created_at');
-      if(emps){
-        const cloudNames=new Set(emps.map(e=>e.name.toLowerCase()));
+      // Employees — fetch ALL rows (active and inactive) so we can correctly
+      // identify orphans. A deactivated person still has a row, just with
+      // active=false; we must not treat them as a brand-new local-only person
+      // and re-insert them.
+      const {data:allRows}=await sb.from('employees').select('*').order('created_at');
+      if(allRows){
+        const activeRows=allRows.filter(e=>e.active!==false);
+        // Build sets of EVERY known person — by id and by lower-cased name.
+        // If a local person is missing from BOTH sets, they're a true orphan
+        // (added on this device while offline / before Supabase was wired).
+        const knownIds=new Set(allRows.map(e=>e.id));
+        const knownNames=new Set(allRows.map(e=>e.name.toLowerCase()));
+        const isOrphan=p=>!(p.id&&knownIds.has(p.id))&&!knownNames.has(p.name.toLowerCase());
         const orphans=[
-          ...LEADS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'lead'})),
-          ...CREW.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'crew'})),
-          ...ADMINS.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'admin',is_admin:true})),
-          ...FOREMEN.filter(p=>!cloudNames.has(p.name.toLowerCase())).map(p=>({name:p.name,role:'foreman'})),
+          ...LEADS.filter(isOrphan).map(p=>({name:p.name,role:'lead'})),
+          ...CREW.filter(isOrphan).map(p=>({name:p.name,role:'crew'})),
+          ...ADMINS.filter(isOrphan).map(p=>({name:p.name,role:'admin',is_admin:true})),
+          ...FOREMEN.filter(isOrphan).map(p=>({name:p.name,role:'foreman'})),
         ];
-        let allEmps=emps;
+        let displayRows=activeRows;
         if(orphans.length>0){
           const {data:inserted,error:upErr}=await sb.from('employees').insert(orphans).select();
           if(upErr){
             console.error('Upload local-only employees failed:',upErr);
             showToast('Some employees failed to sync — see console');
           } else if(inserted){
-            allEmps=[...emps,...inserted];
+            displayRows=[...activeRows,...inserted];
             console.log(`Synced ${inserted.length} local-only employee(s) to Supabase`);
           }
         }
-        if(allEmps.length>0){
-          LEADS.length=0;CREW.length=0;ADMINS.length=0;FOREMEN.length=0;
-          allEmps.forEach(e=>{
-            const bucket=e.role==='admin'?ADMINS:(e.role==='lead'?LEADS:(e.role==='foreman'?FOREMEN:CREW));
-            // Admin role implies admin permission
-            const isAdmin=e.role==='admin'?true:!!e.is_admin;
-            bucket.push({id:e.id,name:e.name,pinHash:e.pin_hash||null,isAdmin});
-          });
-          saveEmployeeLists();
-        }
+        // Rebuild local arrays strictly from active rows (deactivated stay gone).
+        LEADS.length=0;CREW.length=0;ADMINS.length=0;FOREMEN.length=0;
+        displayRows.forEach(e=>{
+          const bucket=e.role==='admin'?ADMINS:(e.role==='lead'?LEADS:(e.role==='foreman'?FOREMEN:CREW));
+          const isAdmin=e.role==='admin'?true:!!e.is_admin;
+          bucket.push({id:e.id,name:e.name,pinHash:e.pin_hash||null,isAdmin});
+        });
+        saveEmployeeLists();
       }
       // This week's sign-offs
       const {data:sigs}=await sb.from('weekly_signoffs').select('*').eq('week_id',S.weekId);
@@ -1797,7 +1803,7 @@ async function checkAdminAccess(){
     masterOpt.textContent=(window.LANG==='es'?'Acceso maestro (PIN único)':'Master access (single PIN)');
     sel.appendChild(masterOpt);
     title.textContent=window.LANG==='es'?'Administración':'Administration';
-    sub.textContent=window.LANG==='es'?'Selecciona tu nombre e ingresa tu PIN.':'Pick your name and enter your PIN.';
+    sub.textContent=window.LANG==='es'?'Selecciona tu nombre e ingresa tu PIN (o crea uno nuevo).':'Pick your name and enter your PIN. (First time? Just enter a new 4-6 digit PIN — it becomes yours.)';
     if(admins.length===0){sel.value='master';}
     modal.classList.add('open');
     setTimeout(()=>input.focus(),50);
@@ -1860,8 +1866,22 @@ async function submitAdminAuth(){
     return;
   }
   if(!employee.pinHash){
-    msg.className='pin-mode-msg error';
-    msg.textContent=window.LANG==='es'?'Primero crea tu PIN firmando una vez':'Create your PIN by signing in once first';
+    // First-time setup — save the entered PIN as their permanent PIN
+    if(sb){
+      const updated=await db.updateEmployee(employee.id,{pin_hash:hash});
+      if(!updated){
+        msg.className='pin-mode-msg error';
+        msg.textContent=window.LANG==='es'?'No se pudo guardar el PIN':'Failed to save PIN';
+        return;
+      }
+    }
+    employee.pinHash=hash;
+    saveEmployeeLists();
+    markDeviceVerified(employee.id);
+    sessionStorage.setItem('hes_admin_ok','1');
+    document.getElementById('adminAuthModal').classList.remove('open');
+    if(_adminAuthResolver){_adminAuthResolver(true);_adminAuthResolver=null;}
+    showToast(window.LANG==='es'?'PIN creado ✓':'PIN created ✓');
     return;
   }
   if(hash===employee.pinHash){
@@ -2042,7 +2062,7 @@ function onNameChange(role){
   pinInput.value='';pinMsg.textContent='';pinMsg.className='pin-mode-msg';
   const name=document.getElementById(selectId)?.value;
   if(!name){pinRow.classList.remove('visible');return;}
-  const employee=[...LEADS,...CREW].find(p=>p.name===name);
+  const employee=[...LEADS,...FOREMEN,...CREW,...ADMINS].find(p=>p.name===name);
   if(!employee||!employee.id){pinRow.classList.remove('visible');return;}
   if(isDeviceVerified(employee.id)){
     pinRow.classList.remove('visible');
@@ -2057,8 +2077,8 @@ function onNameChange(role){
 }
 
 async function ensurePinValid(role,name){
-  // Look across both lists — unified flow needs to find leads or crew by name
-  const employee=[...LEADS,...CREW].find(p=>p.name===name);
+  // Look across ALL four lists — unified sign-off works for any role
+  const employee=[...LEADS,...FOREMEN,...CREW,...ADMINS].find(p=>p.name===name);
   // No Supabase ID → legacy/local-only employee, no PIN check possible
   if(!employee||!employee.id)return true;
   // This device already verified → skip
@@ -2940,12 +2960,14 @@ async function removeEmployee(role,idx){
   const person=list[idx];
   if(!person)return;
   if(!confirm(`Remove ${person.name}? Their existing sign-offs will be kept in the records but they won't appear in lists going forward.`))return;
-  if(sb&&person.id)await db.deactivateEmployee(person.id);
+  // Remove locally FIRST so the inbound realtime sync (triggered by deactivate)
+  // doesn't see this person in our local list and re-insert them as an orphan.
   list.splice(idx,1);
   saveEmployeeLists();
-  showToast(`${person.name} removed`);
   renderAdmin();
   refreshAllNamePickers();
+  if(sb&&person.id)await db.deactivateEmployee(person.id);
+  showToast(`${person.name} removed`);
 }
 function refreshAllNamePickers(){
   // Sign Off — everyone, grouped + alphabetized
